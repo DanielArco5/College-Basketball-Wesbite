@@ -1,0 +1,250 @@
+@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600&family=Barlow:wght@400;500&display=swap");
+
+/* Palette derived from the material: dark hardwood for the playing
+   surface, cooler charcoal around it, faded paint for the lines. The only
+   saturated color is the data scale, so the chart is the one thing asking
+   for attention. --accent carries the selected team's own color. */
+.wrap {
+  --ink: #F0EBE3;
+  --ink-dim: #8B8278;
+  --page: #191512;
+  --panel: #211C18;
+  --rule: #332C25;
+  --accent: #6B5D4F;
+
+  --display: "Barlow Condensed", "Helvetica Neue", sans-serif;
+  --body: "Barlow", system-ui, sans-serif;
+
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 5rem;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--body);
+  min-height: 100vh;
+}
+
+.accent-rule {
+  display: block;
+  width: 3.5rem;
+  height: 4px;
+  background: var(--accent);
+  margin-bottom: 1rem;
+}
+
+.masthead h1 {
+  font-family: var(--display);
+  font-size: clamp(2.6rem, 7vw, 4.25rem);
+  font-weight: 600;
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.sub {
+  color: var(--ink-dim);
+  font-size: 0.95rem;
+  margin: 0.5rem 0 1.75rem;
+}
+
+/* --- Controls ------------------------------------------------- */
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 2.5rem;
+}
+
+.modes {
+  display: inline-flex;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.modes button {
+  font-family: var(--display);
+  font-size: 1rem;
+  color: var(--ink-dim);
+  background: var(--panel);
+  border: 0;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.modes button.on {
+  background: var(--accent);
+  color: #14110F;
+}
+
+.modes button:focus-visible,
+.search input:focus-visible,
+.results button:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: -2px;
+}
+
+.search {
+  position: relative;
+  flex: 1 1 18rem;
+  max-width: 24rem;
+}
+
+.search input {
+  width: 100%;
+  font-family: var(--display);
+  font-size: 1.05rem;
+  color: var(--ink);
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 0.5rem 0.7rem;
+}
+
+.search input::placeholder {
+  color: var(--ink-dim);
+}
+
+.results {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 20rem;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+}
+
+.results button {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 0;
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 1rem;
+  padding: 0.45rem 0.7rem;
+  cursor: pointer;
+}
+
+.results button.active {
+  background: var(--rule);
+}
+
+.r-detail {
+  color: var(--ink-dim);
+  white-space: nowrap;
+}
+
+.no-match {
+  padding: 0.7rem;
+  color: var(--ink-dim);
+  font-size: 0.9rem;
+}
+
+.showing {
+  margin: 0;
+  color: var(--ink-dim);
+  font-size: 0.85rem;
+}
+
+/* --- Layout --------------------------------------------------- */
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 2.5rem;
+  align-items: start;
+}
+
+@media (max-width: 800px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chart {
+  margin: 0;
+}
+
+.court {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: 1px solid var(--rule);
+}
+
+.chart figcaption {
+  color: var(--ink-dim);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin-top: 0.9rem;
+  max-width: 44ch;
+}
+
+.empty-state {
+  color: var(--ink-dim);
+  max-width: 48ch;
+  line-height: 1.6;
+}
+
+/* --- Table ---------------------------------------------------- */
+
+.breakdown table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--display);
+  font-size: 1.05rem;
+}
+
+.breakdown th {
+  text-align: left;
+  font-weight: 500;
+  color: var(--ink-dim);
+  border-bottom: 1px solid var(--rule);
+  padding: 0 0 0.5rem;
+}
+
+.breakdown th:not(:first-child),
+.breakdown .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.breakdown td {
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.breakdown tr.empty td {
+  color: var(--ink-dim);
+}
+
+.swatch {
+  display: inline-block;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 2px;
+  margin-right: 0.55rem;
+  vertical-align: baseline;
+}
+
+.legend {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0 0;
+  font-size: 0.85rem;
+  color: var(--ink-dim);
+  line-height: 1.9;
+}
