@@ -1,22 +1,36 @@
+import Link from "next/link";
 import { createServerClient } from "@/lib/supabase-server";
 import { BUCKET_COLORS, ZONE_LABELS, ZONE_ORDER, type Zone } from "@/lib/court";
 import ShotChart, { type ZoneStat } from "./ShotChart";
+import ShotDots, { type Shot } from "./ShotDots";
 import EntityPicker, { type PickerItem } from "./EntityPicker";
 import "./shot-chart.css";
 
 const SEASON = 2026;
+const MIN_SEASON_ATTEMPTS = 20;
+
+// Last season's games are finished, so the numbers behind this page never
+// change. Re-querying Postgres on every request buys nothing.
+export const revalidate = 3600;
 
 export const metadata = { title: "Shot charts" };
 
-type TeamRow = { id: number; school: string; conference: string | null; primary_color: string | null; color_override: string | null };
+type TeamRow = {
+  id: number;
+  school: string;
+  conference: string | null;
+  primary_color: string | null;
+  color_override: string | null;
+};
 
 export default async function ShotChartPage({
   searchParams,
 }: {
-  searchParams: Promise<{ player?: string; team?: string }>;
+  searchParams: Promise<{ player?: string; team?: string; view?: string }>;
 }) {
   const params = await searchParams;
   const mode: "player" | "team" = params.team ? "team" : "player";
+  const view: "zones" | "shots" = params.view === "shots" ? "shots" : "zones";
   const db = createServerClient();
 
   const { data: teamRows, error: teamErr } = await db
@@ -30,14 +44,8 @@ export default async function ShotChartPage({
   const teams = (teamRows ?? []) as TeamRow[];
   const teamById = new Map(teams.map((t) => [t.id, t]));
 
-  // ---------------------------------------------------------------
-  // Build the picker list for whichever mode we're in
-  // ---------------------------------------------------------------
   let items: PickerItem[] = [];
   let selectedId: number;
-  let heading = "";
-  let subheading = "";
-  let accent = "#6B5D4F";
 
   if (mode === "team") {
     items = teams.map((t) => ({
@@ -48,31 +56,24 @@ export default async function ShotChartPage({
     selectedId = Number(params.team) || teams[0]?.id;
   } else {
     const { data: candidates, error } = await db
-      .from("player_zone_stats")
+      .from("player_season_totals")
       .select("player_id, player_name, team_id, attempts")
       .eq("season", SEASON)
-      .gte("attempts", 40)
-      .order("attempts", { ascending: false })
-      .limit(4000);
+      .gte("attempts", MIN_SEASON_ATTEMPTS)
+      .order("player_name")
+      .limit(20000);
 
     if (error) return <Failure message={error.message} />;
 
-    const seen = new Map<number, PickerItem>();
-    for (const row of candidates ?? []) {
-      if (seen.has(row.player_id)) continue;
-      seen.set(row.player_id, {
-        id: row.player_id,
-        name: row.player_name,
-        detail: teamById.get(row.team_id)?.school ?? "",
-      });
-    }
-    items = [...seen.values()].sort((a, b) => a.name.localeCompare(b.name));
+    items = (candidates ?? []).map((row) => ({
+      id: row.player_id,
+      name: row.player_name,
+      detail: teamById.get(row.team_id)?.school ?? "",
+    }));
     selectedId = Number(params.player) || items[0]?.id;
   }
 
-  // ---------------------------------------------------------------
-  // Stats for the selection
-  // ---------------------------------------------------------------
+  // Zone stats drive the table in both views, so they're always fetched.
   const { data: statRows, error: statErr } =
     mode === "team"
       ? await db
@@ -87,8 +88,30 @@ export default async function ShotChartPage({
           .eq("player_id", selectedId);
 
   if (statErr) return <Failure message={statErr.message} />;
-
   const stats = (statRows ?? []) as (ZoneStat & { attempt_share?: number })[];
+
+  // Raw locations, only when they're going to be drawn.
+  let shots: Shot[] = [];
+  if (view === "shots") {
+    const q = db
+      .from("shot_events")
+      .select("x, y, made")
+      .eq("season", SEASON)
+      .not("zone", "is", null) // field goals only, matching the table
+      .limit(4000);
+
+    const { data: shotRows, error: shotErr } =
+      mode === "team"
+        ? await q.eq("team_id", selectedId)
+        : await q.eq("player_id", selectedId);
+
+    if (shotErr) return <Failure message={shotErr.message} />;
+    shots = (shotRows ?? []) as Shot[];
+  }
+
+  let heading = "";
+  let subheading = "";
+  let accent = "#6B5D4F";
 
   if (mode === "team") {
     const t = teamById.get(selectedId);
@@ -106,6 +129,8 @@ export default async function ShotChartPage({
   const attempts = stats.reduce((n, s) => n + s.attempts, 0);
   const makes = stats.reduce((n, s) => n + s.makes, 0);
 
+  const base = mode === "team" ? `team=${selectedId}` : `player=${selectedId}`;
+
   return (
     <main className="wrap" style={{ ["--accent" as string]: accent }}>
       <header className="masthead">
@@ -118,6 +143,23 @@ export default async function ShotChartPage({
           {attempts ? ((100 * makes) / attempts).toFixed(1) : "0"}%
         </p>
         <EntityPicker mode={mode} items={items} selectedName={heading} />
+
+        <nav className="view-toggle">
+          <Link
+            href={`/shot-chart?${base}&view=zones`}
+            className={view === "zones" ? "on" : ""}
+            scroll={false}
+          >
+            Accuracy by zone
+          </Link>
+          <Link
+            href={`/shot-chart?${base}&view=shots`}
+            className={view === "shots" ? "on" : ""}
+            scroll={false}
+          >
+            Every shot
+          </Link>
+        </nav>
       </header>
 
       {stats.length === 0 ? (
@@ -129,12 +171,26 @@ export default async function ShotChartPage({
       ) : (
         <div className="layout">
           <figure className="chart">
-            <ShotChart stats={stats} />
-            <figcaption>
-              Color compares {mode === "team" ? "this team" : "this player"} to
-              the Division I average in each zone, adjusted for how many shots
-              were actually taken there.
-            </figcaption>
+            {view === "shots" ? (
+              <>
+                <ShotDots shots={shots} />
+                <figcaption>
+                  Each mark is one shot — filled for a make, open for a miss.
+                  Locations are recorded courtside and are accurate to about a
+                  foot, so read the pattern rather than any single dot.
+                  {shots.length >= 4000 && " Showing the first 4,000."}
+                </figcaption>
+              </>
+            ) : (
+              <>
+                <ShotChart stats={stats} />
+                <figcaption>
+                  Color compares {mode === "team" ? "this team" : "this player"}{" "}
+                  to the Division I average in each zone, adjusted for how many
+                  shots were actually taken there.
+                </figcaption>
+              </>
+            )}
           </figure>
 
           <section className="breakdown">
@@ -189,24 +245,26 @@ export default async function ShotChartPage({
               </tbody>
             </table>
 
-            <ul className="legend">
-              {[
-                ["hot", "Well above average"],
-                ["warm", "Above average"],
-                ["neutral", "About average"],
-                ["cool", "Below average"],
-                ["cold", "Well below average"],
-                ["gray", "Too few attempts to say"],
-              ].map(([bucket, label]) => (
-                <li key={bucket}>
-                  <span
-                    className="swatch"
-                    style={{ background: BUCKET_COLORS[bucket] }}
-                  />
-                  {label}
-                </li>
-              ))}
-            </ul>
+            {view === "zones" && (
+              <ul className="legend">
+                {[
+                  ["hot", "Well above average"],
+                  ["warm", "Above average"],
+                  ["neutral", "About average"],
+                  ["cool", "Below average"],
+                  ["cold", "Well below average"],
+                  ["gray", "Too few attempts to say"],
+                ].map(([bucket, label]) => (
+                  <li key={bucket}>
+                    <span
+                      className="swatch"
+                      style={{ background: BUCKET_COLORS[bucket] }}
+                    />
+                    {label}
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
         </div>
       )}

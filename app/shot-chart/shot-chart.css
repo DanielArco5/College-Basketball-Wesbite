@@ -248,3 +248,47 @@
   color: var(--ink-dim);
   line-height: 1.9;
 }
+/* ── Append to app/shot-chart/shot-chart.css ───────────────────── */
+
+.view-toggle {
+  display: flex;
+  gap: 1.25rem;
+  margin-top: 1rem;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+}
+
+.view-toggle a {
+  color: #8C7B6B;
+  text-decoration: none;
+  padding-bottom: 0.3rem;
+  border-bottom: 2px solid transparent;
+  transition: color 120ms ease;
+}
+
+.view-toggle a:hover {
+  color: #D8CCBE;
+}
+
+.view-toggle a.on {
+  color: #E8DFD4;
+  border-bottom-color: var(--accent, #6B5D4F);
+}
+
+.view-toggle a:focus-visible {
+  outline: 2px solid var(--accent, #6B5D4F);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Dot plot. --miss is the open circle; --accent (set per team on the page
+   wrapper) fills the makes. */
+.dots-missed circle,
+.dots-made circle {
+  vector-effect: non-scaling-stroke;
+}
+
+.wrap {
+  --miss: #8C7B6B;
+}
