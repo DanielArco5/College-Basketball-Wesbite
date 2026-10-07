@@ -125,9 +125,9 @@ export const ZONE_ORDER: Zone[] = [
 // be read as "average"; this value is only the fallback.
 export const BUCKET_COLORS: Record<string, string> = {
   hot: "#B7191C",
-  warm: "#CF6968",
+  warm: "#E35F44",
   neutral: "#393530",
-  cool: "#5E91C0",
+  cool: "#4F95DA",
   cold: "#1F5DC2",
   gray: "#2B231D",
 };
