@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createServerClient } from "@/lib/supabase-server";
 import { BUCKET_COLORS, ZONE_LABELS, ZONE_ORDER, type Zone } from "@/lib/court";
 import ShotChart, { ZoneLegend, type ZoneStat } from "./ShotChart";
@@ -44,10 +45,14 @@ type TeamRow = {
 export default async function ShotChartPage({
   searchParams,
 }: {
-  searchParams: Promise<{ player?: string; team?: string }>;
+  searchParams: Promise<{ player?: string; team?: string; side?: string }>;
 }) {
   const params = await searchParams;
   const mode: "player" | "team" = params.team ? "team" : "player";
+  // Defense is a team concept — a player has no defensive shot chart, so
+  // the toggle is hidden in player mode and the param ignored there.
+  const side: "offense" | "defense" =
+    mode === "team" && params.side === "defense" ? "defense" : "offense";
   const db = createServerClient();
 
   const { data: teamRows, error: teamErr } = await db
@@ -103,7 +108,9 @@ export default async function ShotChartPage({
   const { data: statRows, error: statErr } =
     mode === "team"
       ? await db
-          .from("team_zone_stats")
+          .from(
+            side === "defense" ? "team_defense_zone_stats" : "team_zone_stats",
+          )
           .select("*")
           .eq("season", SEASON)
           .eq("team_id", selectedId)
@@ -114,7 +121,7 @@ export default async function ShotChartPage({
           .eq("player_id", selectedId);
 
   if (statErr) return <Failure message={statErr.message} />;
-  const stats = (statRows ?? []) as (ZoneStat & { attempt_share?: number })[];
+  const stats = (statRows ?? []) as ZoneStat[];
 
   let heading = "";
   let subheading = "";
@@ -154,6 +161,24 @@ export default async function ShotChartPage({
           {attempts ? ((100 * makes) / attempts).toFixed(1) : "0"}%
         </p>
         <EntityPicker mode={mode} items={items} selectedName={heading} />
+        {mode === "team" && (
+          <nav className="side-toggle">
+            <Link
+              href={`/shot-chart?team=${selectedId}&side=offense`}
+              className={side === "offense" ? "on" : ""}
+              scroll={false}
+            >
+              Shots taken
+            </Link>
+            <Link
+              href={`/shot-chart?team=${selectedId}&side=defense`}
+              className={side === "defense" ? "on" : ""}
+              scroll={false}
+            >
+              Shots allowed
+            </Link>
+          </nav>
+        )}
       </header>
 
       {stats.length === 0 ? (
@@ -167,11 +192,34 @@ export default async function ShotChartPage({
           <div className="chart-col">
             <figure className="chart">
               <ShotChart stats={stats} />
-              <ZoneLegend mode={mode} />
+              {side === "defense" ? (
+                // The FG% legend would mislabel these colors, so defense
+                // explains its own scale instead.
+                <p className="legend-note">
+                  Color shows where opponents take their shots, not how well
+                  they make them. Red means a larger share of opponent
+                  attempts came from that zone than against an average
+                  defense. Whether that is good defense depends on the zone —
+                  conceding long twos is usually fine, conceding rim attempts
+                  usually is not.
+                </p>
+              ) : (
+                <ZoneLegend mode={mode} />
+              )}
               <figcaption>
-                Color compares {mode === "team" ? "this team" : "this player"}{" "}
-                to the Division I average in each zone, adjusted for how many
-                shots were actually taken there.
+                {side === "defense" ? (
+                  <>
+                    Share of opponent attempts from each zone, compared with
+                    what an average Division I defense allows.
+                  </>
+                ) : (
+                  <>
+                    Color compares{" "}
+                    {mode === "team" ? "this team" : "this player"} to the
+                    Division I average in each zone, adjusted for how many
+                    shots were actually taken there.
+                  </>
+                )}
               </figcaption>
             </figure>
 
@@ -186,7 +234,7 @@ export default async function ShotChartPage({
                   <th>Shots</th>
                   {mode === "team" && <th>Share</th>}
                   <th>FG%</th>
-                  <th>vs D1</th>
+                  <th>{side === "defense" ? "vs D1 share" : "vs D1"}</th>
                 </tr>
               </thead>
               <tbody>
@@ -200,7 +248,8 @@ export default async function ShotChartPage({
                       </tr>
                     );
                   }
-                  const diff = 100 * s.fg_pct_vs_league;
+                  const diff = 100 * (s.fg_pct_vs_league ?? 0);
+                  const shareDiff = 100 * (s.share_vs_league ?? 0);
                   return (
                     <tr key={zone}>
                       <td>
@@ -224,7 +273,9 @@ export default async function ShotChartPage({
                       <td className="num">
                         {s.color_bucket === "gray"
                           ? "—"
-                          : `${diff > 0 ? "+" : ""}${diff.toFixed(1)}`}
+                          : side === "defense"
+                            ? `${shareDiff > 0 ? "+" : ""}${shareDiff.toFixed(1)}`
+                            : `${diff > 0 ? "+" : ""}${diff.toFixed(1)}`}
                       </td>
                     </tr>
                   );
