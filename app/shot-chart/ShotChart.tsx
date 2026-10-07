@@ -24,12 +24,9 @@ export type ZoneStat = {
   raw_fg_pct: number;
   fg_pct: number;
   league_fg_pct: number;
-  // Offensive views only; team_defense_zone_stats colors by share instead.
-  fg_pct_vs_league?: number;
+  fg_pct_vs_league: number;
   color_bucket: string;
   attempt_share?: number;
-  share_vs_league?: number;
-  league_share?: number;
 };
 
 // Lines are drawn in a near-black a shade under the surface, so they read

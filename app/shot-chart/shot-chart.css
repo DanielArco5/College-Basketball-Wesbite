@@ -355,11 +355,3 @@ body:has(.wrap) {
   outline-offset: 3px;
   border-radius: 2px;
 }
-
-.legend-note {
-  margin-top: 0.75rem;
-  max-width: 48ch;
-  font-size: 0.85rem;
-  line-height: 1.5;
-  color: var(--ink-dim);
-}

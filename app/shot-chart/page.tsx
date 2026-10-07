@@ -192,25 +192,13 @@ export default async function ShotChartPage({
           <div className="chart-col">
             <figure className="chart">
               <ShotChart stats={stats} />
-              {side === "defense" ? (
-                // The FG% legend would mislabel these colors, so defense
-                // explains its own scale instead.
-                <p className="legend-note">
-                  Color shows where opponents take their shots, not how well
-                  they make them. Red means a larger share of opponent
-                  attempts came from that zone than against an average
-                  defense. Whether that is good defense depends on the zone —
-                  conceding long twos is usually fine, conceding rim attempts
-                  usually is not.
-                </p>
-              ) : (
-                <ZoneLegend mode={mode} />
-              )}
+              <ZoneLegend mode={mode} />
               <figcaption>
                 {side === "defense" ? (
                   <>
-                    Share of opponent attempts from each zone, compared with
-                    what an average Division I defense allows.
+                    Color compares opponents against this team to the Division
+                    I average in each zone, adjusted for how many shots were
+                    actually taken there.
                   </>
                 ) : (
                   <>
@@ -234,7 +222,7 @@ export default async function ShotChartPage({
                   <th>Shots</th>
                   {mode === "team" && <th>Share</th>}
                   <th>FG%</th>
-                  <th>{side === "defense" ? "vs D1 share" : "vs D1"}</th>
+                  <th>vs D1</th>
                 </tr>
               </thead>
               <tbody>
@@ -248,8 +236,7 @@ export default async function ShotChartPage({
                       </tr>
                     );
                   }
-                  const diff = 100 * (s.fg_pct_vs_league ?? 0);
-                  const shareDiff = 100 * (s.share_vs_league ?? 0);
+                  const diff = 100 * s.fg_pct_vs_league;
                   return (
                     <tr key={zone}>
                       <td>
@@ -273,9 +260,7 @@ export default async function ShotChartPage({
                       <td className="num">
                         {s.color_bucket === "gray"
                           ? "—"
-                          : side === "defense"
-                            ? `${shareDiff > 0 ? "+" : ""}${shareDiff.toFixed(1)}`
-                            : `${diff > 0 ? "+" : ""}${diff.toFixed(1)}`}
+                          : `${diff > 0 ? "+" : ""}${diff.toFixed(1)}`}
                       </td>
                     </tr>
                   );

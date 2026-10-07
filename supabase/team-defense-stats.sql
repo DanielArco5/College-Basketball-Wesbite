@@ -1,74 +1,95 @@
--- Adds league share baselines and a color bucket to the defensive view.
+-- ============================================================
+-- Team defensive zone stats
+-- Run after team-zones.sql. Safe to run top to bottom.
+-- ============================================================
 --
--- The offensive charts color by ACCURACY vs the D1 average, shrunk toward
--- the mean. That is the wrong headline for defense. Defenses reliably
--- control WHERE opponents shoot and much less reliably how well opponents
--- shoot once there; opponent three-point percentage is close to noise even
--- across a full season, while rim share is a repeatable skill. So the
--- defensive chart colors by SHARE OF OPPONENT ATTEMPTS.
+-- The mirror of team_zone_stats: the same accuracy-vs-D1 coloring, the
+-- same shrinkage and the same ±1 / ±3 point thresholds, applied to the
+-- shots a team ALLOWS. Red means opponents shoot better than the D1
+-- average from that zone, blue means worse — the same reading as the
+-- offensive chart, so the two can be compared side by side.
 --
--- Reading the color: red means opponents take MORE of their shots from
--- that zone than they do against an average D1 defense; blue means fewer.
--- It is descriptive, not a verdict — whether conceding mid-range jumpers
--- is good defense is a basketball question, not a data question.
+-- The prior is fitted separately from the offensive one. Opponent FG% is
+-- noisier than a team's own — defenses control where opponents shoot far
+-- more reliably than how well they shoot once there — so the fit should
+-- come out with a larger k and pull harder toward the league mean. That
+-- is the honest result: most defenses will read close to neutral.
 --
--- Thresholds are fitted rather than guessed: one and two standard
--- deviations of the per-zone share distribution across all teams. That
--- self-calibrates per zone, which matters because teams vary a lot in rim
--- share and barely at all in corner-three share.
+-- The league baseline is shared with offense. Every shot is one team's
+-- attempt and another's attempt allowed, so the D1 average is the same.
+-- ============================================================
 
 drop materialized view if exists team_defense_zone_stats;
+drop materialized view if exists team_defense_zone_priors;
 
-create materialized view team_defense_zone_stats as
-with league as (
-  select
-    season,
-    zone,
-    avg(attempt_share)    as league_share,
-    stddev_pop(attempt_share) as share_sd
+create materialized view team_defense_zone_priors as
+with team_zone as (
+  select season, zone, team_id,
+         makes::numeric / attempts as rate
   from team_defense_zones
-  group by season, zone
+  where attempts >= 25
 )
 select
-  d.season,
-  d.team_id,
-  d.zone,
-  d.attempts,
-  d.makes,
+  season,
+  zone,
+  avg(rate)      as prior_mean,
+  var_samp(rate) as prior_var,
+  greatest(
+    avg(rate) * (1 - avg(rate)) / nullif(var_samp(rate), 0) - 1,
+    1
+  )              as k
+from team_zone
+group by season, zone;
+
+create unique index team_defense_zone_priors_key
+  on team_defense_zone_priors (season, zone);
+
+
+create materialized view team_defense_zone_stats as
+select
+  d.season, d.team_id, d.zone, d.attempts, d.makes,
+  d.makes::numeric / nullif(d.attempts, 0)            as raw_fg_pct,
+  (d.makes + p.k * p.prior_mean) / (d.attempts + p.k) as fg_pct,
+  b.fg_pct                                            as league_fg_pct,
+  (d.makes + p.k * p.prior_mean) / (d.attempts + p.k) - b.fg_pct as fg_pct_vs_league,
+
+  -- Share of opponent attempts from this zone: where teams shoot against
+  -- this defense.
   d.attempt_share,
-  (d.makes::numeric / nullif(d.attempts, 0))        as fg_pct,
-  l.league_share,
-  (d.attempt_share - l.league_share)                as share_vs_league,
+
   case
-    -- A team with almost no tracked shots in a zone gets no color at all.
-    -- Same principle as the offensive charts: gray says "no data," a
-    -- neutral color would falsely claim "exactly average."
     when d.attempts < 25 then 'gray'
-    when l.share_sd is null or l.share_sd = 0 then 'neutral'
-    when d.attempt_share - l.league_share >  2 * l.share_sd then 'hot'
-    when d.attempt_share - l.league_share >  1 * l.share_sd then 'warm'
-    when d.attempt_share - l.league_share < -2 * l.share_sd then 'cold'
-    when d.attempt_share - l.league_share < -1 * l.share_sd then 'cool'
-    else 'neutral'
+    else case
+      when (d.makes + p.k * p.prior_mean) / (d.attempts + p.k) - b.fg_pct >=  0.03 then 'hot'
+      when (d.makes + p.k * p.prior_mean) / (d.attempts + p.k) - b.fg_pct >=  0.01 then 'warm'
+      when (d.makes + p.k * p.prior_mean) / (d.attempts + p.k) - b.fg_pct <= -0.03 then 'cold'
+      when (d.makes + p.k * p.prior_mean) / (d.attempts + p.k) - b.fg_pct <= -0.01 then 'cool'
+      else 'neutral'
+    end
   end as color_bucket
 from team_defense_zones d
-join league l on l.season = d.season and l.zone = d.zone;
+join team_defense_zone_priors p on p.season = d.season and p.zone = d.zone
+join zone_baselines           b on b.season = d.season and b.zone = d.zone;
 
-create unique index if not exists team_defense_zone_stats_key
+create unique index team_defense_zone_stats_key
   on team_defense_zone_stats (season, team_id, zone);
 
-grant select on team_defense_zone_stats to service_role, anon, authenticated;
+grant select on team_defense_zone_priors, team_defense_zone_stats
+  to service_role, anon, authenticated;
 notify pgrst, 'reload schema';
 
 
--- ── Check ──────────────────────────────────────────────────────────
--- Uncomment and run on its own. Expect: buckets spread across all five
--- colors, with 'neutral' the largest group (most teams are near average
--- in most zones), and hot/cold the smallest. If nearly everything is
--- neutral the thresholds are too wide; if hot/cold dominate, too narrow.
---
--- select zone, color_bucket, count(*) as teams
--- from team_defense_zone_stats
--- where season = 2026
--- group by zone, color_bucket
--- order by zone, color_bucket;
+-- ------------------------------------------------------------
+-- Check
+-- ------------------------------------------------------------
+-- defense_k should come out larger than offense_k in most zones: the fit
+-- noticing that opponent shooting varies less between defenses than a
+-- team's own shooting varies between offenses.
+select zone,
+       round(prior_mean, 3) as league_rate,
+       round(k, 0)          as defense_k,
+       (select round(k, 0) from team_zone_priors o
+         where o.season = d.season and o.zone = d.zone) as offense_k
+from team_defense_zone_priors d
+where season = 2026
+order by zone;
