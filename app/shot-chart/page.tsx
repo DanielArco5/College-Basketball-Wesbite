@@ -1,13 +1,31 @@
-import Link from "next/link";
 import { createServerClient } from "@/lib/supabase-server";
 import { BUCKET_COLORS, ZONE_LABELS, ZONE_ORDER, type Zone } from "@/lib/court";
-import ShotChart, { type ZoneStat } from "./ShotChart";
-import ShotDots, { type Shot } from "./ShotDots";
+import ShotChart, { ZoneLegend, type ZoneStat } from "./ShotChart";
+import ShotMix from "./ShotMix";
 import EntityPicker, { type PickerItem } from "./EntityPicker";
 import "./shot-chart.css";
 
 const SEASON = 2026;
 const MIN_SEASON_ATTEMPTS = 20;
+
+// Supabase returns at most 1,000 rows per request, whatever .limit() asks
+// for, so anything that can exceed that is read in pages.
+const PAGE_SIZE = 1000;
+
+async function fetchAll<T>(
+  page: (
+    from: number,
+    to: number,
+  ) => PromiseLike<{ data: T[] | null; error: { message: string } | null }>,
+): Promise<{ data: T[]; error: string | null }> {
+  const rows: T[] = [];
+  for (let from = 0; ; from += PAGE_SIZE) {
+    const { data, error } = await page(from, from + PAGE_SIZE - 1);
+    if (error) return { data: rows, error: error.message };
+    rows.push(...(data ?? []));
+    if (!data || data.length < PAGE_SIZE) return { data: rows, error: null };
+  }
+}
 
 // Last season's games are finished, so the numbers behind this page never
 // change. Re-querying Postgres on every request buys nothing.
@@ -26,11 +44,10 @@ type TeamRow = {
 export default async function ShotChartPage({
   searchParams,
 }: {
-  searchParams: Promise<{ player?: string; team?: string; view?: string }>;
+  searchParams: Promise<{ player?: string; team?: string }>;
 }) {
   const params = await searchParams;
   const mode: "player" | "team" = params.team ? "team" : "player";
-  const view: "zones" | "shots" = params.view === "shots" ? "shots" : "zones";
   const db = createServerClient();
 
   const { data: teamRows, error: teamErr } = await db
@@ -55,17 +72,27 @@ export default async function ShotChartPage({
     }));
     selectedId = Number(params.team) || teams[0]?.id;
   } else {
-    const { data: candidates, error } = await db
-      .from("player_season_totals")
-      .select("player_id, player_name, team_id, attempts")
-      .eq("season", SEASON)
-      .gte("attempts", MIN_SEASON_ATTEMPTS)
-      .order("player_name")
-      .limit(20000);
+    // Sorted by id as well as name so pages don't shuffle players who
+    // share a name across the page boundary.
+    const { data: candidates, error } = await fetchAll<{
+      player_id: number;
+      player_name: string;
+      team_id: number;
+      attempts: number;
+    }>((from, to) =>
+      db
+        .from("player_season_totals")
+        .select("player_id, player_name, team_id, attempts")
+        .eq("season", SEASON)
+        .gte("attempts", MIN_SEASON_ATTEMPTS)
+        .order("player_name")
+        .order("player_id")
+        .range(from, to),
+    );
 
-    if (error) return <Failure message={error.message} />;
+    if (error) return <Failure message={error} />;
 
-    items = (candidates ?? []).map((row) => ({
+    items = candidates.map((row) => ({
       id: row.player_id,
       name: row.player_name,
       detail: teamById.get(row.team_id)?.school ?? "",
@@ -73,7 +100,6 @@ export default async function ShotChartPage({
     selectedId = Number(params.player) || items[0]?.id;
   }
 
-  // Zone stats drive the table in both views, so they're always fetched.
   const { data: statRows, error: statErr } =
     mode === "team"
       ? await db
@@ -89,25 +115,6 @@ export default async function ShotChartPage({
 
   if (statErr) return <Failure message={statErr.message} />;
   const stats = (statRows ?? []) as (ZoneStat & { attempt_share?: number })[];
-
-  // Raw locations, only when they're going to be drawn.
-  let shots: Shot[] = [];
-  if (view === "shots") {
-    const q = db
-      .from("shot_events")
-      .select("x, y, made")
-      .eq("season", SEASON)
-      .not("zone", "is", null) // field goals only, matching the table
-      .limit(4000);
-
-    const { data: shotRows, error: shotErr } =
-      mode === "team"
-        ? await q.eq("team_id", selectedId)
-        : await q.eq("player_id", selectedId);
-
-    if (shotErr) return <Failure message={shotErr.message} />;
-    shots = (shotRows ?? []) as Shot[];
-  }
 
   let heading = "";
   let subheading = "";
@@ -129,10 +136,14 @@ export default async function ShotChartPage({
   const attempts = stats.reduce((n, s) => n + s.attempts, 0);
   const makes = stats.reduce((n, s) => n + s.makes, 0);
 
-  const base = mode === "team" ? `team=${selectedId}` : `player=${selectedId}`;
-
   return (
-    <main className="wrap" style={{ ["--accent" as string]: accent }}>
+    <main
+      className="wrap"
+      style={{
+        ["--accent" as string]: accent,
+        ["--accent-ink" as string]: inkOn(accent),
+      }}
+    >
       <header className="masthead">
         <span className="accent-rule" />
         <h1>{heading}</h1>
@@ -143,23 +154,6 @@ export default async function ShotChartPage({
           {attempts ? ((100 * makes) / attempts).toFixed(1) : "0"}%
         </p>
         <EntityPicker mode={mode} items={items} selectedName={heading} />
-
-        <nav className="view-toggle">
-          <Link
-            href={`/shot-chart?${base}&view=zones`}
-            className={view === "zones" ? "on" : ""}
-            scroll={false}
-          >
-            Accuracy by zone
-          </Link>
-          <Link
-            href={`/shot-chart?${base}&view=shots`}
-            className={view === "shots" ? "on" : ""}
-            scroll={false}
-          >
-            Every shot
-          </Link>
-        </nav>
       </header>
 
       {stats.length === 0 ? (
@@ -170,28 +164,19 @@ export default async function ShotChartPage({
         </p>
       ) : (
         <div className="layout">
-          <figure className="chart">
-            {view === "shots" ? (
-              <>
-                <ShotDots shots={shots} />
-                <figcaption>
-                  Each mark is one shot — filled for a make, open for a miss.
-                  Locations are recorded courtside and are accurate to about a
-                  foot, so read the pattern rather than any single dot.
-                  {shots.length >= 4000 && " Showing the first 4,000."}
-                </figcaption>
-              </>
-            ) : (
-              <>
-                <ShotChart stats={stats} />
-                <figcaption>
-                  Color compares {mode === "team" ? "this team" : "this player"}{" "}
-                  to the Division I average in each zone, adjusted for how many
-                  shots were actually taken there.
-                </figcaption>
-              </>
-            )}
-          </figure>
+          <div className="chart-col">
+            <figure className="chart">
+              <ShotChart stats={stats} />
+              <ZoneLegend mode={mode} />
+              <figcaption>
+                Color compares {mode === "team" ? "this team" : "this player"}{" "}
+                to the Division I average in each zone, adjusted for how many
+                shots were actually taken there.
+              </figcaption>
+            </figure>
+
+            <ShotMix stats={stats} />
+          </div>
 
           <section className="breakdown">
             <table>
@@ -220,7 +205,9 @@ export default async function ShotChartPage({
                     <tr key={zone}>
                       <td>
                         <span
-                          className="swatch"
+                          className={
+                            s.color_bucket === "gray" ? "swatch no-data" : "swatch"
+                          }
                           style={{ background: BUCKET_COLORS[s.color_bucket] }}
                         />
                         {ZONE_LABELS[zone]}
@@ -244,32 +231,22 @@ export default async function ShotChartPage({
                 })}
               </tbody>
             </table>
-
-            {view === "zones" && (
-              <ul className="legend">
-                {[
-                  ["hot", "Well above average"],
-                  ["warm", "Above average"],
-                  ["neutral", "About average"],
-                  ["cool", "Below average"],
-                  ["cold", "Well below average"],
-                  ["gray", "Too few attempts to say"],
-                ].map(([bucket, label]) => (
-                  <li key={bucket}>
-                    <span
-                      className="swatch"
-                      style={{ background: BUCKET_COLORS[bucket] }}
-                    />
-                    {label}
-                  </li>
-                ))}
-              </ul>
-            )}
           </section>
         </div>
       )}
     </main>
   );
+}
+
+/** Dark or light text, whichever reads better on a team's color. */
+function inkOn(hex: string) {
+  const [r, g, b] = [1, 3, 5].map((i) => {
+    const c = parseInt(hex.slice(i, i + 2), 16) / 255;
+    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  });
+  const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  // Crossover where dark (#14110F) and light (#F0EBE3) text tie on contrast.
+  return lum > 0.18 ? "#14110F" : "#F0EBE3";
 }
 
 /** Surfaces a failed query instead of silently rendering a blank page. */

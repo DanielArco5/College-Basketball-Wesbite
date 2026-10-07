@@ -34,9 +34,17 @@ as $$
     when x <= 9.9 and y >= 46.66 then 'corner_3_left'
     when x <= 9.9 and y <=  3.34 then 'corner_3_right'
 
-    -- Everything else past the arc is above the break.
+    -- Everything else past the arc is above the break, split into two
+    -- wings and the top of the key at 26 degrees either side of
+    -- straight-on. Three equal wedges of the arc.
     when sqrt(power(x - 5.25, 2) + power(y - 25, 2)) >= 22.1458
-      then 'above_break_3'
+         and (y - 25) > tan(radians(26)) * (x - 5.25)
+      then 'wing_3_left'
+    when sqrt(power(x - 5.25, 2) + power(y - 25, 2)) >= 22.1458
+         and (25 - y) > tan(radians(26)) * (x - 5.25)
+      then 'wing_3_right'
+    when sqrt(power(x - 5.25, 2) + power(y - 25, 2)) >= 22.1458
+      then 'top_3'
 
     -- Restricted area.
     when sqrt(power(x - 5.25, 2) + power(y - 25, 2)) <= 4
@@ -90,13 +98,13 @@ order by avg_dist;
 --   paint_non_ra      ~8 ft     cbbd_says jumper
 --   mid_*             ~14-17 ft cbbd_says jumper
 --   corner_3_*        ~22 ft    cbbd_says three_pointer
---   above_break_3     ~25 ft    cbbd_says three_pointer
+--   wing_3_*, top_3   ~25 ft    cbbd_says three_pointer
 --
--- Every corner_3 and above_break_3 row should have score_value = 3.
+-- Every corner, wing and top-of-key three should have score_value = 3.
 -- Verify that directly:
 select zone, score_value, count(*)
 from shot_events
-where zone in ('corner_3_left','corner_3_right','above_break_3')
+where zone in ('corner_3_left','corner_3_right','wing_3_left','top_3','wing_3_right')
 group by zone, score_value
 order by zone, score_value;
 -- Any score_value = 2 rows here mean the arc math is off.
@@ -251,12 +259,12 @@ create table if not exists color_scale (
 );
 
 insert into color_scale (bucket, hex, label, sort) values
-  ('hot',     '#D62728', 'Well above average', 1),
-  ('warm',    '#F08A5D', 'Above average',      2),
-  ('neutral', '#9AA0A6', 'About average',      3),
-  ('cool',    '#6BA3D6', 'Below average',      4),
-  ('cold',    '#1F5FA9', 'Well below average', 5),
-  ('gray',    '#3C4043', 'Not enough attempts', 6)
+  ('hot',     '#B7191C', 'Well above average', 1),
+  ('warm',    '#CF6968', 'Above average',      2),
+  ('neutral', '#393530', 'About average',      3),
+  ('cool',    '#5E91C0', 'Below average',      4),
+  ('cold',    '#1F5DC2', 'Well below average', 5),
+  ('gray',    '#2B231D', 'Not enough attempts', 6)
 on conflict (bucket) do update
   set hex = excluded.hex, label = excluded.label, sort = excluded.sort;
 

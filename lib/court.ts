@@ -24,6 +24,10 @@ export const CORNER_3_BREAK_FT = 9.9; // where the corner line meets the arc
 export const RESTRICTED_AREA_FT = 4;
 export const LANE_HALF_WIDTH_FT = 6; // lane is 12 ft wide
 export const LANE_DEPTH_FT = 19;
+// Above-the-break threes are split into wings and top of the key at this
+// angle either side of straight-on from the hoop. The arc runs ~78° each
+// way before it meets the corner lines, so 26° makes three equal wedges.
+export const WING_SPLIT_DEG = 26;
 
 // How much of the half court to draw. Shots past ~32 ft are rare enough
 // that including the full 47 would leave most of the chart empty.
@@ -51,7 +55,9 @@ export type Zone =
   | "mid_right"
   | "corner_3_left"
   | "corner_3_right"
-  | "above_break_3";
+  | "wing_3_left"
+  | "top_3"
+  | "wing_3_right";
 
 export function zoneOf(x: number, y: number): Zone {
   // Corner threes first. A corner three sits closer to the rim than the
@@ -64,7 +70,12 @@ export function zoneOf(x: number, y: number): Zone {
 
   const dist = Math.hypot(x - BASKET_X_FT, y - BASKET_Y_FT);
 
-  if (dist >= THREE_POINT_RADIUS_FT) return "above_break_3";
+  if (dist >= THREE_POINT_RADIUS_FT) {
+    const reach = Math.tan((WING_SPLIT_DEG * Math.PI) / 180) * (x - BASKET_X_FT);
+    if (y - BASKET_Y_FT > reach) return "wing_3_left";
+    if (BASKET_Y_FT - y > reach) return "wing_3_right";
+    return "top_3";
+  }
   if (dist <= RESTRICTED_AREA_FT) return "restricted_area";
 
   if (
@@ -87,7 +98,9 @@ export const ZONE_LABELS: Record<Zone, string> = {
   mid_right: "Mid-range, right",
   corner_3_left: "Left corner three",
   corner_3_right: "Right corner three",
-  above_break_3: "Above the break",
+  wing_3_left: "Left wing three",
+  top_3: "Top of the key three",
+  wing_3_right: "Right wing three",
 };
 
 /** Reading order for the table: close to far. */
@@ -99,28 +112,25 @@ export const ZONE_ORDER: Zone[] = [
   "mid_right",
   "corner_3_left",
   "corner_3_right",
-  "above_break_3",
+  "wing_3_left",
+  "top_3",
+  "wing_3_right",
 ];
 
+// Diverging scale built for the dark court: red above average, blue below,
+// a dark warm stone that recedes in between. The extremes are the deepest,
+// most saturated steps; the near steps are lighter and softer. Chosen in
+// OKLCH and checked for color-blind separation. "gray" (too
+// few attempts) is drawn as a hatch over the court, not a color, so it can't
+// be read as "average"; this value is only the fallback.
 export const BUCKET_COLORS: Record<string, string> = {
-  hot: "#D62728",
-  warm: "#F08A5D",
-  neutral: "#9AA0A6",
-  cool: "#6BA3D6",
-  cold: "#1F5FA9",
-  gray: "#3C4043",
+  hot: "#B7191C",
+  warm: "#CF6968",
+  neutral: "#393530",
+  cool: "#5E91C0",
+  cold: "#1F5DC2",
+  gray: "#2B231D",
 };
 
-/** One-foot cells covering the drawn half court, each tagged with its zone. */
-export function buildZoneGrid() {
-  const cells: { sx: number; sy: number; zone: Zone }[] = [];
-  for (let x = 0; x < VIEW_DEPTH_FT; x++) {
-    for (let y = 0; y < COURT_WIDTH_FT; y++) {
-      // Sample the cell's center so boundaries land predictably.
-      const zone = zoneOf(x + 0.5, y + 0.5);
-      const { sx, sy } = toSvg(x + 1, y); // top-left corner of the cell
-      cells.push({ sx, sy, zone });
-    }
-  }
-  return cells;
-}
+/** SVG pattern id for the "too few attempts" hatch, shared by chart and swatches. */
+export const NO_DATA_PATTERN_ID = "zone-no-data";
