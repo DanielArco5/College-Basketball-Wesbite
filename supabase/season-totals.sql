@@ -1,3 +1,7 @@
+-- Superseded by untracked-shots.sql, which rebuilds this view to count
+-- field goals that have no court location. Kept for history; running it
+-- after that file is a no-op (create ... if not exists).
+--
 -- Season-level shot totals per player, for the shot chart picker.
 -- Built from shot_events rather than player_zone_stats so the totals
 -- don't inherit any per-zone filtering.

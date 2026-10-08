@@ -2,7 +2,7 @@ import Link from "next/link";
 import { createServerClient } from "@/lib/supabase-server";
 import { BUCKET_COLORS, ZONE_LABELS, ZONE_ORDER, type Zone } from "@/lib/court";
 import ShotChart, { ZoneLegend, type ZoneStat } from "./ShotChart";
-import ShotMix from "./ShotMix";
+import ShotMix, { type SeasonTotals } from "./ShotMix";
 import EntityPicker, { type PickerItem } from "./EntityPicker";
 import "./shot-chart.css";
 
@@ -123,6 +123,35 @@ export default async function ShotChartPage({
   if (statErr) return <Failure message={statErr.message} />;
   const stats = (statRows ?? []) as ZoneStat[];
 
+  // Season totals count every field goal, including those from games
+  // without location tracking, which the zone rows above can't hold.
+  const totalsQuery =
+    mode === "team"
+      ? db
+          .from(
+            side === "defense"
+              ? "team_defense_season_totals"
+              : "team_season_totals",
+          )
+          .select("attempts, makes, three_attempts, three_makes, untracked_attempts")
+          .eq("season", SEASON)
+          .eq("team_id", selectedId)
+      : db
+          .from("player_season_totals")
+          .select("attempts, makes, three_attempts, three_makes, untracked_attempts")
+          .eq("season", SEASON)
+          .eq("player_id", selectedId);
+
+  const { data: totalsRow, error: totalsErr } = await totalsQuery.maybeSingle();
+  if (totalsErr) return <Failure message={totalsErr.message} />;
+  const totals: SeasonTotals = totalsRow ?? {
+    attempts: 0,
+    makes: 0,
+    three_attempts: 0,
+    three_makes: 0,
+    untracked_attempts: 0,
+  };
+
   let heading = "";
   let subheading = "";
   let accent = "#6B5D4F";
@@ -140,8 +169,7 @@ export default async function ShotChartPage({
     accent = team?.color_override ?? team?.primary_color ?? accent;
   }
 
-  const attempts = stats.reduce((n, s) => n + s.attempts, 0);
-  const makes = stats.reduce((n, s) => n + s.makes, 0);
+  const { attempts, makes } = totals;
 
   return (
     <main
@@ -211,7 +239,7 @@ export default async function ShotChartPage({
               </figcaption>
             </figure>
 
-            <ShotMix stats={stats} />
+            <ShotMix totals={totals} />
           </div>
 
           <section className="breakdown">

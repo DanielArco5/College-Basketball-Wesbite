@@ -355,3 +355,11 @@ body:has(.wrap) {
   outline-offset: 3px;
   border-radius: 2px;
 }
+
+.mix-note {
+  margin-top: 0.6rem;
+  max-width: 52ch;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--ink-dim);
+}

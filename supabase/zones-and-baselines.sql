@@ -75,7 +75,8 @@ $$;
 
 update shot_events
 set zone = zone_of(x, y)
-where zone is null;
+where zone is null
+  and x is not null;  -- untracked shots have no location and stay unzoned
 
 -- Free throws have unreliable coordinates (nobody tracks a shot whose
 -- location is fixed by rule) and don't belong on a shot chart at all.

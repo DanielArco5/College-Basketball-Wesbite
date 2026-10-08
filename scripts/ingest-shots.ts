@@ -4,6 +4,12 @@
  *   npx tsx scripts/ingest-shots.ts --season 2026 --from 2025-11-03 --to 2026-04-06
  *   npx tsx scripts/ingest-shots.ts --season 2026 --resume
  *   npx tsx scripts/ingest-shots.ts --date 2026-01-15
+ *   npx tsx scripts/ingest-shots.ts --season 2026 --untracked [--resume]
+ *
+ * --untracked backfills only the field goals that have no court location,
+ * which ingests before supabase/untracked-shots.sql dropped. It never
+ * touches rows already loaded and skips the raw archive, since those
+ * payloads were archived the first time.
  *
  * Env:
  *   CBBD_API_KEY
@@ -166,7 +172,11 @@ async function logCall(endpoint: string, params: object, status: number, ms: num
 // Ingest one date
 // ---------------------------------------------------------------------------
 
-async function ingestDate(dateISO: string, season: number) {
+// CBBD's labels for a field goal. A play with no location and no label
+// can't be told apart from a free throw, so it isn't kept.
+const FIELD_GOAL_RANGES = new Set(["rim", "jumper", "three_pointer"]);
+
+async function ingestDate(dateISO: string, season: number, untrackedOnly = false) {
   // NOTE: verify this param name against the live docs before your first real
   // backfill — the wrappers expose it as shooting_plays_only. The filter below
   // makes the result correct either way, it just costs a bigger payload.
@@ -184,12 +194,14 @@ async function ingestDate(dateISO: string, season: number) {
   }
 
   // Archive raw before touching anything else. This is the failover.
-  await db.from("ingest_raw").insert({
-    endpoint: "/plays/date",
-    params,
-    row_count: plays.length,
-    payload: plays,
-  });
+  if (!untrackedOnly) {
+    await db.from("ingest_raw").insert({
+      endpoint: "/plays/date",
+      params,
+      row_count: plays.length,
+      payload: plays,
+    });
+  }
 
   const teams = new Map<number, Record<string, unknown>>();
   const players = new Map<number, Record<string, unknown>>();
@@ -197,22 +209,30 @@ async function ingestDate(dateISO: string, season: number) {
   const shots: Record<string, unknown>[] = [];
 
   let dropped = 0;
+  let untracked = 0;
 
   for (const p of plays) {
     if (p.shootingPlay === false) continue;
 
     const info = p.shotInfo;
-    const loc = info?.location;
-    if (!info || loc?.x == null || loc?.y == null) {
+    if (!info) {
       dropped++;
       continue;
     }
 
-    const geo = toHalfCourt(loc.x, loc.y);
-    if (!plausible(geo.x, geo.y)) {
+    // Field goals without a usable location are still field goals: they
+    // count in season totals with x, y and zone left null. Some games have
+    // no location tracking at all, and dropping these lost them entirely.
+    const loc = info.location;
+    const geo = loc?.x != null && loc?.y != null ? toHalfCourt(loc.x, loc.y) : null;
+    const located = geo !== null && plausible(geo.x, geo.y);
+
+    if (!located && !FIELD_GOAL_RANGES.has(info.range ?? "")) {
       dropped++;
       continue;
     }
+    if (located && untrackedOnly) continue;
+    if (!located) untracked++;
 
     // Stub rows so the FKs resolve. Enrich later from /teams and /roster.
     if (p.teamId) {
@@ -268,36 +288,44 @@ async function ingestDate(dateISO: string, season: number) {
       assisted: info.assisted ?? false,
       assisted_by_id: info.assistedBy?.id ?? null,
       cbbd_range: info.range ?? null,
-      raw_x: geo.rawX,
-      raw_y: geo.rawY,
-      x: geo.x,
-      y: geo.y,
-      dist_ft: geo.distFt,
+      raw_x: geo?.rawX ?? null,
+      raw_y: geo?.rawY ?? null,
+      x: located ? geo.x : null,
+      y: located ? geo.y : null,
+      dist_ft: located ? geo.distFt : null,
     });
   }
 
-  // Order matters: parents before children.
-  await upsertChunked("teams", [...teams.values()], "id");
-  await upsertChunked("players", [...players.values()], "id");
-  await upsertChunked("games", [...games.values()], "id");
+  // Order matters: parents before children. A backfill only fills gaps:
+  // stub rows must not overwrite teams and players enriched since.
+  const insertOnly = untrackedOnly;
+  await upsertChunked("teams", [...teams.values()], "id", insertOnly);
+  await upsertChunked("players", [...players.values()], "id", insertOnly);
+  await upsertChunked("games", [...games.values()], "id", insertOnly);
   await upsertChunked("shot_events", shots, "source_play_id");
 
   console.log(
     `${dateISO}: ${shots.length} shots across ${games.size} games` +
-      (dropped ? ` (${dropped} dropped, no/bad coords)` : "")
+      (untracked ? ` (${untracked} untracked)` : "") +
+      (dropped ? ` (${dropped} dropped, not a field goal)` : "")
   );
 
   return { shots: shots.length, games: games.size };
 }
 
-async function upsertChunked(table: string, rows: Record<string, unknown>[], onConflict: string) {
+async function upsertChunked(
+  table: string,
+  rows: Record<string, unknown>[],
+  onConflict: string,
+  ignoreDuplicates = false,
+) {
   const SIZE = 500;
   for (let i = 0; i < rows.length; i += SIZE) {
     const chunk = rows.slice(i, i + SIZE);
 
     let lastErr: unknown;
     for (let attempt = 0; attempt < 5; attempt++) {
-      const { error } = await db.from(table).upsert(chunk, { onConflict, ignoreDuplicates: false });
+      const { error } = await db.from(table).upsert(chunk, { onConflict, ignoreDuplicates });
       if (!error) {
         lastErr = undefined;
         break;
@@ -319,7 +347,8 @@ async function upsertChunked(table: string, rows: Record<string, unknown>[], onC
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   const season = Number(args.season ?? new Date().getFullYear());
-  const job = `shots:${season}`;
+  const untrackedOnly = args.untracked === true;
+  const job = `${untrackedOnly ? "untracked" : "shots"}:${season}`;
 
   let dates: string[];
 
@@ -344,7 +373,7 @@ async function main() {
   let totalShots = 0;
   for (const d of dates) {
     try {
-      const { shots } = await ingestDate(d, season);
+      const { shots } = await ingestDate(d, season, untrackedOnly);
       totalShots += shots;
       await db.from("ingest_checkpoints").upsert({ job, cursor: d, updated_at: new Date().toISOString() });
     } catch (err) {
@@ -356,6 +385,10 @@ async function main() {
     }
     await sleep(3000); // pace for the free-tier database, not just CBBD
   }
+
+  // Season totals are materialized; new shots don't show until refreshed.
+  const { error: refreshErr } = await db.rpc("refresh_season_totals");
+  if (refreshErr) console.warn(`Totals refresh failed: ${refreshErr.message}`);
 
   const { data: usage } = await db.from("api_usage_this_month").select("calls").single();
   console.log(`\nDone. ${totalShots} shots. API calls this month: ${usage?.calls ?? "?"} / 1000`);
