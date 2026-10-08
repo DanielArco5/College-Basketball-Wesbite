@@ -256,7 +256,9 @@ export default async function ShotChartPage({
                           {((s.attempt_share ?? 0) * 100).toFixed(1)}%
                         </td>
                       )}
-                      <td className="num">{(100 * s.fg_pct).toFixed(1)}</td>
+                      {/* Raw, so it agrees with makes/attempts beside it.
+                          The shrunk rate only drives color and vs D1. */}
+                      <td className="num">{(100 * s.raw_fg_pct).toFixed(1)}</td>
                       <td className="num">
                         {s.color_bucket === "gray"
                           ? "—"
