@@ -327,3 +327,21 @@
   letter-spacing: 0.02em;
   color: var(--ink-dim);
 }
+
+/* Identity badges: why an outlier made the list. */
+.rank-badge {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0 0.4rem;
+  border-radius: 3px;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  vertical-align: 1px;
+}
+
+.rank-badge.is-offense { background: rgba(208, 74, 50, 0.18); color: #F08A6E; }
+.rank-badge.is-margins { background: rgba(63, 191, 111, 0.15); color: #6FD495; }
+
+.rank-honorable .rank-badge { font-family: "Barlow Condensed", system-ui, sans-serif; }

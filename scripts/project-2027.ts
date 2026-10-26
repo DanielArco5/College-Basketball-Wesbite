@@ -4,10 +4,11 @@
  *   npx tsx --env-file=.env.local scripts/project-2027.ts           # cached payloads
  *   npx tsx --env-file=.env.local scripts/project-2027.ts --refresh # re-fetch (3 calls)
  *
- * What it weighs, and how heavily (see WEIGHTS):
- *   offensive efficiency, offensive rebounding, turnover margin,
- *   three-point shooting, defensive efficiency, and competition.
- * Hustle (boards, turnovers) and efficient offense carry 63% between them.
+ * What it weighs, and how heavily (see WEIGHTS): net efficiency at the
+ * core, then competition, offensive efficiency, offensive rebounding,
+ * turnover margin, three-point shooting and defense. On top of that, an
+ * identity bonus lifts teams that are elite at one thing: scoring, or
+ * winning the margins on the glass and in turnovers.
  *
  * Steps:
  *   1. 2025-26 team stats for every D1 team, from CollegeBasketballData's
@@ -46,15 +47,30 @@ const SEASON_FROM = 2026;
 const SEASON_TO = 2027;
 const CACHE = "scripts/.cache";
 
-/** Share of the final score. Must sum to 1. */
+/**
+ * Share of the base score. Must sum to 1. Net efficiency is the core,
+ * as in every serious ranking; the rest tilts it toward hustle and
+ * shooting. The identity bonus below is added on top.
+ */
 const WEIGHTS = {
-  offense: 0.27,
-  oreb: 0.18,
-  turnovers: 0.18,
-  three: 0.13,
-  defense: 0.14,
-  competition: 0.1,
+  net: 0.4,
+  competition: 0.22,
+  offense: 0.08,
+  oreb: 0.08,
+  turnovers: 0.08,
+  three: 0.07,
+  defense: 0.07,
 } as const;
+
+/**
+ * Identity bonus: a team far above the field at one thing gets lifted
+ * even if its overall numbers are ordinary. Two identities count: an
+ * elite offense, and winning the margins (offensive rebounding and
+ * turnover margin together). Each z-score point past the threshold adds
+ * IDENTITY_BONUS to the score. Only the stronger identity counts.
+ */
+const IDENTITY_THRESHOLD = 2.5;
+const IDENTITY_BONUS = 0.3;
 
 // ── Tuning. Each one is described in the page's methodology. ─────────
 
@@ -63,11 +79,18 @@ const SHRINK_MINUTES = 300;
 /** Three-point attempts of league-average shooting blended into a roster. */
 const SHRINK_THREES = 200;
 /** Share of a program's edge credited to minutes no known player fills. */
-const PROGRAM_CARRYOVER = 0.5;
+const PROGRAM_CARRYOVER = 0.8;
 /** Team-level stats keep this much of last season's edge with nobody back... */
-const CONTINUITY_BASE = 0.35;
+const CONTINUITY_BASE = 0.5;
 /** ...plus this much more in proportion to returning minutes. */
-const CONTINUITY_RETURN = 0.45;
+const CONTINUITY_RETURN = 0.4;
+/**
+ * Share of the net-efficiency component taken from last season's
+ * adjusted net, the team as it actually played, rather than the roster
+ * projection. Programs that were good tend to stay good in ways a box
+ * score can't see: coaching, recruiting, development.
+ */
+const PRIOR_WEIGHT = 0.35;
 /** Rounds of opponent adjustment. Converges well before this. */
 const ADJUST_ROUNDS = 12;
 const RANKED = 25;
@@ -398,6 +421,7 @@ async function main() {
         (threeAtt ? threeSched / threeAtt : 0),
       defense: carry("eff"),
       competition: competitionOf(t.teamId),
+      lastNet: a.eff.off - a.eff.def,
     };
 
     const team = d1.get(t.teamId)!;
@@ -418,6 +442,9 @@ async function main() {
   // ── 4. Score ───────────────────────────────────────────────────────
   // Every component oriented so higher is better before z-scoring.
   const parts: Record<WeightKey, number[]> = {
+    net: rows.map(
+      (r) => (1 - PRIOR_WEIGHT) * (r.proj.offense - r.proj.defense) + PRIOR_WEIGHT * r.proj.lastNet,
+    ),
     offense: rows.map((r) => r.proj.offense),
     oreb: rows.map((r) => r.proj.oreb),
     turnovers: rows.map((r) => r.proj.tovForced - r.proj.tovCommitted),
@@ -453,6 +480,7 @@ async function main() {
     defense: r.proj.defense,
   });
   const shownParts: Record<WeightKey, number[]> = {
+    net: shown.map((x) => x.offense - x.defense),
     offense: shown.map((x) => x.offense),
     oreb: shown.map((x) => x.oreb),
     turnovers: shown.map((x) => x.turnovers),
@@ -461,7 +489,23 @@ async function main() {
     competition: parts.competition,
   };
   const ranks = Object.fromEntries(keys.map((k) => [k, rankDesc(shownParts[k])])) as Record<WeightKey, number[]>;
-  const scores = rows.map((_, i) => sum(keys.map((k) => WEIGHTS[k] * z[k][i])));
+  // Identity: margins is its own z-score of the two hustle stats combined,
+  // so "elite at margins" means elite against the field, not an average
+  // of two good-not-great numbers.
+  const marginsZ = zscores(rows.map((_, i) => z.oreb[i] + z.turnovers[i]));
+  const identity = rows.map((_, i) => {
+    const offense = z.offense[i] - IDENTITY_THRESHOLD;
+    const margins = marginsZ[i] - IDENTITY_THRESHOLD;
+    const best = Math.max(offense, margins);
+    if (best <= 0) return { bonus: 0, label: null as string | null };
+    return {
+      bonus: IDENTITY_BONUS * best,
+      label: offense >= margins ? "Elite offense" : "Wins the margins",
+    };
+  });
+  const scores = rows.map(
+    (_, i) => sum(keys.map((k) => WEIGHTS[k] * z[k][i])) + identity[i].bonus,
+  );
 
   const ordered = rows
     .map((r, i) => ({ r, i }))
@@ -477,8 +521,9 @@ async function main() {
       ? { source: live.source, fetched: live.fetched, max_games: maxGames, blend_games: BLEND_GAMES }
       : null,
     weights: WEIGHTS,
+    identity: { threshold: IDENTITY_THRESHOLD, bonus: IDENTITY_BONUS },
     params: {
-      SHRINK_MINUTES, SHRINK_THREES, PROGRAM_CARRYOVER, CONTINUITY_BASE,
+      SHRINK_MINUTES, SHRINK_THREES, PROGRAM_CARRYOVER, PRIOR_WEIGHT, CONTINUITY_BASE,
       CONTINUITY_RETURN, RANKED, HONORABLE, BLEND_GAMES,
     },
     sources: {
@@ -508,6 +553,7 @@ async function main() {
       def_eff: round(shown[i].defense, 1),
       conf_strength: round(r.proj.competition, 1),
       ranks: Object.fromEntries(keys.map((k) => [k, ranks[k][i]])) as Record<WeightKey, number>,
+      identity: identity[i].label,
       returning: round(r.returning, 3),
       incomplete: r.incomplete,
       transfers_in: r.transfers_in,
@@ -606,6 +652,7 @@ function inSeason(teamIds: number[], d1: Map<number, { conference: string | null
   return {
     byTeam: new Map(ids.map((id) => [id, { games: file.teams[id].games, stats: stats.get(id)! }])),
     z: {
+      net: comp((s) => s.offense - s.defense),
       offense: comp((s) => s.offense),
       oreb: comp((s) => s.oreb),
       turnovers: comp((s) => s.turnovers),

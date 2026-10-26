@@ -89,7 +89,10 @@ export function FormulaRanking({ limit }: { limit?: number } = {}) {
                 <td className="num ratings-rk">{r.rk}</td>
                 <td>
                   <TeamLink row={r} />
-                  <span className="ratings-team-conf">{r.conference}</span>
+                  <span className="ratings-team-conf">
+                    {r.conference}
+                    {r.identity && <IdentityBadge label={r.identity} />}
+                  </span>
                 </td>
                 <td className="num">{signed(r.score, 2)}</td>
                 <td className="num"><Stat value={r.off_eff.toFixed(1)} rank={r.ranks.offense} /></td>
@@ -113,6 +116,7 @@ export function FormulaRanking({ limit }: { limit?: number } = {}) {
             {honorable.map((r) => (
               <li key={r.team_id}>
                 <TeamLink row={r} /> <span className="rank-asof">{signed(r.score, 2)}</span>
+                {r.identity && <IdentityBadge label={r.identity} />}
               </li>
             ))}
           </ol>
@@ -135,6 +139,15 @@ export function FormulaRanking({ limit }: { limit?: number } = {}) {
   );
 }
 
+/** Why an outlier is here: it's elite at one thing. */
+function IdentityBadge({ label }: { label: string }) {
+  return (
+    <span className={`rank-badge ${label === "Elite offense" ? "is-offense" : "is-margins"}`}>
+      {label}
+    </span>
+  );
+}
+
 function TeamLink({ row }: { row: FormulaRow }) {
   return (
     <>
@@ -150,16 +163,18 @@ function TeamLink({ row }: { row: FormulaRow }) {
 
 export function FormulaMethod() {
   const p = formula.params;
-  const hustleAndOffense = W.offense + W.oreb + W.turnovers;
+  const id = formula.identity;
   return (
     <section className="rank-method">
       <h2>How our formula works</h2>
       <p>
-        No one else&rsquo;s rankings go into this. It rewards teams that
-        play hard and score efficiently: crash the offensive glass, win the
-        turnover battle, make threes and turn possessions into points.
-        Offense, rebounding and turnovers alone carry{" "}
-        {pctOf(hustleAndOffense)} of the score.
+        No one else&rsquo;s rankings go into this. The core is the same thing
+        every serious ranking is built on: how many more points a team
+        scores than it allows per possession, against the competition it
+        faces. On top of that it leans toward teams that play hard and
+        score efficiently, and it makes room for outliers: a team that is
+        truly elite at one thing can crack the Top 25 even when its overall
+        numbers are ordinary.
       </p>
 
       <table className="rank-weights">
@@ -171,6 +186,21 @@ export function FormulaMethod() {
           </tr>
         </thead>
         <tbody>
+          <tr>
+            <td>Net efficiency</td>
+            <td>
+              Points scored minus allowed per 100 possessions:{" "}
+              {pctOf(1 - p.PRIOR_WEIGHT)} from the projected 2026-27 roster,{" "}
+              {pctOf(p.PRIOR_WEIGHT)} from how the team actually played last
+              season
+            </td>
+            <td className="num">{pctOf(W.net)}</td>
+          </tr>
+          <tr>
+            <td>Competition</td>
+            <td>Strength of the conference a team plays in</td>
+            <td className="num">{pctOf(W.competition)}</td>
+          </tr>
           <tr>
             <td>Offensive efficiency</td>
             <td>Points scored per 100 possessions</td>
@@ -196,13 +226,22 @@ export function FormulaMethod() {
             <td>Three-point percentage</td>
             <td className="num">{pctOf(W.three)}</td>
           </tr>
-          <tr>
-            <td>Competition</td>
-            <td>Strength of the conference a team plays in</td>
-            <td className="num">{pctOf(W.competition)}</td>
-          </tr>
         </tbody>
       </table>
+
+      <h3>Outliers: the identity bonus</h3>
+      <p>
+        Two kinds of team get lifted beyond their overall numbers, and
+        they&rsquo;re marked in the table. <strong>Elite offense</strong> is a
+        team whose projected scoring efficiency is far above the rest of
+        Division I. <strong>Wins the margins</strong> is the methodical team
+        that out-rebounds and out-possesses opponents: offensive rebounding
+        and turnover margin together, far above the field. A team qualifies
+        when it&rsquo;s more than {id.threshold} standard deviations above
+        average at either, which is roughly the top 1% of the country, and
+        each step past that adds to its score. Only its stronger identity
+        counts.
+      </p>
 
       <ol>
         <li>
@@ -218,7 +257,9 @@ export function FormulaMethod() {
           team&rsquo;s opponents did in that stat against everyone else,
           recalculated until the numbers settle. Then competition counts a
           second time, as its own {pctOf(W.competition)} component: the
-          average strength of the team&rsquo;s conference.
+          average strength of the team&rsquo;s conference. That&rsquo;s what
+          keeps a mid-major with gaudy numbers from outranking a power team
+          that put up good ones against far better opponents.
         </li>
         <li>
           <strong>Follow the players to their 2026-27 teams.</strong> Every
@@ -235,7 +276,7 @@ export function FormulaMethod() {
           Freshmen, international signings and players new to Division I
           have no college numbers. Their minutes are credited at{" "}
           {pctOf(p.PROGRAM_CARRYOVER)} of how far above average the program
-          was last season.
+          was last season. Good programs replace talent with talent.
         </li>
         <li>
           <strong>Carry defense by continuity.</strong> Box scores can&rsquo;t
@@ -265,12 +306,13 @@ export function FormulaMethod() {
       <h3>What it can&rsquo;t see</h3>
       <p>
         Freshmen, including five-stars, count only through their
-        program&rsquo;s track record. Coaching changes aren&rsquo;t modeled.
+        program&rsquo;s track record, so teams rebuilt around a top recruiting
+        class can sit lower here than in the polls. Coaching changes aren&rsquo;t modeled.
         Players confirmed out for the season, such as UConn&rsquo;s Solo
         Ball and St. John&rsquo;s Donnie Freeman, are removed. Because the
         formula leans on hustle stats, a team that wins with size and
-        half-court defense but doesn&rsquo;t force turnovers will rank lower
-        here than in most polls. That&rsquo;s deliberate.
+        half-court defense but doesn&rsquo;t force turnovers can rank a little
+        lower here than in most polls. That&rsquo;s deliberate.
       </p>
 
       <h3>Where the numbers come from</h3>
