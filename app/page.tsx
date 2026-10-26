@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { createServerClient } from "@/lib/supabase-server";
-import { loadRatings, pps, RATINGS_SEASON } from "@/lib/ratings";
-import RatingsTable, { RatingsCaveat } from "./rankings/RatingsTable";
+import { RATINGS_SEASON } from "@/lib/ratings";
+import { buildComposite } from "@/lib/preseason";
+import { RatingsCaveat } from "./rankings/RatingsTable";
+import { PreseasonMethod, PreseasonTable, loadTeamIds } from "./rankings/Preseason";
 import type { WireEntry } from "./LiveWire";
 import "./home.css";
 import "./rankings/rankings.css";
@@ -43,8 +45,9 @@ export default async function Home({
           every team.
         </h1>
         <p className="home-lede">
-          Shot locations and opponent-adjusted ratings for all 365 Division I
-          teams from the {SEASON_LABEL} season.
+          The 2026&ndash;27 preseason Top 25, built from KenPom, Torvik, EvanMiya
+          and ESPN, plus shot locations for every Division I team from
+          {SEASON_LABEL}.
         </p>
       </header>
 
@@ -75,7 +78,7 @@ export default async function Home({
 // ── Overview ──────────────────────────────────────────────────────────
 
 async function Overview({ db }: { db: Db }) {
-  const [counts, wire, ratings] = await Promise.all([
+  const [counts, wire, teamIds] = await Promise.all([
     // Precomputed in site-counts.sql. If the view is missing or the read
     // fails, hide the line rather than show zeros.
     db
@@ -94,12 +97,12 @@ async function Overview({ db }: { db: Db }) {
       .eq("is_live", true)
       .order("published_at", { ascending: false })
       .limit(5),
-    loadRatings(db),
+    loadTeamIds(db),
   ]);
 
   const stats = counts.data;
   const entries = (wire.data ?? []) as WireEntry[];
-  const top = ratings.data.slice(0, 10);
+  const top = buildComposite().slice(0, 10);
 
   return (
     <>
@@ -127,24 +130,26 @@ async function Overview({ db }: { db: Db }) {
       <div className="home-grid">
         <div className="home-block">
           <h2>
-            Top 10 <span className="home-block-season">{SEASON_LABEL}</span>
+            Top 10 <span className="home-block-season">2026&ndash;27 preseason</span>
           </h2>
-          {top.length === 0 ? (
-            <p className="home-empty">Ratings aren&rsquo;t available right now.</p>
-          ) : (
-            <ol className="home-top">
-              {top.map((r) => (
-                <li key={r.team_id}>
+          <ol className="home-top">
+            {top.map((r) => {
+              const id = teamIds.get(r.school);
+              return (
+                <li key={r.school}>
                   <span className="home-top-rk">{r.rk}</span>
-                  <Link href={`/shot-chart?team=${r.team_id}`}>{r.school}</Link>
-                  <span className="home-top-net">
-                    {r.net > 0 ? "+" : ""}
-                    {pps(r.net)}
+                  {id ? (
+                    <Link href={`/shot-chart?team=${id}`}>{r.school}</Link>
+                  ) : (
+                    r.school
+                  )}
+                  <span className="home-top-net" title="Average rank across sources">
+                    {r.avg.toFixed(1)}
                   </span>
                 </li>
-              ))}
-            </ol>
-          )}
+              );
+            })}
+          </ol>
           <Link href="/?tab=top25" className="home-more" scroll={false}>
             Full Top 25
           </Link>
@@ -184,11 +189,11 @@ async function Overview({ db }: { db: Db }) {
         </Link>
 
         <Link href="/rankings" className="home-card">
-          <span className="home-card-season">{SEASON_LABEL} season</span>
-          <h2>Team ratings</h2>
+          <span className="home-card-season">2026&ndash;27 preseason</span>
+          <h2>Top 25</h2>
           <p>
-            Points per shot scored and allowed for every team, adjusted for
-            who they played. Sort by offense, defense or overall.
+            KenPom, Torvik, EvanMiya and ESPN averaged into one ranking, with
+            every source&rsquo;s number shown beside it.
           </p>
         </Link>
       </nav>
@@ -199,19 +204,22 @@ async function Overview({ db }: { db: Db }) {
 // ── Top 25 ────────────────────────────────────────────────────────────
 
 async function Top25({ db }: { db: Db }) {
-  const { data, error } = await loadRatings(db);
-
-  if (error) {
-    return <p className="home-empty">Can&rsquo;t load ratings: {error}</p>;
-  }
+  const teamIds = await loadTeamIds(db);
 
   return (
     <>
-      <RatingsTable rows={data.slice(0, 25)} />
+      <p className="home-intro">
+        2026&ndash;27 preseason composite. Each column is that source&rsquo;s own
+        rank; the{" "}
+        <Link href="/?tab=method" scroll={false}>
+          method
+        </Link>{" "}
+        explains NR and the dashes.
+      </p>
+      <PreseasonTable rows={buildComposite().slice(0, 25)} teamIds={teamIds} />
       <Link href="/rankings" className="home-more">
-        All 365 teams, sortable by offense and defense
+        Full list and sources
       </Link>
-      <RatingsCaveat />
     </>
   );
 }
@@ -283,7 +291,9 @@ function Method() {
         is exactly average, which is a different and unsupported statement.
       </p>
 
-      <h2>Ratings</h2>
+      <PreseasonMethod />
+
+      <h2>Last season&rsquo;s shooting ratings</h2>
       <p>
         Each team&rsquo;s offense is the points it scored per field goal
         attempt, and its defense is the points it allowed. Both are adjusted

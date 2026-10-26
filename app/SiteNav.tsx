@@ -12,7 +12,7 @@ import { usePathname } from "next/navigation";
 const LINKS = [
   { href: "/", label: "Home", season: null, ready: true },
   { href: "/shot-chart", label: "Shot charts", season: "2025-26", ready: true },
-  { href: "/rankings", label: "Ratings", season: "2025-26", ready: true },
+  { href: "/rankings", label: "Top 25", season: "2026-27", ready: true },
 ];
 
 export default function SiteNav() {
