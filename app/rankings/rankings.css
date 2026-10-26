@@ -1,0 +1,152 @@
+/* Rankings page and the ratings table it shares with the home page.
+   Palette and type come from site-chrome.css. */
+
+.rank {
+  width: 100%;
+  max-width: 62rem;
+  margin: 0 auto;
+  padding: 3rem 1rem 5rem;
+  color: var(--ink);
+  font-family: Barlow, system-ui, sans-serif;
+}
+
+.rank-season {
+  display: block;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  color: var(--accent-warm);
+}
+
+.rank h1 {
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: clamp(2.6rem, 8vw, 4.25rem);
+  font-weight: 600;
+  line-height: 0.95;
+  margin: 0.2rem 0 0;
+}
+
+.rank-lede {
+  max-width: 52ch;
+  margin: 1rem 0 0;
+  line-height: 1.6;
+  color: var(--ink-dim);
+}
+
+.rank-tabs {
+  display: flex;
+  gap: 1.5rem;
+  margin: 2.25rem 0 0;
+  border-bottom: 1px solid #3A3028;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 1.1rem;
+}
+
+.rank-tabs a {
+  padding: 0 0 0.5rem;
+  margin-bottom: -1px;
+  color: var(--ink-dim);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+}
+
+.rank-tabs a:hover { color: var(--ink); }
+
+.rank-tabs a.is-active {
+  color: var(--ink);
+  border-bottom-color: var(--accent-warm);
+}
+
+.rank-tabs a:focus-visible {
+  outline: 2px solid var(--accent-warm);
+  outline-offset: 3px;
+}
+
+.rank-error {
+  margin: 2rem 0 0;
+  color: var(--ink-dim);
+}
+
+.rank-note {
+  max-width: 64ch;
+  margin: 2rem 0 0;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--ink-faint);
+}
+
+/* ── Table ───────────────────────────────────────────────────────── */
+
+/* Narrow screens scroll the table, not the page. */
+.ratings-scroll {
+  margin: 1.5rem 0 0;
+  overflow-x: auto;
+}
+
+.ratings {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.ratings th {
+  padding: 0 0.75rem 0.6rem;
+  text-align: left;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+
+.ratings th.is-sorted { color: var(--ink); }
+
+.ratings td {
+  padding: 0.55rem 0.75rem;
+  border-top: 1px solid #2E2620;
+  white-space: nowrap;
+}
+
+.ratings tbody tr:hover { background: var(--panel); }
+
+.ratings .num {
+  text-align: right;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-size: 1.02rem;
+}
+
+.ratings-rk { color: var(--ink-dim); }
+
+.ratings a {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+.ratings a:hover { border-bottom-color: var(--rule); }
+
+.ratings a:focus-visible {
+  outline: 2px solid var(--accent-warm);
+  outline-offset: 2px;
+}
+
+.ratings-conf { color: var(--ink-dim); }
+
+.ratings-sub {
+  display: inline-block;
+  min-width: 2.2em;
+  margin-left: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--ink-faint);
+}
+
+.ratings-overall { color: var(--ink-dim); }
+
+@media (max-width: 36rem) {
+  .rank { padding-top: 2rem; }
+  .ratings-conf,
+  .ratings-overall { display: none; }
+  .ratings th,
+  .ratings td { padding-left: 0.5rem; padding-right: 0.5rem; }
+}
