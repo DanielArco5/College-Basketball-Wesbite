@@ -4,6 +4,7 @@ import { loadRatings, sortRatings, RATINGS_SEASON, type RatingSort } from "@/lib
 import { buildComposite } from "@/lib/preseason";
 import RatingsTable, { RatingsCaveat } from "./RatingsTable";
 import { PreseasonMethod, PreseasonTable, loadTeamIds } from "./Preseason";
+import { FormulaMethod, FormulaRanking } from "./Formula";
 import "./rankings.css";
 
 export const metadata = {
@@ -14,11 +15,13 @@ export const metadata = {
 };
 
 /**
- * Two views: the 2026-27 preseason composite (default), and our own
- * 2025-26 ratings, which describe last season and can't rank this one.
+ * Three views: the 2026-27 composite of outside rankings (default), our
+ * own 2026-27 formula, and our 2025-26 ratings, which describe last
+ * season and can't rank this one.
  */
 const VIEWS = [
-  { key: "preseason", label: "2026-27 preseason", href: "/rankings" },
+  { key: "preseason", label: "2026-27 composite", href: "/rankings" },
+  { key: "formula", label: "Our formula", href: "/rankings?view=formula" },
   { key: "last", label: "2025-26 shooting ratings", href: "/rankings?view=last" },
 ] as const;
 
@@ -34,20 +37,23 @@ export default async function RankingsPage({
   searchParams: Promise<{ view?: string; sort?: string }>;
 }) {
   const params = await searchParams;
-  const view = params.view === "last" ? "last" : "preseason";
+  const view =
+    params.view === "last" || params.view === "formula" ? params.view : "preseason";
   const db = createServerClient();
 
   return (
     <main className="rank">
       <header>
         <span className="rank-season">
-          {view === "preseason" ? "2026–27 preseason" : "2025–26 season"}
+          {view === "last" ? "2025–26 season" : "2026–27 preseason"}
         </span>
-        <h1>{view === "preseason" ? "Top 25" : "Shooting ratings"}</h1>
+        <h1>{view === "last" ? "Shooting ratings" : "Top 25"}</h1>
         <p className="rank-lede">
           {view === "preseason"
             ? "Three of the most-followed preseason rankings, KenPom, Torvik and ESPN, averaged into one list. How it's built is explained below the table."
-            : "Points per field goal attempt each team scored and allowed last season, adjusted for the quality of its opponents. Net is the gap between the two."}
+            : view === "formula"
+              ? "Our own projection, built from what every returning player and transfer did last season. No outside rankings go into it. Net is projected points per shot scored minus allowed."
+              : "Points per field goal attempt each team scored and allowed last season, adjusted for the quality of its opponents. Net is the gap between the two."}
         </p>
       </header>
 
@@ -65,11 +71,14 @@ export default async function RankingsPage({
         ))}
       </nav>
 
-      {view === "preseason" ? (
-        <Preseason db={db} />
-      ) : (
-        <LastSeason db={db} sort={params.sort} />
+      {view === "preseason" && <Preseason db={db} />}
+      {view === "formula" && (
+        <>
+          <FormulaRanking />
+          <FormulaMethod />
+        </>
       )}
+      {view === "last" && <LastSeason db={db} sort={params.sort} />}
     </main>
   );
 }

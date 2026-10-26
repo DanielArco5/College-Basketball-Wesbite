@@ -235,3 +235,51 @@
 @media (max-width: 36rem) {
   .ratings-src { font-size: 0.9rem; }
 }
+
+/* ── Our formula ─────────────────────────────────────────────────── */
+
+.ratings-adds {
+  max-width: 22rem;
+  white-space: normal;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.rank-flag {
+  margin-left: 0.2rem;
+  color: var(--accent-warm);
+}
+
+.rank-honorable {
+  margin: 2rem 0 0;
+}
+
+.rank-honorable h2 {
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+}
+
+.rank-honorable ol {
+  columns: 14rem;
+  column-gap: 2rem;
+  margin: 0;
+  padding-left: 1.75rem;
+  color: var(--ink-faint);
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+}
+
+.rank-honorable li {
+  padding: 0.2rem 0;
+  break-inside: avoid;
+}
+
+.rank-honorable a {
+  color: var(--ink);
+  font-family: Barlow, system-ui, sans-serif;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+.rank-honorable a:hover { border-bottom-color: var(--rule); }

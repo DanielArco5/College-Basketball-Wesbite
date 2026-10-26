@@ -3,6 +3,7 @@ import { createServerClient } from "@/lib/supabase-server";
 import { buildComposite } from "@/lib/preseason";
 import type { WireEntry } from "./LiveWire";
 import { PreseasonMethod, PreseasonTable, loadTeamIds } from "./rankings/Preseason";
+import { FormulaMethod, FormulaRanking } from "./rankings/Formula";
 import "./home.css";
 import "./rankings/rankings.css";
 
@@ -30,6 +31,7 @@ type Counts = {
 const TABS = [
   { key: "overview", label: "Overview" },
   { key: "top25", label: "Top 25" },
+  { key: "formula", label: "Our Top 25" },
   { key: "shots", label: "Shot charts" },
   { key: "wire", label: "Live Wire" },
   { key: "method", label: "How it works" },
@@ -93,6 +95,7 @@ export default async function Home({
       <div className="home-panel">
         {tab === "overview" && <Overview db={db} />}
         {tab === "top25" && <Top25 db={db} />}
+        {tab === "formula" && <OurTop25 />}
         {tab === "shots" && <ShotCharts db={db} />}
         {tab === "wire" && <Wire db={db} />}
         {tab === "method" && <Method />}
@@ -214,6 +217,30 @@ async function Top25({ db }: { db: Db }) {
         explains NR and the dashes.
       </p>
       <PreseasonTable rows={buildComposite().slice(0, 25)} teamIds={teamIds} />
+    </section>
+  );
+}
+
+// ── Our Top 25 ────────────────────────────────────────────────────────
+
+function OurTop25() {
+  return (
+    <section>
+      <h2 className="home-h2">
+        Our Top 25, 2026-27 preseason
+        <Link href="/rankings?view=formula" className="home-h2-link">
+          Full page
+        </Link>
+      </h2>
+      <p className="home-intro">
+        Our own formula, using no outside rankings: every returning player
+        and transfer valued by what they did last season.{" "}
+        <Link href="/?tab=method" scroll={false}>
+          How it works
+        </Link>{" "}
+        has the details.
+      </p>
+      <FormulaRanking />
     </section>
   );
 }
@@ -370,6 +397,8 @@ function Method() {
       </section>
 
       <PreseasonMethod />
+
+      <FormulaMethod />
 
       <section className="home-method">
         <h2 className="home-h2">
