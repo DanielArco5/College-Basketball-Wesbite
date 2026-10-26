@@ -345,3 +345,4 @@
 .rank-badge.is-margins { background: rgba(63, 191, 111, 0.15); color: #6FD495; }
 
 .rank-honorable .rank-badge { font-family: "Barlow Condensed", system-ui, sans-serif; }
+.rank-badge.is-defense { background: rgba(94, 142, 214, 0.18); color: #8FB4EC; }

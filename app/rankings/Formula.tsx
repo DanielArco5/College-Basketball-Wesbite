@@ -150,7 +150,11 @@ export function FormulaRanking({ limit }: { limit?: number } = {}) {
 /** Why an outlier is here: it's elite at one thing. */
 function IdentityBadge({ label }: { label: string }) {
   return (
-    <span className={`rank-badge ${label === "Elite offense" ? "is-offense" : "is-margins"}`}>
+    <span
+      className={`rank-badge ${
+        label === "Elite offense" ? "is-offense" : label === "Elite defense" ? "is-defense" : "is-margins"
+      }`}
+    >
       {label}
     </span>
   );
@@ -177,13 +181,14 @@ export function FormulaMethod() {
       <h2>How our formula works</h2>
       <p>
         No one else&rsquo;s rankings go into this, but it&rsquo;s built the
-        same way the major ones are. {pctOf(W.net + W.competition)} of the
-        score is a <strong>power rating</strong>: how many more points a team
-        scores than it allows per possession, and the strength of the
-        competition it does it against. The other{" "}
-        {pctOf(1 - W.net - W.competition)} are <strong>style tilts</strong>{" "}
-        toward efficient offense, offensive rebounding and an experienced
-        roster. They move teams within the power rating&rsquo;s frame rather
+        same way the major ones are.{" "}
+        {pctOf(W.net + W.competition + W.winning)} of the score is a{" "}
+        <strong>power rating</strong>: how many more points a team scores
+        than it allows per possession, the strength of the competition it
+        does it against, and whether it actually won. The other{" "}
+        {pctOf(1 - W.net - W.competition - W.winning)} are{" "}
+        <strong>style tilts</strong> toward defense, efficient offense,
+        offensive rebounding and an experienced roster. They move teams within the power rating&rsquo;s frame rather
         than overturn it. And there&rsquo;s room for outliers: a team truly
         elite at one thing can crack the Top 25 on that alone.
       </p>
@@ -213,6 +218,16 @@ export function FormulaMethod() {
             <td className="num">{pctOf(W.competition)}</td>
           </tr>
           <tr>
+            <td>Winning</td>
+            <td>Last season&rsquo;s win percentage. Programs that win tend to keep winning</td>
+            <td className="num">{pctOf(W.winning)}</td>
+          </tr>
+          <tr>
+            <td>Defensive efficiency</td>
+            <td>Points allowed per 100 possessions</td>
+            <td className="num">{pctOf(W.defense)}</td>
+          </tr>
+          <tr>
             <td>Offensive efficiency</td>
             <td>Points scored per 100 possessions</td>
             <td className="num">{pctOf(W.offense)}</td>
@@ -237,11 +252,6 @@ export function FormulaMethod() {
             <td className="num">{pctOf(W.turnovers)}</td>
           </tr>
           <tr>
-            <td>Defensive efficiency</td>
-            <td>Points allowed per 100 possessions</td>
-            <td className="num">{pctOf(W.defense)}</td>
-          </tr>
-          <tr>
             <td>Three-point shooting</td>
             <td>Three-point percentage</td>
             <td className="num">{pctOf(W.three)}</td>
@@ -251,10 +261,11 @@ export function FormulaMethod() {
 
       <h3>Outliers: the identity bonus</h3>
       <p>
-        Two kinds of team get lifted beyond their overall numbers, and
-        they&rsquo;re marked in the table. <strong>Elite offense</strong> is a
-        team whose projected scoring efficiency is far above the rest of
-        Division I. <strong>Wins the margins</strong> is the methodical team
+        Three kinds of team get lifted beyond their overall numbers, and
+        they&rsquo;re marked in the table. <strong>Elite offense</strong> and{" "}
+        <strong>Elite defense</strong> are teams whose projected scoring, or
+        stopping, is far above the rest of Division I.{" "}
+        <strong>Wins the margins</strong> is the methodical team
         that out-rebounds and out-possesses opponents: offensive rebounding
         and turnover margin together, far above the field. A team qualifies
         when it&rsquo;s more than {id.threshold} standard deviations above
@@ -299,11 +310,13 @@ export function FormulaMethod() {
           was last season. Good programs replace talent with talent.
         </li>
         <li>
-          <strong>Carry defense by continuity.</strong> Box scores can&rsquo;t
-          pin defense or forced turnovers on individual players, so a team
-          keeps {pctOf(p.CONTINUITY_BASE)} of last season&rsquo;s edge in
-          both, plus up to {pctOf(p.CONTINUITY_RETURN)} more depending on how
-          many minutes return.
+          <strong>Carry defense with the program.</strong> Box scores
+          can&rsquo;t pin defense or forced turnovers on individual players,
+          and defense is the most coach-driven part of the game. So a team
+          keeps {pctOf(p.CONTINUITY_BASE)} of last season&rsquo;s defensive
+          edge for its coach and system, plus up to{" "}
+          {pctOf(p.CONTINUITY_RETURN)} more depending on how many minutes
+          return.
         </li>
         <li>
           <strong>Switch to real numbers as games are played.</strong> Once

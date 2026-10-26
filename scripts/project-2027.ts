@@ -51,26 +51,28 @@ const CACHE = "scripts/.cache";
 /**
  * Share of the base score. Must sum to 1. Two layers: a power rating
  * built the way the major rankings build theirs (net efficiency and the
- * competition it came against, 70%), then style tilts toward efficient
- * offense, offensive rebounding and an experienced roster (30%). The
+ * competition it came against, plus last season's winning, 65%), then
+ * style tilts toward defense, efficient offense, offensive rebounding and
+ * an experienced roster (35%). The
  * identity bonus below is added on top.
  */
 const WEIGHTS = {
-  net: 0.45,
-  competition: 0.25,
-  offense: 0.1,
-  oreb: 0.08,
-  continuity: 0.05,
+  net: 0.32,
+  competition: 0.23,
+  winning: 0.1,
+  defense: 0.1,
+  offense: 0.09,
+  oreb: 0.07,
+  continuity: 0.04,
   turnovers: 0.03,
   three: 0.02,
-  defense: 0.02,
 } as const;
 
 /**
  * Identity bonus: a team far above the field at one thing gets lifted
- * even if its overall numbers are ordinary. Two identities count: an
- * elite offense, and winning the margins (offensive rebounding and
- * turnover margin together). Each z-score point past the threshold adds
+ * even if its overall numbers are ordinary. Three identities count: an
+ * elite offense, an elite defense, and winning the margins (offensive
+ * rebounding and turnover margin together). Each z-score point past the threshold adds
  * IDENTITY_BONUS to the score. Only the stronger identity counts.
  */
 const IDENTITY_THRESHOLD = 2.5;
@@ -84,17 +86,21 @@ const SHRINK_MINUTES = 300;
 const SHRINK_THREES = 200;
 /** Share of a program's edge credited to minutes no known player fills. */
 const PROGRAM_CARRYOVER = 0.8;
-/** Team-level stats keep this much of last season's edge with nobody back... */
-const CONTINUITY_BASE = 0.5;
+/**
+ * Team-level stats (defense, forced turnovers) keep this much of last
+ * season's edge with nobody back. Defense is the most coach-driven part
+ * of the game, so the system carries a lot of it...
+ */
+const CONTINUITY_BASE = 0.65;
 /** ...plus this much more in proportion to returning minutes. */
-const CONTINUITY_RETURN = 0.4;
+const CONTINUITY_RETURN = 0.3;
 /**
  * Share of the net-efficiency component taken from last season's
  * adjusted net, the team as it actually played, rather than the roster
  * projection. Programs that were good tend to stay good in ways a box
  * score can't see: coaching, recruiting, development.
  */
-const PRIOR_WEIGHT = 0.4;
+const PRIOR_WEIGHT = 0.5;
 /** Credit, relative to a returner, for minutes a transfer played elsewhere in D1. */
 const TRANSFER_CREDIT = 0.5;
 /** Rounds of opponent adjustment. Converges well before this. */
@@ -170,6 +176,8 @@ type BoxSide = {
 type TeamSeason = {
   teamId: number;
   games: number;
+  wins: number;
+  losses: number;
   totalMinutes: number;
   teamStats: BoxSide;
   opponentStats: BoxSide;
@@ -434,6 +442,7 @@ async function main() {
       defense: carry("eff"),
       competition: competitionOf(t.teamId),
       lastNet: a.eff.off - a.eff.def,
+      winPct: tb.wins / Math.max(tb.wins + tb.losses, 1),
     };
 
     const team = d1.get(t.teamId)!;
@@ -464,8 +473,10 @@ async function main() {
     three: rows.map((r) => r.proj.three),
     defense: rows.map((r) => -r.proj.defense),
     competition: rows.map((r) => r.proj.competition),
-    // Share of last season's minutes back with the same team.
+    // Roster experience: minutes back, plus half credit for D1 transfers.
     continuity: rows.map((r) => r.experience),
+    // Last season's win percentage: programs that win keep winning.
+    winning: rows.map((r) => r.proj.winPct),
   };
   const keys = Object.keys(WEIGHTS) as WeightKey[];
   const z = Object.fromEntries(keys.map((k) => [k, zscores(parts[k])])) as Record<WeightKey, number[]>;
@@ -478,7 +489,8 @@ async function main() {
   });
   if (live.byTeam.size) {
     for (const k of keys) {
-      if (k === "competition" || k === "continuity") continue; // same input either way
+      // Same input either way; in-season wins come through net efficiency.
+      if (k === "competition" || k === "continuity" || k === "winning") continue;
       rows.forEach((r, i) => {
         const az = live.z[k].get(r.team_id);
         if (az !== undefined) z[k][i] = weightOf[i] * az + (1 - weightOf[i]) * z[k][i];
@@ -503,6 +515,7 @@ async function main() {
     defense: shown.map((x) => -x.defense),
     competition: parts.competition,
     continuity: parts.continuity,
+    winning: parts.winning,
   };
   const ranks = Object.fromEntries(keys.map((k) => [k, rankDesc(shownParts[k])])) as Record<WeightKey, number[]>;
   // Identity: margins is its own z-score of the two hustle stats combined,
@@ -510,14 +523,14 @@ async function main() {
   // of two good-not-great numbers.
   const marginsZ = zscores(rows.map((_, i) => z.oreb[i] + z.turnovers[i]));
   const identity = rows.map((_, i) => {
-    const offense = z.offense[i] - IDENTITY_THRESHOLD;
-    const margins = marginsZ[i] - IDENTITY_THRESHOLD;
-    const best = Math.max(offense, margins);
-    if (best <= 0) return { bonus: 0, label: null as string | null };
-    return {
-      bonus: IDENTITY_BONUS * best,
-      label: offense >= margins ? "Elite offense" : "Wins the margins",
-    };
+    const options: [string, number][] = [
+      ["Elite offense", z.offense[i] - IDENTITY_THRESHOLD],
+      ["Elite defense", z.defense[i] - IDENTITY_THRESHOLD],
+      ["Wins the margins", marginsZ[i] - IDENTITY_THRESHOLD],
+    ];
+    const [label, past] = options.reduce((a, b) => (b[1] > a[1] ? b : a));
+    if (past <= 0) return { bonus: 0, label: null as string | null };
+    return { bonus: IDENTITY_BONUS * past, label };
   });
   const scores = rows.map(
     (_, i) => sum(keys.map((k) => WEIGHTS[k] * z[k][i])) + identity[i].bonus,
