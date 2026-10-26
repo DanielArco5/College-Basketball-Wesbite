@@ -1,6 +1,7 @@
 -- ============================================================
 -- Untracked shots
--- Run once, BEFORE `npm run ingest -- --untracked`. Safe to rerun.
+-- Run once, BEFORE `npm run ingest -- --untracked`. Safe to rerun, but
+-- then rerun jumper-totals.sql, which extends the views defined here.
 -- ============================================================
 --
 -- Some games have no shot-location tracking, and some tracked games miss

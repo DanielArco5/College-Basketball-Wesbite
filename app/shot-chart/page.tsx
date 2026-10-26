@@ -2,11 +2,13 @@ import Link from "next/link";
 import { createServerClient } from "@/lib/supabase-server";
 import { BUCKET_COLORS, ZONE_LABELS, ZONE_ORDER, type Zone } from "@/lib/court";
 import ShotChart, { ZoneLegend, type ZoneStat } from "./ShotChart";
-import ShotMix, { type SeasonTotals } from "./ShotMix";
+import ShotMix, { type LeagueTotals, type SeasonTotals } from "./ShotMix";
 import EntityPicker, { type PickerItem } from "./EntityPicker";
 import "./shot-chart.css";
 
 const SEASON = 2026;
+const TOTALS_COLUMNS =
+  "attempts, makes, three_attempts, three_makes, untracked_attempts, jumper_attempts, jumper_makes";
 const MIN_SEASON_ATTEMPTS = 20;
 
 // Supabase returns at most 1,000 rows per request, whatever .limit() asks
@@ -133,23 +135,33 @@ export default async function ShotChartPage({
               ? "team_defense_season_totals"
               : "team_season_totals",
           )
-          .select("attempts, makes, three_attempts, three_makes, untracked_attempts")
+          .select(TOTALS_COLUMNS)
           .eq("season", SEASON)
           .eq("team_id", selectedId)
       : db
           .from("player_season_totals")
-          .select("attempts, makes, three_attempts, three_makes, untracked_attempts")
+          .select(TOTALS_COLUMNS)
           .eq("season", SEASON)
           .eq("player_id", selectedId);
 
   const { data: totalsRow, error: totalsErr } = await totalsQuery.maybeSingle();
   if (totalsErr) return <Failure message={totalsErr.message} />;
+
+  // Division I as a whole, for the averages beside each figure.
+  const { data: league, error: leagueErr } = await db
+    .from("d1_season_totals")
+    .select("attempts, makes, three_attempts, three_makes")
+    .eq("season", SEASON)
+    .maybeSingle<LeagueTotals>();
+  if (leagueErr) return <Failure message={leagueErr.message} />;
   const totals: SeasonTotals = totalsRow ?? {
     attempts: 0,
     makes: 0,
     three_attempts: 0,
     three_makes: 0,
     untracked_attempts: 0,
+    jumper_attempts: 0,
+    jumper_makes: 0,
   };
 
   let heading = "";
@@ -239,7 +251,7 @@ export default async function ShotChartPage({
               </figcaption>
             </figure>
 
-            <ShotMix totals={totals} />
+            <ShotMix totals={totals} league={league} />
           </div>
 
           <section className="breakdown">
@@ -297,6 +309,18 @@ export default async function ShotChartPage({
                 })}
               </tbody>
             </table>
+
+            {/* Floors match the gray cutoffs in team-zones.sql,
+                team-defense-stats.sql and zones-and-baselines.sql. */}
+            <p className="accuracy-note">
+              FG% is the raw make rate. Colors and vs D1 use an adjusted rate
+              that pulls small samples toward the Division I average, so a
+              zone with few shots shows a smaller gap than its raw FG%
+              suggests. Zones with fewer than {mode === "team" ? 25 : 5}{" "}
+              attempts are gray: too few shots to say anything.
+              {side === "defense" &&
+                " Shots allowed are a rough read on defense: they reflect who a team played as much as how it defended, and opponent three-point shooting is largely luck."}
+            </p>
           </section>
         </div>
       )}
