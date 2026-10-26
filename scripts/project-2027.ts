@@ -4,9 +4,10 @@
  *   npx tsx --env-file=.env.local scripts/project-2027.ts           # cached payloads
  *   npx tsx --env-file=.env.local scripts/project-2027.ts --refresh # re-fetch (3 calls)
  *
- * What it weighs, and how heavily (see WEIGHTS): net efficiency at the
- * core, then competition, offensive efficiency, offensive rebounding,
- * roster continuity, turnover margin, three-point shooting and defense. On top of that, an
+ * What it weighs, and how heavily (see WEIGHTS): a power rating (net
+ * efficiency and competition), then style tilts for offensive
+ * efficiency, offensive rebounding, roster experience, turnover margin,
+ * three-point shooting and defense. On top of that, an
  * identity bonus lifts teams that are elite at one thing: scoring, or
  * winning the margins on the glass and in turnovers.
  *
@@ -48,19 +49,21 @@ const SEASON_TO = 2027;
 const CACHE = "scripts/.cache";
 
 /**
- * Share of the base score. Must sum to 1. Net efficiency is the core,
- * as in every serious ranking; the rest tilts it toward hustle and
- * shooting. The identity bonus below is added on top.
+ * Share of the base score. Must sum to 1. Two layers: a power rating
+ * built the way the major rankings build theirs (net efficiency and the
+ * competition it came against, 70%), then style tilts toward efficient
+ * offense, offensive rebounding and an experienced roster (30%). The
+ * identity bonus below is added on top.
  */
 const WEIGHTS = {
-  net: 0.28,
-  competition: 0.24,
-  offense: 0.15,
-  oreb: 0.13,
-  continuity: 0.1,
-  turnovers: 0.04,
-  three: 0.03,
-  defense: 0.03,
+  net: 0.45,
+  competition: 0.25,
+  offense: 0.1,
+  oreb: 0.08,
+  continuity: 0.05,
+  turnovers: 0.03,
+  three: 0.02,
+  defense: 0.02,
 } as const;
 
 /**
@@ -91,7 +94,9 @@ const CONTINUITY_RETURN = 0.4;
  * projection. Programs that were good tend to stay good in ways a box
  * score can't see: coaching, recruiting, development.
  */
-const PRIOR_WEIGHT = 0.35;
+const PRIOR_WEIGHT = 0.4;
+/** Credit, relative to a returner, for minutes a transfer played elsewhere in D1. */
+const TRANSFER_CREDIT = 0.5;
 /** Rounds of opponent adjustment. Converges well before this. */
 const ADJUST_ROUNDS = 12;
 const RANKED = 25;
@@ -354,6 +359,7 @@ async function main() {
 
     let known = 0;
     let returningMin = 0;
+    let transferMin = 0;
     let ortgW = 0;
     let ortgSum = 0;
     let orebSum = 0;
@@ -377,6 +383,7 @@ async function main() {
       known += share;
       if (p.fromTeam === t.teamId) returningMin += p.minutes;
       else {
+        transferMin += p.minutes;
         transfersIn.push({
           name: p.name,
           from: d1.get(p.fromTeam)?.school ?? "non-D1",
@@ -408,6 +415,10 @@ async function main() {
     const knownShare = Math.min(known, 1);
     const unknown = 1 - knownShare;
     const returning = Math.min(returningMin / teamMinutes, 1);
+    // Experience: minutes back, plus half credit for minutes proven
+    // elsewhere in Division I. A team rebuilt with established transfers
+    // isn't the same as one rebuilt with unknowns.
+    const experience = Math.min((returningMin + TRANSFER_CREDIT * transferMin) / teamMinutes, 1);
     const fill = (k: FactorKey) => league[k] + PROGRAM_CARRYOVER * (a[k].off - league[k]);
     const carry = (k: FactorKey) =>
       league[k] + (a[k].def - league[k]) * (CONTINUITY_BASE + CONTINUITY_RETURN * returning);
@@ -432,6 +443,7 @@ async function main() {
       conference: team.conference,
       proj,
       returning,
+      experience,
       incomplete: !hasNewcomers && !added.has(t.teamId),
       transfers_in: transfersIn
         .sort((x, y) => y.minutes - x.minutes)
@@ -453,7 +465,7 @@ async function main() {
     defense: rows.map((r) => -r.proj.defense),
     competition: rows.map((r) => r.proj.competition),
     // Share of last season's minutes back with the same team.
-    continuity: rows.map((r) => r.returning),
+    continuity: rows.map((r) => r.experience),
   };
   const keys = Object.keys(WEIGHTS) as WeightKey[];
   const z = Object.fromEntries(keys.map((k) => [k, zscores(parts[k])])) as Record<WeightKey, number[]>;
@@ -527,7 +539,7 @@ async function main() {
     weights: WEIGHTS,
     identity: { threshold: IDENTITY_THRESHOLD, bonus: IDENTITY_BONUS },
     params: {
-      SHRINK_MINUTES, SHRINK_THREES, PROGRAM_CARRYOVER, PRIOR_WEIGHT, CONTINUITY_BASE,
+      SHRINK_MINUTES, SHRINK_THREES, PROGRAM_CARRYOVER, PRIOR_WEIGHT, TRANSFER_CREDIT, CONTINUITY_BASE,
       CONTINUITY_RETURN, RANKED, HONORABLE, BLEND_GAMES,
     },
     sources: {
@@ -559,6 +571,7 @@ async function main() {
       ranks: Object.fromEntries(keys.map((k) => [k, ranks[k][i]])) as Record<WeightKey, number>,
       identity: identity[i].label,
       returning: round(r.returning, 3),
+      experience: round(r.experience, 3),
       incomplete: r.incomplete,
       transfers_in: r.transfers_in,
     })),

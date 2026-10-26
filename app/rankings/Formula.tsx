@@ -80,8 +80,12 @@ export function FormulaRanking({ limit }: { limit?: number } = {}) {
               </th>
               <th scope="col" className="num" title="Three-point percentage">3P%</th>
               <th scope="col" className="num" title="Points allowed per 100 possessions">Def</th>
-              <th scope="col" className="num" title="Share of last season's minutes back with the same team">
-                Back
+              <th
+                scope="col"
+                className="num"
+                title="Roster experience: last season's minutes back, plus half credit for minutes transfers played elsewhere in D1"
+              >
+                Exp
               </th>
               <th scope="col" className="ratings-conf">Key additions</th>
             </tr>
@@ -103,7 +107,7 @@ export function FormulaRanking({ limit }: { limit?: number } = {}) {
                 <td className="num"><Stat value={signed(r.to_margin)} rank={r.ranks.turnovers} /></td>
                 <td className="num"><Stat value={r.three_pct.toFixed(1)} rank={r.ranks.three} /></td>
                 <td className="num"><Stat value={r.def_eff.toFixed(1)} rank={r.ranks.defense} /></td>
-                <td className="num"><Stat value={`${Math.round(r.returning * 100)}%`} rank={r.ranks.continuity} /></td>
+                <td className="num"><Stat value={`${Math.round(r.experience * 100)}%`} rank={r.ranks.continuity} /></td>
                 <td className="ratings-conf ratings-adds">
                   {r.transfers_in.map((t) => `${t.name} (${t.from})`).join(", ")}
                 </td>
@@ -172,14 +176,16 @@ export function FormulaMethod() {
     <section className="rank-method">
       <h2>How our formula works</h2>
       <p>
-        No one else&rsquo;s rankings go into this. The core is the same thing
-        every serious ranking is built on: how many more points a team
-        scores than it allows per possession, against the competition it
-        faces. On top of that it leans hard toward efficient offense and
-        offensive rebounding, rewards teams that bring their roster back,
-        and weighs the conference a team plays in heavily. It also makes
-        room for outliers: a team that is truly elite at one thing can
-        crack the Top 25 even when its overall numbers are ordinary.
+        No one else&rsquo;s rankings go into this, but it&rsquo;s built the
+        same way the major ones are. {pctOf(W.net + W.competition)} of the
+        score is a <strong>power rating</strong>: how many more points a team
+        scores than it allows per possession, and the strength of the
+        competition it does it against. The other{" "}
+        {pctOf(1 - W.net - W.competition)} are <strong>style tilts</strong>{" "}
+        toward efficient offense, offensive rebounding and an experienced
+        roster. They move teams within the power rating&rsquo;s frame rather
+        than overturn it. And there&rsquo;s room for outliers: a team truly
+        elite at one thing can crack the Top 25 on that alone.
       </p>
 
       <table className="rank-weights">
@@ -217,8 +223,12 @@ export function FormulaMethod() {
             <td className="num">{pctOf(W.oreb)}</td>
           </tr>
           <tr>
-            <td>Roster continuity</td>
-            <td>Share of last season&rsquo;s minutes back with the same team</td>
+            <td>Roster experience</td>
+            <td>
+              Last season&rsquo;s minutes back with the same team, plus{" "}
+              {pctOf(p.TRANSFER_CREDIT)} credit for minutes transfers played
+              elsewhere in Division I
+            </td>
             <td className="num">{pctOf(W.continuity)}</td>
           </tr>
           <tr>
@@ -316,10 +326,8 @@ export function FormulaMethod() {
       <h3>What it can&rsquo;t see</h3>
       <p>
         Freshmen, including five-stars, count only through their
-        program&rsquo;s track record, and the continuity weight favors teams
-        that kept their roster together. Teams rebuilt through the transfer
-        portal or around a top recruiting class can sit lower here than in
-        the polls. Coaching changes aren&rsquo;t modeled.
+        program&rsquo;s track record, so teams rebuilt around a top recruiting
+        class can sit lower here than in the polls. Coaching changes aren&rsquo;t modeled.
         Players confirmed out for the season, such as UConn&rsquo;s Solo
         Ball and St. John&rsquo;s Donnie Freeman, are removed. Because the
         formula leans on hustle stats, a team that wins with size and
