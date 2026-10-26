@@ -17,13 +17,18 @@ const KIND_LABEL: Record<WireEntry["kind"], string> = {
   note: "Note",
 };
 
-// Whether the viewer has hidden the ticker. The choice lives in
-// localStorage and is mirrored onto <html data-wire="off"> by the inline
-// script in layout.tsx before first paint, so a hidden ticker never
-// flashes in on load. CSS does the hiding; this store only keeps the
-// button label and aria-pressed in step.
-// Keep in sync with the key in layout.tsx's inline script.
-const WIRE_STORAGE_KEY = "cbb:wire";
+const STORAGE_KEY = "cbb.wire";
+const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
+
+// Both values live outside React (a media query, and the data-wire
+// attribute SiteChrome's inline script sets before first paint), so they
+// are read as external stores. The server can't know either, so it
+// renders the open, animated version and the client corrects on hydration.
+function subscribeReducedMotion(onChange: () => void) {
+  const mq = window.matchMedia(REDUCED_MOTION);
+  mq.addEventListener("change", onChange);
+  return () => mq.removeEventListener("change", onChange);
+}
 
 function subscribeWire(onChange: () => void) {
   const obs = new MutationObserver(onChange);
@@ -31,37 +36,20 @@ function subscribeWire(onChange: () => void) {
   return () => obs.disconnect();
 }
 
-function setWireHidden(hidden: boolean) {
-  document.documentElement.dataset.wire = hidden ? "off" : "on";
-  try {
-    localStorage.setItem(WIRE_STORAGE_KEY, hidden ? "off" : "on");
-  } catch {
-    // Private mode or blocked storage: the toggle still works for this
-    // page view, it just won't be remembered.
-  }
-}
-
-// The viewer's reduced-motion setting, read as an external store so it
-// stays current if they change it while the page is open. The server
-// can't know it, so it renders the animated version and the client
-// corrects on hydration.
-const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
-
-function subscribeReducedMotion(onChange: () => void) {
-  const mq = window.matchMedia(REDUCED_MOTION);
-  mq.addEventListener("change", onChange);
-  return () => mq.removeEventListener("change", onChange);
-}
-
 /**
- * Scrolling news ticker, fed by hand from the live_wire_entries table.
+ * Scrolling news ticker, fed by hand from live_wire_entries.
  *
- * Motion is the whole point of a ticker and also the thing that makes
- * some people ill, so a viewer who has asked their system for reduced
- * motion gets the same entries as a static, scrollable row instead.
- * Hovering or focusing pauses it either way — a headline you can't finish
- * reading is worse than no headline. Anyone who'd rather not have it at
- * all can collapse it to a single button, and the choice sticks.
+ * Two things a ticker has to get right or it becomes an irritant:
+ *
+ * Motion. It's the whole point of the format and also the thing that
+ * makes some people ill, so a viewer whose system asks for reduced
+ * motion gets the same entries as a static row. Hover and focus pause it
+ * either way — a headline you can't finish reading is worse than none.
+ *
+ * An exit. Anything that moves forever at the top of every page needs an
+ * off switch. The choice is remembered per browser, and collapsing
+ * leaves a thin bar rather than vanishing, so it can always be found
+ * again.
  */
 export default function LiveWire({ entries }: { entries: WireEntry[] }) {
   const reduced = useSyncExternalStore(
@@ -69,66 +57,87 @@ export default function LiveWire({ entries }: { entries: WireEntry[] }) {
     () => window.matchMedia(REDUCED_MOTION).matches,
     () => false,
   );
-  const hidden = useSyncExternalStore(
+  // Mirrors the data-wire attribute that the inline script in SiteChrome
+  // already set before first paint, so this never fights what's on screen.
+  const open = useSyncExternalStore(
     subscribeWire,
-    () => document.documentElement.dataset.wire === "off",
-    () => false,
+    () => document.documentElement.dataset.wire !== "off",
+    () => true,
   );
+
+  function toggle() {
+    const next = !open;
+    // Setting the attribute re-renders through subscribeWire.
+    document.documentElement.dataset.wire = next ? "on" : "off";
+    // Private windows and blocked site data both throw here; the toggle
+    // should still work for this session.
+    try {
+      window.localStorage.setItem(STORAGE_KEY, next ? "on" : "off");
+    } catch {
+      /* preference just won't survive a reload */
+    }
+  }
 
   if (entries.length === 0) return null;
 
-  // The track holds two copies so the scroll wraps without a visible jump.
-  // With reduced motion there's no animation, so one copy is enough.
-  const items = reduced ? entries : [...entries, ...entries];
+  // Two copies so the scroll wraps without a visible jump. With reduced
+  // motion there's no animation, so one is enough.
+  const items = reduced || !open ? entries : [...entries, ...entries];
 
   return (
     <aside
-      className={`wire${reduced ? " is-static" : ""}`}
+      className={`wire${reduced ? " is-static" : ""}${open ? "" : " is-closed"}`}
       aria-label="Latest college basketball news"
     >
       <span className="wire-flag">Live Wire</span>
-      <div className="wire-window">
-        <div
-          className="wire-track"
-          // The duplicated half is decorative; a screen reader should hear
-          // each headline once.
-          style={{ animationDuration: `${Math.max(30, entries.length * 9)}s` }}
-        >
-          {items.map((e, i) => {
-            const dup = !reduced && i >= entries.length;
-            const body = (
-              <>
-                <span className={`wire-kind k-${e.kind}`}>
-                  {KIND_LABEL[e.kind]}
+
+      {open && (
+        <div className="wire-window">
+          <div
+            className="wire-track"
+            style={{
+              animationDuration: `${Math.max(30, entries.length * 9)}s`,
+            }}
+          >
+            {items.map((e, i) => {
+              const dup = !reduced && i >= entries.length;
+              const body = (
+                <>
+                  <span className={`wire-kind k-${e.kind}`}>
+                    {KIND_LABEL[e.kind]}
+                  </span>
+                  {e.headline}
+                </>
+              );
+              return (
+                <span
+                  className="wire-item"
+                  key={`${e.id}-${i}`}
+                  // The duplicated half is decorative; a screen reader
+                  // should hear each headline once.
+                  aria-hidden={dup || undefined}
+                >
+                  {e.url ? (
+                    <a href={e.url} target="_blank" rel="noopener noreferrer">
+                      {body}
+                    </a>
+                  ) : (
+                    body
+                  )}
                 </span>
-                {e.headline}
-              </>
-            );
-            return (
-              <span
-                className="wire-item"
-                key={`${e.id}-${i}`}
-                aria-hidden={dup || undefined}
-              >
-                {e.url ? (
-                  <a href={e.url} target="_blank" rel="noopener noreferrer">
-                    {body}
-                  </a>
-                ) : (
-                  body
-                )}
-              </span>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
+
       <button
         type="button"
         className="wire-toggle"
-        onClick={() => setWireHidden(!hidden)}
+        onClick={toggle}
+        aria-expanded={open}
       >
-        <span className="wire-toggle-off">Hide</span>
-        <span className="wire-toggle-on">Show Live Wire</span>
+        {open ? "Hide" : `Show ${entries.length}`}
       </button>
     </aside>
   );

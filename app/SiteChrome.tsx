@@ -4,11 +4,23 @@ import SiteNav from "./SiteNav";
 import "./site-chrome.css";
 
 /**
- * The ticker and nav that sit above every page.
- *
- * This lives in the root layout rather than on individual pages so the
- * shot chart, the rankings and the home page read as one site instead of
- * a set of separate tools that happen to share a palette.
+ * Runs before first paint, so a viewer who switched the ticker off never
+ * sees it flash in and disappear. Reading localStorage inside React
+ * would be a frame too late — the markup is already on screen by then.
+ */
+const WIRE_PREF = `
+try {
+  var v = localStorage.getItem('cbb.wire');
+  document.documentElement.dataset.wire = v === 'off' ? 'off' : 'on';
+} catch (e) {
+  document.documentElement.dataset.wire = 'on';
+}
+`;
+
+/**
+ * The ticker and nav above every page. Living in the root layout is what
+ * makes the shot charts, the ratings and the home page read as one site
+ * rather than three tools sharing a palette.
  */
 export default async function SiteChrome() {
   const db = createServerClient();
@@ -25,6 +37,7 @@ export default async function SiteChrome() {
 
   return (
     <>
+      <script dangerouslySetInnerHTML={{ __html: WIRE_PREF }} />
       <LiveWire entries={(data ?? []) as WireEntry[]} />
       <SiteNav />
     </>

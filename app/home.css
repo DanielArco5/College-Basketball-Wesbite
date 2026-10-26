@@ -1,19 +1,16 @@
-/* Home page. Palette, fonts and the ticker live in site-chrome.css;
-   the ratings table comes from rankings/rankings.css.
-   Barlow Condensed for anything numeric or structural, Barlow for reading. */
-
-/* ── Page ────────────────────────────────────────────────────────── */
+/* Home page. Palette and ticker styles live in site-chrome.css. */
 
 .home {
-  width: 100%;
   max-width: 62rem;
   margin: 0 auto;
-  padding: 3rem 1rem 5rem;
+  padding: 3.5rem 1rem 5rem;
   color: var(--ink);
   font-family: Barlow, system-ui, sans-serif;
 }
 
-.home-head h1 {
+/* ── Hero ────────────────────────────────────────────────────────── */
+
+.home-hero h1 {
   font-family: "Barlow Condensed", system-ui, sans-serif;
   font-size: clamp(3rem, 11vw, 6.5rem);
   font-weight: 600;
@@ -23,25 +20,62 @@
 }
 
 .home-lede {
-  max-width: 38ch;
+  max-width: 40ch;
   margin: 1.75rem 0 0;
   font-size: 1.1rem;
   line-height: 1.6;
   color: var(--ink-dim);
 }
 
-.home-nav {
+.home-counts {
+  margin: 1.25rem 0 0;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 0.95rem;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Section headings ────────────────────────────────────────────── */
+
+.home-h2 {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin: 0 0 1.25rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid #3A3028;
+}
+
+.home-h2-link {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--accent-warm);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+.home-h2-link:hover { border-bottom-color: currentColor; }
+
+/* ── Section cards ───────────────────────────────────────────────── */
+
+.home-sections { margin-top: 4rem; }
+
+.home-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
   gap: 1px;
-  margin: 4rem 0 0;
   background: #3A3028;
   border: 1px solid #3A3028;
 }
 
 .home-card {
-  display: block;
-  padding: 1.75rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  padding: 1.6rem 1.4rem 1.4rem;
   background: var(--page);
   color: inherit;
   text-decoration: none;
@@ -56,67 +90,130 @@ a.home-card:focus-visible {
 }
 
 .home-card-season {
-  display: block;
   font-family: "Barlow Condensed", system-ui, sans-serif;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   letter-spacing: 0.04em;
   color: var(--accent-warm);
 }
 
-.home-card h2 {
+.home-card.is-static .home-card-season { color: var(--ink-faint); }
+
+.home-card h3 {
   font-family: "Barlow Condensed", system-ui, sans-serif;
-  font-size: 1.9rem;
+  font-size: 1.7rem;
   font-weight: 600;
-  margin: 0.2rem 0 0.6rem;
+  margin: 0.15rem 0 0.6rem;
 }
 
 .home-card p {
   margin: 0;
-  max-width: 34ch;
   line-height: 1.55;
   color: var(--ink-dim);
+  font-size: 0.95rem;
 }
 
-.home-card-stat {
-  display: block;
-  margin-top: 1.1rem;
+.home-card-go {
+  margin-top: auto;
+  padding-top: 1.1rem;
   font-family: "Barlow Condensed", system-ui, sans-serif;
   font-size: 0.9rem;
   color: var(--ink-faint);
 }
 
-.home-card.is-pending {
-  cursor: default;
-  opacity: 0.55;
+a.home-card:hover .home-card-go { color: var(--accent-warm); }
+
+/* ── Top ten ─────────────────────────────────────────────────────── */
+
+.home-top { margin-top: 4rem; }
+
+.home-top-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
-.home-method {
-  margin: 4.5rem 0 0;
-  padding-top: 2rem;
-  border-top: 1px solid #3A3028;
+.home-top-list li {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr auto 5rem;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.5rem 0.4rem;
+  border-bottom: 1px solid #241C16;
 }
 
-.home-method h2 {
+.home-top-list li:hover { background: var(--panel); }
+
+.home-top-rk {
   font-family: "Barlow Condensed", system-ui, sans-serif;
-  font-size: 1.4rem;
-  font-weight: 600;
-  margin: 0 0 1rem;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
 }
 
-.home-method p {
-  max-width: 64ch;
+.home-top-team { font-weight: 500; }
+
+.home-top-conf {
+  font-size: 0.85rem;
+  color: var(--ink-dim);
+}
+
+.home-top-net {
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--ink);
+}
+
+/* ── Methodology ─────────────────────────────────────────────────── */
+
+.home-method { margin-top: 4rem; }
+
+.home-method-body {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: 2rem 3rem;
+}
+
+.home-method-body h3 {
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0 0 0.6rem;
+  color: var(--ink);
+}
+
+.home-method-body p {
+  max-width: 62ch;
+  margin: 0 0 0.9rem;
   line-height: 1.7;
   color: var(--ink-dim);
-  margin: 0 0 1rem;
+  font-size: 0.95rem;
 }
 
+.home-method-body p:last-child { margin-bottom: 0; }
+
+/* ── Footer ──────────────────────────────────────────────────────── */
+
 .home-foot {
-  margin-top: 3.5rem;
+  margin-top: 4rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #3A3028;
   font-size: 0.88rem;
   color: var(--ink-faint);
 }
 
-.home-foot p { max-width: 54ch; margin: 0; }
+.home-foot p {
+  max-width: 60ch;
+  margin: 0;
+  line-height: 1.6;
+}
+
+@media (max-width: 36rem) {
+  .home { padding-top: 2.25rem; }
+  .home-sections, .home-top, .home-method { margin-top: 2.75rem; }
+  .home-top-list li { grid-template-columns: 2rem 1fr 4.5rem; }
+  .home-top-conf { display: none; }
+}
 
 /* ── Tabs ────────────────────────────────────────────────────────── */
 
@@ -154,18 +251,6 @@ a.home-card:focus-visible {
   outline-offset: -2px;
 }
 
-.home-panel { margin-top: 2rem; }
-
-.home-panel > .home-method {
-  margin-top: 0;
-  padding-top: 0;
-  border-top: 0;
-}
-
-.home-method h2 + p { margin-top: 0; }
-
-.home-method h2:not(:first-child) { margin-top: 2.5rem; }
-
 .home-empty,
 .home-intro {
   color: var(--ink-dim);
@@ -190,103 +275,6 @@ a.home-card:focus-visible {
 .home-more:hover,
 .home-intro a:hover { border-bottom-color: var(--ink); }
 
-/* ── Overview ────────────────────────────────────────────────────── */
-
-.home-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
-  gap: 1px;
-  margin: 0;
-  background: #3A3028;
-  border: 1px solid #3A3028;
-}
-
-.home-stats div {
-  padding: 1rem 1.25rem;
-  background: var(--page);
-}
-
-.home-stats dt {
-  font-family: "Barlow Condensed", system-ui, sans-serif;
-  font-size: 0.85rem;
-  letter-spacing: 0.04em;
-  color: var(--ink-faint);
-}
-
-.home-stats dd {
-  margin: 0.15rem 0 0;
-  font-family: "Barlow Condensed", system-ui, sans-serif;
-  font-size: 1.9rem;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
-
-.home-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
-  gap: 2.5rem;
-  margin-top: 2.5rem;
-}
-
-.home-block h2 {
-  font-family: "Barlow Condensed", system-ui, sans-serif;
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin: 0 0 0.75rem;
-}
-
-.home-block-season {
-  margin-left: 0.4rem;
-  font-size: 0.9rem;
-  font-weight: 400;
-  color: var(--ink-faint);
-}
-
-.home-top,
-.home-wire {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.home-top li {
-  display: flex;
-  align-items: baseline;
-  gap: 0.75rem;
-  padding: 0.45rem 0;
-  border-top: 1px solid #2E2620;
-}
-
-.home-top-rk {
-  width: 1.5rem;
-  text-align: right;
-  font-family: "Barlow Condensed", system-ui, sans-serif;
-  color: var(--ink-faint);
-}
-
-.home-top a,
-.home-wire a {
-  color: var(--ink);
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-}
-
-.home-top a:hover,
-.home-wire a:hover { border-bottom-color: var(--rule); }
-
-.home-top a:focus-visible,
-.home-wire a:focus-visible {
-  outline: 2px solid var(--accent-warm);
-  outline-offset: 2px;
-}
-
-.home-top-net {
-  margin-left: auto;
-  font-family: "Barlow Condensed", system-ui, sans-serif;
-  font-variant-numeric: tabular-nums;
-  color: var(--ink-dim);
-}
-
 .home-wire li {
   padding: 0.55rem 0;
   border-top: 1px solid #2E2620;
@@ -299,8 +287,6 @@ a.home-card:focus-visible {
   font-family: "Barlow Condensed", system-ui, sans-serif;
   text-transform: capitalize;
 }
-
-/* ── Team directory ──────────────────────────────────────────────── */
 
 .home-confs {
   columns: 15rem;
@@ -342,8 +328,29 @@ a.home-card:focus-visible {
   outline-offset: 2px;
 }
 
+.home-panel { margin-top: 2.5rem; }
+
+/* Each tab's first section sits right under the tab row. */
+.home-panel > :first-child { margin-top: 0; }
+
+.home-panel .home-intro { margin-bottom: 1.25rem; }
+
+.home-top-team a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+.home-top-team a:hover { border-bottom-color: var(--rule); }
+
+.home-top-team a:focus-visible {
+  outline: 2px solid var(--accent-warm);
+  outline-offset: 2px;
+}
+
+.home-panel .rank-method { margin-top: 4rem; }
+
 @media (max-width: 36rem) {
-  .home { padding-top: 2rem; }
   .home-tabs { gap: 1.25rem; margin-top: 2rem; }
-  .home-nav { margin-top: 2.5rem; }
+  .home-panel .rank-method { margin-top: 2.75rem; }
 }

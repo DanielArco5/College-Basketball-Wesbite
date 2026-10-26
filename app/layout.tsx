@@ -23,22 +23,14 @@ export const metadata: Metadata = {
     "floor and measured against the rest of the country.",
 };
 
-// Applies a hidden Live Wire before first paint, so a viewer who turned
-// the ticker off never sees it flash in. The key matches
-// WIRE_STORAGE_KEY in LiveWire.tsx.
-const WIRE_PREF_SCRIPT = `try{if(localStorage.getItem("cbb:wire")==="off")document.documentElement.dataset.wire="off"}catch(e){}`;
-
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-      // The inline script may set data-wire before React hydrates.
+      // SiteChrome's inline script sets data-wire before React hydrates.
       suppressHydrationWarning
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: WIRE_PREF_SCRIPT }} />
-      </head>
       <body className="min-h-full flex flex-col">
         <SiteChrome />
         {children}

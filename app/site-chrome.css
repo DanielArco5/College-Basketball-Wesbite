@@ -117,43 +117,6 @@ body {
 .wire-kind.k-commitment { color: #7FB069; }
 .wire-kind.k-injury     { color: #CF6968; }
 
-/* Hide/show. The button carries both labels and CSS picks one, keyed off
-   <html data-wire>, which layout.tsx sets before first paint. */
-.wire-toggle {
-  flex: none;
-  padding: 0 1rem;
-  border: 0;
-  border-left: 1px solid #3A3028;
-  background: transparent;
-  color: var(--ink-dim);
-  font: inherit;
-  font-size: 0.8rem;
-  letter-spacing: 0.08em;
-  cursor: pointer;
-}
-
-.wire-toggle:hover { color: var(--ink); }
-
-.wire-toggle:focus-visible {
-  outline: 2px solid var(--accent-warm);
-  outline-offset: -2px;
-}
-
-.wire-toggle-on { display: none; }
-
-html[data-wire="off"] .wire-flag,
-html[data-wire="off"] .wire-window,
-html[data-wire="off"] .wire-toggle-off { display: none; }
-
-html[data-wire="off"] .wire-toggle-on { display: inline; }
-
-html[data-wire="off"] .wire { justify-content: flex-end; }
-
-html[data-wire="off"] .wire-toggle {
-  padding: 0.3rem 1rem;
-  border-left: 0;
-}
-
 /* ── Nav ─────────────────────────────────────────────────────────── */
 
 .sitenav {
@@ -226,3 +189,47 @@ html[data-wire="off"] .wire-toggle {
   }
   .sitenav ul { gap: 1.1rem; }
 }
+/* Append to app/site-chrome.css — the ticker's off switch.
+   If you already have a .wire block, these rules extend it. */
+
+.wire-toggle {
+  flex: none;
+  align-self: stretch;
+  padding: 0 0.9rem;
+  background: none;
+  border: none;
+  border-left: 1px solid #3A3028;
+  color: var(--ink-faint);
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: color 120ms ease, background 120ms ease;
+}
+
+.wire-toggle:hover {
+  color: var(--ink);
+  background: #2C2219;
+}
+
+.wire-toggle:focus-visible {
+  outline: 2px solid var(--accent-warm);
+  outline-offset: -2px;
+}
+
+/* Collapsed: the flag and the button stay, so it can always be found
+   again. A control that vanishes entirely is a control people assume
+   broke. */
+.wire.is-closed {
+  justify-content: flex-start;
+}
+
+.wire.is-closed .wire-flag {
+  background: #3A3028;
+  color: var(--ink-dim);
+}
+
+/* Set by the inline script in SiteChrome before first paint, so a
+   dismissed ticker never flashes in on load. The class on .wire handles
+   it once React has mounted; this covers the gap before that. */
+:root[data-wire="off"] .wire .wire-window { display: none; }
