@@ -6,10 +6,25 @@ import ShotMix, { type LeagueTotals, type SeasonTotals } from "./ShotMix";
 import EntityPicker, { type PickerItem } from "./EntityPicker";
 import "./shot-chart.css";
 
-const SEASON = 2026;
+/**
+ * Seasons the chart can show, newest first, named by the year they end
+ * (2027 is 2026-27). The live season fills in as scripts/update-shots.ts
+ * imports games; a finished season never changes.
+ */
+const SEASONS = [2027, 2026];
+const LIVE_SEASON = 2027;
+const LIVE_SEASON_START = "November 2";
+const LIVE_SEASON_NOTE_EARLY = "charts open once every zone has enough shots";
 const TOTALS_COLUMNS =
   "attempts, makes, three_attempts, three_makes, untracked_attempts, jumper_attempts, jumper_makes";
+/** Shots a player needs to be listed. A full season clears 20 easily;
+ *  early in a live season that floor would hide almost everyone. */
 const MIN_SEASON_ATTEMPTS = 20;
+const MIN_LIVE_ATTEMPTS = 5;
+
+function seasonLabel(season: number) {
+  return `${season - 1}–${String(season).slice(2)}`;
+}
 
 // Supabase returns at most 1,000 rows per request, whatever .limit() asks
 // for, so anything that can exceed that is read in pages.
@@ -30,8 +45,7 @@ async function fetchAll<T>(
   }
 }
 
-// Last season's games are finished, so the numbers behind this page never
-// change. Re-querying Postgres on every request buys nothing.
+// The live season changes once a day at most, when new games are imported.
 export const revalidate = 3600;
 
 export const metadata = { title: "Shot charts" };
@@ -47,7 +61,7 @@ type TeamRow = {
 export default async function ShotChartPage({
   searchParams,
 }: {
-  searchParams: Promise<{ player?: string; team?: string; side?: string }>;
+  searchParams: Promise<{ player?: string; team?: string; side?: string; season?: string }>;
 }) {
   const params = await searchParams;
   const mode: "player" | "team" = params.team ? "team" : "player";
@@ -56,6 +70,28 @@ export default async function ShotChartPage({
   const side: "offense" | "defense" =
     mode === "team" && params.side === "defense" ? "defense" : "offense";
   const db = createServerClient();
+
+  // A season is shown only once every zone's small-sample correction can
+  // be fitted from that season's own shots. The priors need players and
+  // teams with real volume in each zone, and the stats views join them
+  // with inner joins, so a season shown too early would silently drop
+  // its thinly-shot zones (corner threes first) from every chart. Until
+  // then the tab is visible but disabled.
+  const [{ data: seasonRows }, { data: playerPriors }, { data: teamPriors }] = await Promise.all([
+    db.from("d1_season_totals").select("season"),
+    db.from("zone_priors").select("season, zone"),
+    db.from("team_zone_priors").select("season, zone"),
+  ]);
+  const zones = new Set((playerPriors ?? []).map((p) => p.zone)).size;
+  const ready = (s: number, rows: { season: number }[] | null) =>
+    (rows ?? []).filter((r) => r.season === s).length >= zones;
+  const hasShots = (s: number) => (seasonRows ?? []).some((r) => r.season === s);
+  const available = SEASONS.filter(
+    (s) => hasShots(s) && ready(s, playerPriors) && ready(s, teamPriors),
+  );
+  const requested = Number(params.season);
+  const season = available.includes(requested) ? requested : (available[0] ?? SEASONS.at(-1)!);
+  const minAttempts = season === LIVE_SEASON ? MIN_LIVE_ATTEMPTS : MIN_SEASON_ATTEMPTS;
 
   const { data: teamRows, error: teamErr } = await db
     .from("teams")
@@ -90,8 +126,8 @@ export default async function ShotChartPage({
       db
         .from("player_season_totals")
         .select("player_id, player_name, team_id, attempts")
-        .eq("season", SEASON)
-        .gte("attempts", MIN_SEASON_ATTEMPTS)
+        .eq("season", season)
+        .gte("attempts", minAttempts)
         .order("player_name")
         .order("player_id")
         .range(from, to),
@@ -114,12 +150,12 @@ export default async function ShotChartPage({
             side === "defense" ? "team_defense_zone_stats" : "team_zone_stats",
           )
           .select("*")
-          .eq("season", SEASON)
+          .eq("season", season)
           .eq("team_id", selectedId)
       : await db
           .from("player_zone_stats")
           .select("*")
-          .eq("season", SEASON)
+          .eq("season", season)
           .eq("player_id", selectedId);
 
   if (statErr) return <Failure message={statErr.message} />;
@@ -136,12 +172,12 @@ export default async function ShotChartPage({
               : "team_season_totals",
           )
           .select(TOTALS_COLUMNS)
-          .eq("season", SEASON)
+          .eq("season", season)
           .eq("team_id", selectedId)
       : db
           .from("player_season_totals")
           .select(TOTALS_COLUMNS)
-          .eq("season", SEASON)
+          .eq("season", season)
           .eq("player_id", selectedId);
 
   const { data: totalsRow, error: totalsErr } = await totalsQuery.maybeSingle();
@@ -151,7 +187,7 @@ export default async function ShotChartPage({
   const { data: league, error: leagueErr } = await db
     .from("d1_season_totals")
     .select("attempts, makes, three_attempts, three_makes")
-    .eq("season", SEASON)
+    .eq("season", season)
     .maybeSingle<LeagueTotals>();
   if (leagueErr) return <Failure message={leagueErr.message} />;
   const totals: SeasonTotals = totalsRow ?? {
@@ -196,22 +232,50 @@ export default async function ShotChartPage({
         <h1>{heading}</h1>
         <p className="sub">
           {subheading ? `${subheading} · ` : ""}
-          {SEASON - 1}–{String(SEASON).slice(2)} ·{" "}
+          {seasonLabel(season)}
+          {season === LIVE_SEASON ? " so far" : ""} ·{" "}
           {attempts.toLocaleString()} field goal attempts ·{" "}
           {attempts ? ((100 * makes) / attempts).toFixed(1) : "0"}%
         </p>
-        <EntityPicker mode={mode} items={items} selectedName={heading} />
+        <nav className="season-toggle" aria-label="Season">
+          {SEASONS.map((s) => {
+            const label = `${seasonLabel(s)}${s === LIVE_SEASON ? " · live" : ""}`;
+            if (!available.includes(s)) {
+              return (
+                <span key={s} className="is-pending" aria-disabled="true">
+                  {label}
+                  <span className="season-note">
+                    {hasShots(s) ? LIVE_SEASON_NOTE_EARLY : `starts ${LIVE_SEASON_START}`}
+                  </span>
+                </span>
+              );
+            }
+            const subject = mode === "team" ? `team=${selectedId}` : `player=${selectedId}`;
+            return (
+              <Link
+                key={s}
+                href={`/shot-chart?${subject}&season=${s}`}
+                className={s === season ? "on" : ""}
+                aria-current={s === season ? "page" : undefined}
+                scroll={false}
+              >
+                {label}
+              </Link>
+            );
+          })}
+        </nav>
+        <EntityPicker mode={mode} items={items} selectedName={heading} season={season} />
         {mode === "team" && (
           <nav className="side-toggle">
             <Link
-              href={`/shot-chart?team=${selectedId}&side=offense`}
+              href={`/shot-chart?team=${selectedId}&side=offense&season=${season}`}
               className={side === "offense" ? "on" : ""}
               scroll={false}
             >
               Shots taken
             </Link>
             <Link
-              href={`/shot-chart?team=${selectedId}&side=defense`}
+              href={`/shot-chart?team=${selectedId}&side=defense&season=${season}`}
               className={side === "defense" ? "on" : ""}
               scroll={false}
             >
@@ -223,8 +287,8 @@ export default async function ShotChartPage({
 
       {stats.length === 0 ? (
         <p className="empty-state">
-          No tracked shots for this {mode} in {SEASON - 1}–
-          {String(SEASON).slice(2)}. Some games have no shot tracking at all,
+          No tracked shots for this {mode} in {seasonLabel(season)}
+          {season === LIVE_SEASON ? " yet" : ""}. Some games have no shot tracking at all,
           which is most common in low-major matchups.
         </p>
       ) : (

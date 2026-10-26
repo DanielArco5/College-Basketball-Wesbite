@@ -389,3 +389,48 @@ body:has(.wrap) {
   line-height: 1.5;
   color: var(--ink-dim);
 }
+
+/* --- Season switch ------------------------------------------- */
+
+.season-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 1.25rem;
+  font-family: var(--display);
+}
+
+.season-toggle a,
+.season-toggle .is-pending {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  padding: 0.25rem 0.8rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  color: var(--ink-dim);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.season-toggle a:hover { color: var(--ink); }
+
+.season-toggle a.on {
+  color: var(--ink);
+  border-color: var(--accent);
+}
+
+.season-toggle a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.season-toggle .is-pending {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.season-note {
+  font-size: 0.78rem;
+  color: var(--ink-dim);
+}

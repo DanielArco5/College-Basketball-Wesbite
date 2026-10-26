@@ -13,10 +13,13 @@ export default function EntityPicker({
   mode,
   items,
   selectedName,
+  season,
 }: {
   mode: "player" | "team";
   items: PickerItem[];
   selectedName: string;
+  /** Carried through every navigation so picking keeps the season. */
+  season: number;
 }) {
   const router = useRouter();
   const [query, setQuery] = useState("");
@@ -42,7 +45,7 @@ export default function EntityPicker({
     setOpen(false);
     setQuery("");
     inputRef.current?.blur();
-    router.push(`/shot-chart?${mode}=${item.id}`);
+    router.push(`/shot-chart?${mode}=${item.id}&season=${season}`);
   }
 
   function onKeyDown(e: React.KeyboardEvent) {
@@ -68,14 +71,14 @@ export default function EntityPicker({
         <button
           type="button"
           className={mode === "player" ? "on" : ""}
-          onClick={() => router.push("/shot-chart")}
+          onClick={() => router.push(`/shot-chart?season=${season}`)}
         >
           Players
         </button>
         <button
           type="button"
           className={mode === "team" ? "on" : ""}
-          onClick={() => router.push("/shot-chart?team=all")}
+          onClick={() => router.push(`/shot-chart?team=all&season=${season}`)}
         >
           Teams
         </button>
