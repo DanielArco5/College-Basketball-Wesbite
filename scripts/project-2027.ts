@@ -108,7 +108,8 @@ const TRANSFER_CREDIT = 0.5;
  * Share of the final score taken from KenPom, Torvik and ESPN's preseason
  * ranks (lib/external-ranks.ts). Their ranks are put on our scale by
  * position: the team they rank k-th gets the score our k-th best team
- * has. Ignored once the season has started, when real numbers take over.
+ * has. Fades out team by team as real 2026-27 numbers come in: a team
+ * whose real numbers count for half has half the outside weight left.
  */
 const EXTERNAL_WEIGHT = 0.6;
 /** Rounds of opponent adjustment. Converges well before this. */
@@ -552,8 +553,12 @@ async function main() {
     // Off both lists: no better than the team just below their depth.
     return rk === null ? Math.min(own[i], ladder[EXTERNAL_DEPTH]) : ladder[rk - 1];
   });
-  const externalWeight = live.byTeam.size ? 0 : EXTERNAL_WEIGHT;
-  const scores = own.map((o, i) => (1 - externalWeight) * o + externalWeight * externalScore[i]);
+  // Outside rankings are preseason opinions; they give way at the same
+  // rate the team's own real numbers arrive, so nothing jumps overnight.
+  const externalWeights = weightOf.map((w) => EXTERNAL_WEIGHT * (1 - w));
+  const scores = own.map(
+    (o, i) => (1 - externalWeights[i]) * o + externalWeights[i] * externalScore[i],
+  );
 
   const ownRank = rankDesc(own);
   const ordered = rows
@@ -572,7 +577,7 @@ async function main() {
     weights: WEIGHTS,
     identity: { threshold: IDENTITY_THRESHOLD, bonus: IDENTITY_BONUS },
     external: {
-      weight: externalWeight,
+      weight: EXTERNAL_WEIGHT,
       sources: EXTERNAL_SOURCES.map(({ name, url, asOf, note }) => ({ name, url, asOf, note })),
     },
     params: {

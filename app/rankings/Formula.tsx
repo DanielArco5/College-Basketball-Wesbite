@@ -88,11 +88,13 @@ export function FormulaRanking({ limit }: { limit?: number } = {}) {
               >
                 Exp
               </th>
-              <th scope="col" className="num" title="Rank in our formula alone">Ours</th>
-              <th scope="col" className="num" title="Rank in the combined KenPom, Torvik and ESPN preseason lists">
-                Cons.
+              <th
+                scope="col"
+                className="num"
+                title="Rank in our formula alone · rank in the combined KenPom, Torvik and ESPN lists"
+              >
+                Ours · Cons.
               </th>
-              <th scope="col" className="ratings-conf">Key additions</th>
             </tr>
           </thead>
           <tbody>
@@ -105,6 +107,11 @@ export function FormulaRanking({ limit }: { limit?: number } = {}) {
                     {r.conference}
                     {r.identity && <IdentityBadge label={r.identity} />}
                   </span>
+                  {r.transfers_in.length > 0 && (
+                    <span className="ratings-adds-line">
+                      Adds {r.transfers_in.map((t) => `${t.name} (${t.from})`).join(", ")}
+                    </span>
+                  )}
                 </td>
                 <td className="num">{signed(r.score, 2)}</td>
                 <td className="num"><Stat value={r.off_eff.toFixed(1)} rank={r.ranks.offense} /></td>
@@ -113,10 +120,8 @@ export function FormulaRanking({ limit }: { limit?: number } = {}) {
                 <td className="num"><Stat value={r.three_pct.toFixed(1)} rank={r.ranks.three} /></td>
                 <td className="num"><Stat value={r.def_eff.toFixed(1)} rank={r.ranks.defense} /></td>
                 <td className="num"><Stat value={`${Math.round(r.experience * 100)}%`} rank={r.ranks.continuity} /></td>
-                <td className="num ratings-src">{r.own_rank}</td>
-                <td className="num ratings-src">{r.external_rank ?? "–"}</td>
-                <td className="ratings-conf ratings-adds">
-                  {r.transfers_in.map((t) => `${t.name} (${t.from})`).join(", ")}
+                <td className="num ratings-src">
+                  {r.own_rank} · {r.external_rank ?? "–"}
                 </td>
               </tr>
             ))}
@@ -343,9 +348,9 @@ export function FormulaMethod() {
         </li>
         <li>
           <strong>Switch to real numbers as games are played.</strong> Once
-          the season starts the outside rankings drop out, and each
-          team&rsquo;s official 2026&ndash;27 totals from NCAA.com are put
-          through the same formula and blended with the projection: after {p.BLEND_GAMES} games they count half, and more
+          the season starts, each team&rsquo;s official 2026&ndash;27 totals
+          from NCAA.com are put through the same formula and blended with the
+          projection, and the outside rankings fade out at the same pace: after {p.BLEND_GAMES} games they count half, and more
           after that. NCAA.com doesn&rsquo;t publish schedules, so these
           in-season numbers are adjusted for the strength of a team&rsquo;s
           conference rather than its exact opponents.

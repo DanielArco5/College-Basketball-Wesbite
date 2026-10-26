@@ -1,6 +1,10 @@
 /* Home page. Palette and ticker styles live in site-chrome.css. */
 
 .home {
+  /* Auto side margins stop a flex item stretching; without an explicit
+     width the column shrink-wraps to its widest line (the tab row) and
+     overflows a phone. */
+  width: 100%;
   max-width: 62rem;
   margin: 0 auto;
   padding: 3.5rem 1rem 5rem;

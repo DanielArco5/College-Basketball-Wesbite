@@ -238,12 +238,6 @@
 
 /* ── Our formula ─────────────────────────────────────────────────── */
 
-.ratings-adds {
-  max-width: 22rem;
-  white-space: normal;
-  font-size: 0.85rem;
-  line-height: 1.4;
-}
 
 .rank-flag {
   margin-left: 0.2rem;
@@ -346,3 +340,58 @@
 
 .rank-honorable .rank-badge { font-family: "Barlow Condensed", system-ui, sans-serif; }
 .rank-badge.is-defense { background: rgba(94, 142, 214, 0.18); color: #8FB4EC; }
+
+/* ── Polish: room for every column, pinned team names on phones ──── */
+
+/* The Top 25 table has twelve columns; give the page room so desktop
+   readers never scroll sideways. Text blocks keep their reading width. */
+.rank { max-width: 72rem; }
+.rank-lede,
+.rank-method { max-width: 64ch; }
+
+/* Incoming transfers, under the team name rather than in their own
+   column, so the table fits a laptop without scrolling. */
+.ratings-adds-line {
+  display: block;
+  max-width: 17rem;
+  margin-top: 0.15rem;
+  white-space: normal;
+  font-size: 0.74rem;
+  line-height: 1.35;
+  color: var(--ink-faint);
+}
+
+/* On narrow screens the stats scroll under the rank and team, so you
+   always know whose numbers you're reading. */
+@media (max-width: 64rem) {
+  .ratings th:nth-child(1),
+  .ratings td:nth-child(1),
+  .ratings th:nth-child(2),
+  .ratings td:nth-child(2) {
+    position: sticky;
+    z-index: 1;
+    background: var(--page);
+  }
+  .ratings th:nth-child(1),
+  .ratings td:nth-child(1) { left: 0; min-width: 2.25rem; }
+  .ratings th:nth-child(2),
+  .ratings td:nth-child(2) {
+    left: 2.25rem;
+    box-shadow: 1px 0 0 #2E2620;
+  }
+  .ratings tbody tr:hover td:nth-child(1),
+  .ratings tbody tr:hover td:nth-child(2) { background: var(--panel); }
+}
+
+/* The body is a flex column, and a flex child grows to fit its widest
+   content unless told otherwise; without this the 10-column table
+   widens the whole page on a phone instead of scrolling in its box. */
+.rank,
+.home { min-width: 0; }
+
+/* Line the nav up with the wider ranking page. */
+body:has(.rank) .sitenav { max-width: 72rem; }
+
+@media (max-width: 36rem) {
+  .ratings-adds-line { display: none; }
+}

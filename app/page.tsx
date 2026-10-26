@@ -104,11 +104,10 @@ export default async function Home({
           </p>
         </div>
         <p className="home-actions">
-          <Link href="/?tab=top25" scroll={false} className="home-action is-primary">
+          {/* A full page, not a tab switch: a tab changes below the fold
+              without scrolling, which reads as a dead button. */}
+          <Link href="/rankings" className="home-action is-primary">
             See the Top 25
-          </Link>
-          <Link href="/?tab=shots" scroll={false} className="home-action">
-            Find a shot chart
           </Link>
         </p>
         {counts && (
