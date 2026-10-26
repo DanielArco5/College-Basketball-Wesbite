@@ -1,0 +1,228 @@
+@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600&family=Barlow:wght@400;500&display=swap");
+
+/* Site chrome: the ticker and nav that wrap every page.
+   Ticker styles moved here from home.css so they apply site-wide. */
+
+:root {
+  --page: #191512;
+  --panel: #241C16;
+  --rule: #6B5D4F;
+  --ink: #E8DFD4;
+  --ink-dim: #9C8C7C;
+  --ink-faint: #6B5D4F;
+  --accent-warm: #D04A32;
+}
+
+/* Every page is dark. globals.css paints the body white in light mode,
+   which shows as a white band around anything narrower than the window. */
+body {
+  background: var(--page);
+  color: var(--ink);
+}
+
+/* ── Ticker ──────────────────────────────────────────────────────── */
+
+.wire {
+  display: flex;
+  align-items: stretch;
+  background: var(--panel);
+  border-bottom: 1px solid #3A3028;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 0.95rem;
+  overflow: hidden;
+}
+
+.wire-flag {
+  flex: none;
+  display: flex;
+  align-items: center;
+  padding: 0.55rem 1rem;
+  background: #B7191C;
+  color: #FFF4F0;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.wire-window {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.wire-window::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 4rem;
+  pointer-events: none;
+  background: linear-gradient(to right, transparent, var(--panel));
+}
+
+.wire-track {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+  padding: 0.55rem 0;
+  white-space: nowrap;
+  width: max-content;
+  animation-name: wire-scroll;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.wire:hover .wire-track,
+.wire:focus-within .wire-track {
+  animation-play-state: paused;
+}
+
+@keyframes wire-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.wire.is-static .wire-track {
+  animation: none;
+  width: auto;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.wire.is-static .wire-window::after { display: none; }
+
+.wire-item { color: var(--ink); }
+
+.wire-item a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+.wire-item a:hover { border-bottom-color: var(--rule); }
+
+.wire-item a:focus-visible {
+  outline: 2px solid var(--accent-warm);
+  outline-offset: 3px;
+}
+
+.wire-kind {
+  margin-right: 0.5rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-dim);
+}
+
+.wire-kind.k-transfer   { color: #D9A441; }
+.wire-kind.k-commitment { color: #7FB069; }
+.wire-kind.k-injury     { color: #CF6968; }
+
+/* Hide/show. The button carries both labels and CSS picks one, keyed off
+   <html data-wire>, which layout.tsx sets before first paint. */
+.wire-toggle {
+  flex: none;
+  padding: 0 1rem;
+  border: 0;
+  border-left: 1px solid #3A3028;
+  background: transparent;
+  color: var(--ink-dim);
+  font: inherit;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.wire-toggle:hover { color: var(--ink); }
+
+.wire-toggle:focus-visible {
+  outline: 2px solid var(--accent-warm);
+  outline-offset: -2px;
+}
+
+.wire-toggle-on { display: none; }
+
+html[data-wire="off"] .wire-flag,
+html[data-wire="off"] .wire-window,
+html[data-wire="off"] .wire-toggle-off { display: none; }
+
+html[data-wire="off"] .wire-toggle-on { display: inline; }
+
+html[data-wire="off"] .wire { justify-content: flex-end; }
+
+html[data-wire="off"] .wire-toggle {
+  padding: 0.3rem 1rem;
+  border-left: 0;
+}
+
+/* ── Nav ─────────────────────────────────────────────────────────── */
+
+.sitenav {
+  display: flex;
+  align-items: baseline;
+  gap: 2rem;
+  max-width: 62rem;
+  margin: 0 auto;
+  padding: 1.1rem 1rem 0;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+}
+
+.sitenav-mark {
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.sitenav ul {
+  display: flex;
+  gap: 1.75rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sitenav-link {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  color: var(--ink-dim);
+  text-decoration: none;
+  padding-bottom: 0.35rem;
+  border-bottom: 2px solid transparent;
+  transition: color 120ms ease;
+}
+
+.sitenav-link:hover { color: var(--ink); }
+
+.sitenav-link.is-active {
+  color: var(--ink);
+  border-bottom-color: var(--accent-warm);
+}
+
+.sitenav-link.is-pending {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.sitenav-link:focus-visible {
+  outline: 2px solid var(--accent-warm);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* The season sits under its section rather than beside it, so the label
+   reads as part of the item and not as a separate nav entry. */
+.sitenav-season {
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+}
+
+@media (max-width: 36rem) {
+  .sitenav {
+    gap: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .sitenav ul { gap: 1.1rem; }
+}
