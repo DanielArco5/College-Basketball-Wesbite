@@ -1,0 +1,349 @@
+/* Home page. Palette, fonts and the ticker live in site-chrome.css;
+   the ratings table comes from rankings/rankings.css.
+   Barlow Condensed for anything numeric or structural, Barlow for reading. */
+
+/* ── Page ────────────────────────────────────────────────────────── */
+
+.home {
+  width: 100%;
+  max-width: 62rem;
+  margin: 0 auto;
+  padding: 3rem 1rem 5rem;
+  color: var(--ink);
+  font-family: Barlow, system-ui, sans-serif;
+}
+
+.home-head h1 {
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: clamp(3rem, 11vw, 6.5rem);
+  font-weight: 600;
+  line-height: 0.92;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+
+.home-lede {
+  max-width: 38ch;
+  margin: 1.75rem 0 0;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--ink-dim);
+}
+
+.home-nav {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: 1px;
+  margin: 4rem 0 0;
+  background: #3A3028;
+  border: 1px solid #3A3028;
+}
+
+.home-card {
+  display: block;
+  padding: 1.75rem 1.5rem 1.5rem;
+  background: var(--page);
+  color: inherit;
+  text-decoration: none;
+  transition: background 140ms ease;
+}
+
+a.home-card:hover { background: var(--panel); }
+
+a.home-card:focus-visible {
+  outline: 2px solid var(--accent-warm);
+  outline-offset: -2px;
+}
+
+.home-card-season {
+  display: block;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  color: var(--accent-warm);
+}
+
+.home-card h2 {
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 1.9rem;
+  font-weight: 600;
+  margin: 0.2rem 0 0.6rem;
+}
+
+.home-card p {
+  margin: 0;
+  max-width: 34ch;
+  line-height: 1.55;
+  color: var(--ink-dim);
+}
+
+.home-card-stat {
+  display: block;
+  margin-top: 1.1rem;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 0.9rem;
+  color: var(--ink-faint);
+}
+
+.home-card.is-pending {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.home-method {
+  margin: 4.5rem 0 0;
+  padding-top: 2rem;
+  border-top: 1px solid #3A3028;
+}
+
+.home-method h2 {
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 0 0 1rem;
+}
+
+.home-method p {
+  max-width: 64ch;
+  line-height: 1.7;
+  color: var(--ink-dim);
+  margin: 0 0 1rem;
+}
+
+.home-foot {
+  margin-top: 3.5rem;
+  font-size: 0.88rem;
+  color: var(--ink-faint);
+}
+
+.home-foot p { max-width: 54ch; margin: 0; }
+
+/* ── Tabs ────────────────────────────────────────────────────────── */
+
+.home-tabs {
+  display: flex;
+  gap: 1.75rem;
+  margin: 2.75rem 0 0;
+  border-bottom: 1px solid #3A3028;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 1.2rem;
+  /* On a phone the row scrolls sideways instead of wrapping. */
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.home-tabs a {
+  flex: none;
+  padding: 0 0 0.55rem;
+  margin-bottom: -1px;
+  color: var(--ink-dim);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+}
+
+.home-tabs a:hover { color: var(--ink); }
+
+.home-tabs a.is-active {
+  color: var(--ink);
+  border-bottom-color: var(--accent-warm);
+}
+
+.home-tabs a:focus-visible {
+  outline: 2px solid var(--accent-warm);
+  outline-offset: -2px;
+}
+
+.home-panel { margin-top: 2rem; }
+
+.home-panel > .home-method {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.home-method h2 + p { margin-top: 0; }
+
+.home-method h2:not(:first-child) { margin-top: 2.5rem; }
+
+.home-empty,
+.home-intro {
+  color: var(--ink-dim);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.home-intro a,
+.home-more {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--rule);
+}
+
+.home-more {
+  display: inline-block;
+  margin-top: 1rem;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 1rem;
+}
+
+.home-more:hover,
+.home-intro a:hover { border-bottom-color: var(--ink); }
+
+/* ── Overview ────────────────────────────────────────────────────── */
+
+.home-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 1px;
+  margin: 0;
+  background: #3A3028;
+  border: 1px solid #3A3028;
+}
+
+.home-stats div {
+  padding: 1rem 1.25rem;
+  background: var(--page);
+}
+
+.home-stats dt {
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+}
+
+.home-stats dd {
+  margin: 0.15rem 0 0;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 1.9rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: 2.5rem;
+  margin-top: 2.5rem;
+}
+
+.home-block h2 {
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+}
+
+.home-block-season {
+  margin-left: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--ink-faint);
+}
+
+.home-top,
+.home-wire {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.home-top li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.45rem 0;
+  border-top: 1px solid #2E2620;
+}
+
+.home-top-rk {
+  width: 1.5rem;
+  text-align: right;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  color: var(--ink-faint);
+}
+
+.home-top a,
+.home-wire a {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+.home-top a:hover,
+.home-wire a:hover { border-bottom-color: var(--rule); }
+
+.home-top a:focus-visible,
+.home-wire a:focus-visible {
+  outline: 2px solid var(--accent-warm);
+  outline-offset: 2px;
+}
+
+.home-top-net {
+  margin-left: auto;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-dim);
+}
+
+.home-wire li {
+  padding: 0.55rem 0;
+  border-top: 1px solid #2E2620;
+  line-height: 1.45;
+}
+
+.home-wire .wire-kind {
+  display: block;
+  margin: 0 0 0.1rem;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  text-transform: capitalize;
+}
+
+/* ── Team directory ──────────────────────────────────────────────── */
+
+.home-confs {
+  columns: 15rem;
+  column-gap: 2.5rem;
+  margin-top: 1.5rem;
+}
+
+.home-conf {
+  break-inside: avoid;
+  margin-bottom: 1.75rem;
+}
+
+.home-conf h3 {
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--accent-warm);
+  margin: 0 0 0.4rem;
+}
+
+.home-conf ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.home-conf li { padding: 0.15rem 0; }
+
+.home-conf a {
+  color: var(--ink-dim);
+  text-decoration: none;
+}
+
+.home-conf a:hover { color: var(--ink); }
+
+.home-conf a:focus-visible {
+  outline: 2px solid var(--accent-warm);
+  outline-offset: 2px;
+}
+
+@media (max-width: 36rem) {
+  .home { padding-top: 2rem; }
+  .home-tabs { gap: 1.25rem; margin-top: 2rem; }
+  .home-nav { margin-top: 2.5rem; }
+}
