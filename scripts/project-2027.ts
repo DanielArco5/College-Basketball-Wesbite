@@ -6,7 +6,7 @@
  *
  * What it weighs, and how heavily (see WEIGHTS): net efficiency at the
  * core, then competition, offensive efficiency, offensive rebounding,
- * turnover margin, three-point shooting and defense. On top of that, an
+ * roster continuity, turnover margin, three-point shooting and defense. On top of that, an
  * identity bonus lifts teams that are elite at one thing: scoring, or
  * winning the margins on the glass and in turnovers.
  *
@@ -53,13 +53,14 @@ const CACHE = "scripts/.cache";
  * shooting. The identity bonus below is added on top.
  */
 const WEIGHTS = {
-  net: 0.4,
-  competition: 0.22,
-  offense: 0.08,
-  oreb: 0.08,
-  turnovers: 0.08,
-  three: 0.07,
-  defense: 0.07,
+  net: 0.28,
+  competition: 0.24,
+  offense: 0.15,
+  oreb: 0.13,
+  continuity: 0.1,
+  turnovers: 0.04,
+  three: 0.03,
+  defense: 0.03,
 } as const;
 
 /**
@@ -451,6 +452,8 @@ async function main() {
     three: rows.map((r) => r.proj.three),
     defense: rows.map((r) => -r.proj.defense),
     competition: rows.map((r) => r.proj.competition),
+    // Share of last season's minutes back with the same team.
+    continuity: rows.map((r) => r.returning),
   };
   const keys = Object.keys(WEIGHTS) as WeightKey[];
   const z = Object.fromEntries(keys.map((k) => [k, zscores(parts[k])])) as Record<WeightKey, number[]>;
@@ -463,7 +466,7 @@ async function main() {
   });
   if (live.byTeam.size) {
     for (const k of keys) {
-      if (k === "competition") continue; // same input either way
+      if (k === "competition" || k === "continuity") continue; // same input either way
       rows.forEach((r, i) => {
         const az = live.z[k].get(r.team_id);
         if (az !== undefined) z[k][i] = weightOf[i] * az + (1 - weightOf[i]) * z[k][i];
@@ -487,6 +490,7 @@ async function main() {
     three: shown.map((x) => x.three),
     defense: shown.map((x) => -x.defense),
     competition: parts.competition,
+    continuity: parts.continuity,
   };
   const ranks = Object.fromEntries(keys.map((k) => [k, rankDesc(shownParts[k])])) as Record<WeightKey, number[]>;
   // Identity: margins is its own z-score of the two hustle stats combined,
