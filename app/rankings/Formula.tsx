@@ -12,6 +12,7 @@ type FormulaRow = (typeof formula.rows)[number];
 type InSeason = { source: string; fetched: string; max_games: number; blend_games: number };
 
 const RANKED = formula.params.RANKED;
+const X = formula.external;
 const W = formula.weights;
 
 function pctOf(w: number) {
@@ -87,6 +88,10 @@ export function FormulaRanking({ limit }: { limit?: number } = {}) {
               >
                 Exp
               </th>
+              <th scope="col" className="num" title="Rank in our formula alone">Ours</th>
+              <th scope="col" className="num" title="Rank in the combined KenPom, Torvik and ESPN preseason lists">
+                Cons.
+              </th>
               <th scope="col" className="ratings-conf">Key additions</th>
             </tr>
           </thead>
@@ -108,6 +113,8 @@ export function FormulaRanking({ limit }: { limit?: number } = {}) {
                 <td className="num"><Stat value={r.three_pct.toFixed(1)} rank={r.ranks.three} /></td>
                 <td className="num"><Stat value={r.def_eff.toFixed(1)} rank={r.ranks.defense} /></td>
                 <td className="num"><Stat value={`${Math.round(r.experience * 100)}%`} rank={r.ranks.continuity} /></td>
+                <td className="num ratings-src">{r.own_rank}</td>
+                <td className="num ratings-src">{r.external_rank ?? "–"}</td>
                 <td className="ratings-conf ratings-adds">
                   {r.transfers_in.map((t) => `${t.name} (${t.from})`).join(", ")}
                 </td>
@@ -180,8 +187,24 @@ export function FormulaMethod() {
     <section className="rank-method">
       <h2>How our formula works</h2>
       <p>
-        No one else&rsquo;s rankings go into this, but it&rsquo;s built the
-        same way the major ones are.{" "}
+        Two halves. {pctOf(1 - X.weight)} is <strong>our own formula</strong>,
+        described below. {pctOf(X.weight)} is the{" "}
+        <strong>consensus of the established preseason rankings</strong>:{" "}
+        {X.sources.map((s, i) => (
+          <span key={s.name}>
+            {i > 0 && (i === X.sources.length - 1 ? " and " : ", ")}
+            <a href={s.url} target="_blank" rel="noopener noreferrer">
+              {s.name}
+            </a>
+          </span>
+        ))}
+        . A team ranked k-th by the consensus gets the score our k-th best team
+        has, so both halves sit on one scale. The table shows where each team
+        ranks in each half.
+      </p>
+      <p>
+        Our formula uses only box-score data, and it&rsquo;s built the same
+        way the major ones are.{" "}
         {pctOf(W.net + W.competition + W.winning)} of the score is a{" "}
         <strong>power rating</strong>: how many more points a team scores
         than it allows per possession, the strength of the competition it
@@ -320,9 +343,9 @@ export function FormulaMethod() {
         </li>
         <li>
           <strong>Switch to real numbers as games are played.</strong> Once
-          the season starts, each team&rsquo;s official 2026&ndash;27 totals
-          from NCAA.com are put through the same formula and blended with the
-          projection: after {p.BLEND_GAMES} games they count half, and more
+          the season starts the outside rankings drop out, and each
+          team&rsquo;s official 2026&ndash;27 totals from NCAA.com are put
+          through the same formula and blended with the projection: after {p.BLEND_GAMES} games they count half, and more
           after that. NCAA.com doesn&rsquo;t publish schedules, so these
           in-season numbers are adjusted for the strength of a team&rsquo;s
           conference rather than its exact opponents.

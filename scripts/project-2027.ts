@@ -43,6 +43,7 @@
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
+import { EXTERNAL_DEPTH, EXTERNAL_SOURCES } from "../lib/external-ranks";
 
 const SEASON_FROM = 2026;
 const SEASON_TO = 2027;
@@ -103,6 +104,13 @@ const CONTINUITY_RETURN = 0.3;
 const PRIOR_WEIGHT = 0.5;
 /** Credit, relative to a returner, for minutes a transfer played elsewhere in D1. */
 const TRANSFER_CREDIT = 0.5;
+/**
+ * Share of the final score taken from KenPom, Torvik and ESPN's preseason
+ * ranks (lib/external-ranks.ts). Their ranks are put on our scale by
+ * position: the team they rank k-th gets the score our k-th best team
+ * has. Ignored once the season has started, when real numbers take over.
+ */
+const EXTERNAL_WEIGHT = 0.6;
 /** Rounds of opponent adjustment. Converges well before this. */
 const ADJUST_ROUNDS = 12;
 const RANKED = 25;
@@ -532,10 +540,22 @@ async function main() {
     if (past <= 0) return { bonus: 0, label: null as string | null };
     return { bonus: IDENTITY_BONUS * past, label };
   });
-  const scores = rows.map(
+  const own = rows.map(
     (_, i) => sum(keys.map((k) => WEIGHTS[k] * z[k][i])) + identity[i].bonus,
   );
 
+  // ── 7. Blend with KenPom, Torvik and ESPN ─────────────────────────
+  const external = externalRanks(rows.map((r) => r.school));
+  const ladder = [...own].sort((a, b) => b - a);
+  const externalScore = rows.map((_, i) => {
+    const rk = external[i];
+    // Off both lists: no better than the team just below their depth.
+    return rk === null ? Math.min(own[i], ladder[EXTERNAL_DEPTH]) : ladder[rk - 1];
+  });
+  const externalWeight = live.byTeam.size ? 0 : EXTERNAL_WEIGHT;
+  const scores = own.map((o, i) => (1 - externalWeight) * o + externalWeight * externalScore[i]);
+
+  const ownRank = rankDesc(own);
   const ordered = rows
     .map((r, i) => ({ r, i }))
     .sort((x, y) => scores[y.i] - scores[x.i])
@@ -551,6 +571,10 @@ async function main() {
       : null,
     weights: WEIGHTS,
     identity: { threshold: IDENTITY_THRESHOLD, bonus: IDENTITY_BONUS },
+    external: {
+      weight: externalWeight,
+      sources: EXTERNAL_SOURCES.map(({ name, url, asOf, note }) => ({ name, url, asOf, note })),
+    },
     params: {
       SHRINK_MINUTES, SHRINK_THREES, PROGRAM_CARRYOVER, PRIOR_WEIGHT, TRANSFER_CREDIT, CONTINUITY_BASE,
       CONTINUITY_RETURN, RANKED, HONORABLE, BLEND_GAMES,
@@ -573,6 +597,9 @@ async function main() {
       school: r.school,
       conference: r.conference,
       score: round(scores[i], 3),
+      own_score: round(own[i], 3),
+      own_rank: ownRank[i],
+      external_rank: external[i],
       games: live.byTeam.get(r.team_id)?.games ?? 0,
       actual_weight: round(weightOf[i], 2),
       off_eff: round(shown[i].offense, 1),
@@ -598,6 +625,27 @@ async function main() {
         `tom ${r.to_margin}, 3p ${r.three_pct}, def ${r.def_eff})`,
     );
   }
+}
+
+// ── KenPom / Torvik / ESPN ────────────────────────────────────────────
+
+/**
+ * Each team's place in the combined KenPom/Torvik/ESPN order (1 = best), or
+ * null if neither lists it. Combined by average rank; a team on only
+ * one list uses that rank.
+ */
+function externalRanks(schools: string[]) {
+  const avg = schools.map((school) => {
+    const r = EXTERNAL_SOURCES.map((s) => s.ranks[school]).filter((x) => x !== undefined);
+    return r.length ? mean(r) : null;
+  });
+  const order = avg
+    .map((a, i) => [a, i] as const)
+    .filter((x): x is readonly [number, number] => x[0] !== null)
+    .sort((a, b) => a[0] - b[0]);
+  const place = new Array<number | null>(schools.length).fill(null);
+  order.forEach(([, i], n) => (place[i] = n + 1));
+  return place;
 }
 
 // ── In-season (NCAA.com) ──────────────────────────────────────────────

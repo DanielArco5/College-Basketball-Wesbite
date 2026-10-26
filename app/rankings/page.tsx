@@ -5,8 +5,8 @@ import "./rankings.css";
 export const metadata = {
   title: "2026-27 Top 25",
   description:
-    "Our 2026-27 Top 25, weighted toward offensive efficiency, offensive " +
-    "rebounding, turnover margin and three-point shooting.",
+    "Our 2026-27 Top 25: a box-score formula blended with the KenPom, " +
+    "Torvik and ESPN preseason rankings.",
 };
 
 export default function RankingsPage() {
@@ -18,9 +18,9 @@ export default function RankingsPage() {
         </span>
         <h1>Top 25</h1>
         <p className="rank-lede">
-          Built from scratch for teams that play hard and score efficiently:
-          offensive rebounding, turnover margin, three-point shooting and
-          points per possession, all adjusted for competition.
+          Our box-score formula, built on efficiency, defense, rebounding and
+          competition, blended with the KenPom, Torvik and ESPN preseason
+          rankings.
         </p>
       </header>
 

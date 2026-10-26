@@ -10,9 +10,8 @@ import "./rankings/rankings.css";
 export const metadata = {
   title: { absolute: "CBB · College basketball, ranked on hustle and efficiency" },
   description:
-    "A 2026-27 Top 25 built from scratch on offensive rebounding, turnover " +
-    "margin, three-point shooting and points per possession, plus shot " +
-    "charts for every Division I team and player.",
+    "A 2026-27 Top 25 that blends our box-score formula with KenPom, " +
+    "Torvik and ESPN, plus shot charts for every Division I team and player.",
 };
 
 type Db = ReturnType<typeof createServerClient>;
@@ -73,11 +72,12 @@ export default async function Home({
         <div className="home-intro-copy">
           <p className="home-lede">
             CBB ranks college basketball on how games are actually won:
-            second chances off the offensive glass, turnovers forced and
-            avoided, threes that go in, and points squeezed out of every trip
-            down the floor. The Top 25 is built from scratch. No polls and no
-            borrowed rankings, just every Division I team&rsquo;s box scores
-            with each number adjusted for who they played.
+            efficient offense, real defense, second chances off the glass and
+            the turnover battle, every number adjusted for who a team played.
+            Our own box-score formula is weighed against the established
+            preseason rankings from KenPom, Torvik and ESPN, so the Top 25
+            agrees with the experts where the evidence is strong and breaks
+            from them where our numbers see something they don&rsquo;t.
           </p>
           <p>
             {formula.stage === "in-season" ? (
@@ -199,9 +199,8 @@ function Top25() {
         </Link>
       </h2>
       <p className="home-intro">
-        Our own formula, weighted toward offensive efficiency, offensive
-        rebounding, turnover margin and three-point shooting, all adjusted
-        for competition.{" "}
+        Our box-score formula blended with the KenPom, Torvik and ESPN
+        preseason rankings.{" "}
         <Link href="/?tab=method" scroll={false}>
           How it works
         </Link>{" "}
