@@ -10,12 +10,23 @@ export type WireEntry = {
   published_at: string;
 };
 
-const KIND_LABEL: Record<WireEntry["kind"], string> = {
-  transfer: "Transfer",
-  commitment: "Commit",
-  injury: "Injury",
-  note: "Note",
+/**
+ * Each kind reads like a stock symbol with a direction: a team gaining a
+ * player is up, losing one to injury is down, a note is flat.
+ */
+const TICKER: Record<WireEntry["kind"], { sym: string; arrow: string; tone: string; label: string }> = {
+  transfer: { sym: "XFER", arrow: "▲", tone: "up", label: "Transfer" },
+  commitment: { sym: "COMMIT", arrow: "▲", tone: "up", label: "Commitment" },
+  injury: { sym: "INJ", arrow: "▼", tone: "down", label: "Injury" },
+  note: { sym: "NOTE", arrow: "●", tone: "flat", label: "Note" },
 };
+
+/** "OCT 20". Fixed time zone so server and browser print the same date. */
+function stamp(iso: string) {
+  return new Date(iso)
+    .toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "America/New_York" })
+    .toUpperCase();
+}
 
 const STORAGE_KEY = "cbb.wire";
 const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
@@ -37,7 +48,8 @@ function subscribeWire(onChange: () => void) {
 }
 
 /**
- * Scrolling news ticker, fed by hand from live_wire_entries.
+ * Scrolling news ticker, fed by hand from live_wire_entries, styled like
+ * a market tape: symbol, direction arrow, headline, date.
  *
  * Two things a ticker has to get right or it becomes an irritant:
  *
@@ -89,7 +101,11 @@ export default function LiveWire({ entries }: { entries: WireEntry[] }) {
       className={`wire${reduced ? " is-static" : ""}${open ? "" : " is-closed"}`}
       aria-label="Latest college basketball news"
     >
-      <span className="wire-flag">Live Wire</span>
+      <span className="wire-flag">
+        <span className="wire-dot" aria-hidden="true" />
+        <span className="wire-flag-live">Live</span>
+        <span className="wire-flag-name">Wire</span>
+      </span>
 
       {open && (
         <div className="wire-window">
@@ -101,17 +117,25 @@ export default function LiveWire({ entries }: { entries: WireEntry[] }) {
           >
             {items.map((e, i) => {
               const dup = !reduced && i >= entries.length;
+              const t = TICKER[e.kind];
               const body = (
                 <>
-                  <span className={`wire-kind k-${e.kind}`}>
-                    {KIND_LABEL[e.kind]}
+                  <span className="wire-sym" aria-hidden="true">
+                    {t.sym}
                   </span>
-                  {e.headline}
+                  <span className="wire-chg" aria-hidden="true">
+                    {t.arrow}
+                  </span>
+                  <span className="sr-only">{t.label}: </span>
+                  <span className="wire-head">{e.headline}</span>
+                  <time className="wire-time" dateTime={e.published_at}>
+                    {stamp(e.published_at)}
+                  </time>
                 </>
               );
               return (
                 <span
-                  className="wire-item"
+                  className={`wire-item t-${t.tone}`}
                   key={`${e.id}-${i}`}
                   // The duplicated half is decorative; a screen reader
                   // should hear each headline once.
