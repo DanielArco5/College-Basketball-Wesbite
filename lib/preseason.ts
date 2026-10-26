@@ -1,10 +1,13 @@
 /**
- * 2026-27 preseason composite: four published rankings averaged.
+ * 2026-27 preseason composite: three published rankings averaged.
+ *
+ * EvanMiya was dropped: only its top 10 is public, too few ranks to
+ * weigh it equally against full lists.
  *
  * The ranks below are copied by hand from each source. None of them can be
  * pulled automatically: KenPom blocks scripts and is a subscription site,
- * Torvik's robots.txt disallows its JSON, and EvanMiya and ESPN build
- * their pages in the browser. Only ranks are stored, never a source's
+ * Torvik's robots.txt disallows its JSON, and ESPN builds its pages in
+ * the browser. Only ranks are stored, never a source's
  * underlying ratings, and every source is credited and linked on the page.
  *
  * TO UPDATE: edit a source's `ranks`, bump its `asOf`, and adjust
@@ -15,7 +18,7 @@
 export const PRESEASON_SEASON = 2027;
 
 export type Source = {
-  key: "kenpom" | "torvik" | "evanmiya" | "espn";
+  key: "kenpom" | "torvik" | "espn";
   name: string;
   url: string;
   asOf: string;
@@ -70,20 +73,6 @@ export const SOURCES: Source[] = [
     },
   },
   {
-    key: "evanmiya",
-    name: "EvanMiya",
-    url: "https://evanmiya.com/",
-    asOf: "2026-10-25",
-    kind: "Computer projection: Bayesian player ratings rolled up to team strength",
-    completeThrough: 10,
-    unknownSlots: [],
-    note: "Only the top 10 is public; the full list is behind a subscription.",
-    ranks: {
-      Florida: 1, Duke: 2, Illinois: 3, Arizona: 4, UConn: 5,
-      Kansas: 6, Gonzaga: 7, "St. John's": 8, Houston: 9, "Iowa State": 10,
-    },
-  },
-  {
     key: "espn",
     name: "ESPN",
     url: "https://www.espn.com/mens-college-basketball/story/_/id/50117086/mens-college-basketball-2026-27-preseason-top-25-rankings",
@@ -121,7 +110,7 @@ export type CompositeRow = {
 /**
  * A source's silence only counts against a team when its list is long
  * enough to mean something. Being outside a complete top 25 is real
- * information; being outside EvanMiya's public top 10 says nothing about
+ * information; being outside a short public list says nothing about
  * whether a team is 11th or 60th.
  */
 const MIN_LIST_FOR_NR = 25;

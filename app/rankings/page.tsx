@@ -9,7 +9,7 @@ import "./rankings.css";
 export const metadata = {
   title: "2026-27 rankings",
   description:
-    "A 2026-27 preseason composite of KenPom, Torvik, EvanMiya and ESPN, " +
+    "A 2026-27 preseason composite of KenPom, Torvik and ESPN, " +
     "plus last season's opponent-adjusted shooting ratings.",
 };
 
@@ -46,7 +46,7 @@ export default async function RankingsPage({
         <h1>{view === "preseason" ? "Top 25" : "Shooting ratings"}</h1>
         <p className="rank-lede">
           {view === "preseason"
-            ? "Four of the most-followed preseason rankings, KenPom, Torvik, EvanMiya and ESPN, averaged into one list. How it's built is explained below the table."
+            ? "Three of the most-followed preseason rankings, KenPom, Torvik and ESPN, averaged into one list. How it's built is explained below the table."
             : "Points per field goal attempt each team scored and allowed last season, adjusted for the quality of its opponents. Net is the gap between the two."}
         </p>
       </header>

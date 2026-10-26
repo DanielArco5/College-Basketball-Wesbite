@@ -10,7 +10,7 @@ export const metadata = {
   title: { absolute: "College basketball shot charts and the 2026-27 Top 25" },
   description:
     "Shot locations for every Division I team and player, and a 2026-27 " +
-    "preseason Top 25 built from KenPom, Torvik, EvanMiya and ESPN.",
+    "preseason Top 25 built from KenPom, Torvik and ESPN.",
 };
 
 type Db = ReturnType<typeof createServerClient>;
@@ -126,7 +126,7 @@ async function Overview({ db }: { db: Db }) {
             <span className="home-card-season">2026-27 preseason</span>
             <h3>Top 25</h3>
             <p>
-              KenPom, Torvik, EvanMiya and ESPN averaged into one ranking,
+              KenPom, Torvik and ESPN averaged into one ranking,
               with every source&rsquo;s own number shown beside it so you can
               see where they disagree.
             </p>
@@ -409,7 +409,7 @@ function Method() {
             </p>
             <p>
               They also describe 2025-26 and aren&rsquo;t used in the 2026-27
-              Top 25, which comes entirely from the four outside sources.
+              Top 25, which comes entirely from the three outside sources.
             </p>
           </article>
         </div>

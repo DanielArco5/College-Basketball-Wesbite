@@ -106,9 +106,8 @@ export function PreseasonMethod() {
           spot below the end of the list. ESPN&rsquo;s top 25 is complete, so
           a team left off counts as 26th (shown as NR). When a source&rsquo;s
           public list is short or has gaps, missing teams are left out of
-          that source entirely (shown as –) rather than guessed.
-          EvanMiya publishes only its top 10, and two of KenPom&rsquo;s top 25
-          spots couldn&rsquo;t be confirmed.
+          that source entirely (shown as –) rather than guessed. Two of
+          KenPom&rsquo;s top 25 spots couldn&rsquo;t be confirmed.
         </li>
         <li>
           <strong>Average.</strong> A team&rsquo;s composite score is the
@@ -118,10 +117,8 @@ export function PreseasonMethod() {
         </li>
       </ol>
       <p>
-        One side effect is worth knowing about. Because EvanMiya&rsquo;s list
-        stops at 10, teams in its top 10 get a fourth vote that other teams
-        don&rsquo;t. That helps them slightly when their EvanMiya rank is
-        better than their others.
+        EvanMiya is left out on purpose. Only its top 10 is public, which
+        is too few ranks to weigh it equally against full lists.
       </p>
 
       <h3>Sources</h3>
@@ -141,7 +138,7 @@ export function PreseasonMethod() {
         ))}
       </dl>
       <p className="rank-note">
-        All four are independent projects; the ranks belong to them and this
+        All three are independent projects; the ranks belong to them and this
         site just averages them. Rankings move as rosters change, so check
         each source for its latest list.
       </p>
