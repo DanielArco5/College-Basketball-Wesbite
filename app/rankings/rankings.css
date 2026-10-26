@@ -151,7 +151,7 @@
   .ratings td { padding-left: 0.5rem; padding-right: 0.5rem; }
 }
 
-/* ── 2026-27 composite ───────────────────────────────────────────── */
+/* ── View tabs and methodology ───────────────────────────────────── */
 
 .rank-subtabs {
   display: flex;
@@ -283,3 +283,39 @@
 }
 
 .rank-honorable a:hover { border-bottom-color: var(--rule); }
+
+.ratings-team-conf {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+}
+
+.rank-weights {
+  width: 100%;
+  margin: 1.5rem 0;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.rank-weights th {
+  padding: 0 0.5rem 0.5rem 0;
+  text-align: left;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-weight: 500;
+  color: var(--ink-faint);
+}
+
+.rank-weights td {
+  padding: 0.45rem 0.5rem 0.45rem 0;
+  border-top: 1px solid #2E2620;
+  vertical-align: top;
+}
+
+.rank-weights td:first-child { color: var(--ink); white-space: nowrap; }
+
+.rank-weights .num {
+  text-align: right;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 1.05rem;
+  color: var(--ink);
+}

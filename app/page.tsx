@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { createServerClient } from "@/lib/supabase-server";
-import { buildComposite } from "@/lib/preseason";
+import formula from "@/lib/formula-2027.json";
 import type { WireEntry } from "./LiveWire";
-import { PreseasonMethod, PreseasonTable, loadTeamIds } from "./rankings/Preseason";
 import { FormulaMethod, FormulaRanking } from "./rankings/Formula";
 import "./home.css";
 import "./rankings/rankings.css";
@@ -10,8 +9,8 @@ import "./rankings/rankings.css";
 export const metadata = {
   title: { absolute: "College basketball shot charts and the 2026-27 Top 25" },
   description:
-    "Shot locations for every Division I team and player, and a 2026-27 " +
-    "preseason Top 25 built from KenPom, Torvik and ESPN.",
+    "Shot locations for every Division I team and player, and our 2026-27 " +
+    "preseason Top 25, built on hustle and efficient offense.",
 };
 
 type Db = ReturnType<typeof createServerClient>;
@@ -31,7 +30,6 @@ type Counts = {
 const TABS = [
   { key: "overview", label: "Overview" },
   { key: "top25", label: "Top 25" },
-  { key: "formula", label: "Our Top 25" },
   { key: "shots", label: "Shot charts" },
   { key: "wire", label: "Live Wire" },
   { key: "method", label: "How it works" },
@@ -93,9 +91,8 @@ export default async function Home({
       </nav>
 
       <div className="home-panel">
-        {tab === "overview" && <Overview db={db} />}
-        {tab === "top25" && <Top25 db={db} />}
-        {tab === "formula" && <OurTop25 />}
+        {tab === "overview" && <Overview />}
+        {tab === "top25" && <Top25 />}
         {tab === "shots" && <ShotCharts db={db} />}
         {tab === "wire" && <Wire db={db} />}
         {tab === "method" && <Method />}
@@ -115,9 +112,8 @@ export default async function Home({
 
 // ── Overview ──────────────────────────────────────────────────────────
 
-async function Overview({ db }: { db: Db }) {
-  const teamIds = await loadTeamIds(db);
-  const top = buildComposite().slice(0, 10);
+function Overview() {
+  const top = formula.rows.slice(0, 10);
 
   return (
     <>
@@ -129,9 +125,9 @@ async function Overview({ db }: { db: Db }) {
             <span className="home-card-season">2026-27 preseason</span>
             <h3>Top 25</h3>
             <p>
-              KenPom, Torvik and ESPN averaged into one ranking,
-              with every source&rsquo;s own number shown beside it so you can
-              see where they disagree.
+              Our own formula, built for teams that crash the glass, win the
+              turnover battle and score efficiently, with every stat
+              adjusted for who they played.
             </p>
             <span className="home-card-go">Open the Top 25</span>
           </Link>
@@ -169,27 +165,19 @@ async function Overview({ db }: { db: Db }) {
           </Link>
         </h2>
         <ol className="home-top-list">
-          {top.map((t) => {
-            const id = teamIds.get(t.school);
-            return (
-              <li key={t.school}>
-                <span className="home-top-rk">{t.rk}</span>
-                <span className="home-top-team">
-                  {id ? (
-                    <Link href={`/shot-chart?team=${id}`}>{t.school}</Link>
-                  ) : (
-                    t.school
-                  )}
-                </span>
-                <span className="home-top-conf">
-                  {t.used} source{t.used === 1 ? "" : "s"}
-                </span>
-                <span className="home-top-net" title="Average rank across sources">
-                  {t.avg.toFixed(1)}
-                </span>
-              </li>
-            );
-          })}
+          {top.map((t) => (
+            <li key={t.team_id}>
+              <span className="home-top-rk">{t.rk}</span>
+              <span className="home-top-team">
+                <Link href={`/shot-chart?team=${t.team_id}`}>{t.school}</Link>
+              </span>
+              <span className="home-top-conf">{t.conference}</span>
+              <span className="home-top-net" title="Formula score; 0 is a typical D1 team">
+                {t.score > 0 ? "+" : ""}
+                {t.score.toFixed(2)}
+              </span>
+            </li>
+          ))}
         </ol>
       </section>
     </>
@@ -198,47 +186,23 @@ async function Overview({ db }: { db: Db }) {
 
 // ── Top 25 ────────────────────────────────────────────────────────────
 
-async function Top25({ db }: { db: Db }) {
-  const teamIds = await loadTeamIds(db);
-
+function Top25() {
   return (
     <section>
       <h2 className="home-h2">
         Top 25, 2026-27 preseason
         <Link href="/rankings" className="home-h2-link">
-          Full list
-        </Link>
-      </h2>
-      <p className="home-intro">
-        Each column is that source&rsquo;s own rank, and Avg is the composite.{" "}
-        <Link href="/?tab=method" scroll={false}>
-          How it works
-        </Link>{" "}
-        explains NR and the dashes.
-      </p>
-      <PreseasonTable rows={buildComposite().slice(0, 25)} teamIds={teamIds} />
-    </section>
-  );
-}
-
-// ── Our Top 25 ────────────────────────────────────────────────────────
-
-function OurTop25() {
-  return (
-    <section>
-      <h2 className="home-h2">
-        Our Top 25, 2026-27 preseason
-        <Link href="/rankings?view=formula" className="home-h2-link">
           Full page
         </Link>
       </h2>
       <p className="home-intro">
-        Our own formula, using no outside rankings: every returning player
-        and transfer valued by what they did last season.{" "}
+        Our own formula, weighted toward offensive efficiency, offensive
+        rebounding, turnover margin and three-point shooting, all adjusted
+        for competition.{" "}
         <Link href="/?tab=method" scroll={false}>
           How it works
         </Link>{" "}
-        has the details.
+        has the weights.
       </p>
       <FormulaRanking />
     </section>
@@ -396,8 +360,6 @@ function Method() {
         </div>
       </section>
 
-      <PreseasonMethod />
-
       <FormulaMethod />
 
       <section className="home-method">
@@ -438,7 +400,7 @@ function Method() {
             </p>
             <p>
               They also describe 2025-26 and aren&rsquo;t used in the 2026-27
-              Top 25, which comes entirely from the three outside sources.
+              Top 25, which is built from full box scores instead.
             </p>
           </article>
         </div>

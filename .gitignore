@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# CBBD payloads cached by scripts/project-2027.ts
+/scripts/.cache/

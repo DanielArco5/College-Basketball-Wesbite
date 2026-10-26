@@ -1,27 +1,23 @@
 import Link from "next/link";
 import { createServerClient } from "@/lib/supabase-server";
 import { loadRatings, sortRatings, RATINGS_SEASON, type RatingSort } from "@/lib/ratings";
-import { buildComposite } from "@/lib/preseason";
 import RatingsTable, { RatingsCaveat } from "./RatingsTable";
-import { PreseasonMethod, PreseasonTable, loadTeamIds } from "./Preseason";
 import { FormulaMethod, FormulaRanking } from "./Formula";
 import "./rankings.css";
 
 export const metadata = {
-  title: "2026-27 rankings",
+  title: "2026-27 Top 25",
   description:
-    "A 2026-27 preseason composite of KenPom, Torvik and ESPN, " +
-    "plus last season's opponent-adjusted shooting ratings.",
+    "Our 2026-27 preseason Top 25, weighted toward offensive efficiency, " +
+    "offensive rebounding, turnover margin and three-point shooting.",
 };
 
 /**
- * Three views: the 2026-27 composite of outside rankings (default), our
- * own 2026-27 formula, and our 2025-26 ratings, which describe last
- * season and can't rank this one.
+ * Two views: our 2026-27 formula (default), and our 2025-26 shooting
+ * ratings, which describe last season and can't rank this one.
  */
 const VIEWS = [
-  { key: "preseason", label: "2026-27 composite", href: "/rankings" },
-  { key: "formula", label: "Our formula", href: "/rankings?view=formula" },
+  { key: "formula", label: "2026-27 Top 25", href: "/rankings" },
   { key: "last", label: "2025-26 shooting ratings", href: "/rankings?view=last" },
 ] as const;
 
@@ -37,9 +33,7 @@ export default async function RankingsPage({
   searchParams: Promise<{ view?: string; sort?: string }>;
 }) {
   const params = await searchParams;
-  const view =
-    params.view === "last" || params.view === "formula" ? params.view : "preseason";
-  const db = createServerClient();
+  const view = params.view === "last" ? "last" : "formula";
 
   return (
     <main className="rank">
@@ -49,11 +43,9 @@ export default async function RankingsPage({
         </span>
         <h1>{view === "last" ? "Shooting ratings" : "Top 25"}</h1>
         <p className="rank-lede">
-          {view === "preseason"
-            ? "Three of the most-followed preseason rankings, KenPom, Torvik and ESPN, averaged into one list. How it's built is explained below the table."
-            : view === "formula"
-              ? "Our own projection, built from what every returning player and transfer did last season. No outside rankings go into it. Net is projected points per shot scored minus allowed."
-              : "Points per field goal attempt each team scored and allowed last season, adjusted for the quality of its opponents. Net is the gap between the two."}
+          {view === "last"
+            ? "Points per field goal attempt each team scored and allowed last season, adjusted for the quality of its opponents. Net is the gap between the two."
+            : "Our own projection, built for teams that play hard and score efficiently: offensive rebounding, turnover margin, three-point shooting and points per possession, all adjusted for competition."}
         </p>
       </header>
 
@@ -71,38 +63,22 @@ export default async function RankingsPage({
         ))}
       </nav>
 
-      {view === "preseason" && <Preseason db={db} />}
-      {view === "formula" && (
+      {view === "formula" ? (
         <>
           <FormulaRanking />
           <FormulaMethod />
         </>
+      ) : (
+        <LastSeason sort={params.sort} />
       )}
-      {view === "last" && <LastSeason db={db} sort={params.sort} />}
     </main>
   );
 }
 
-async function Preseason({ db }: { db: ReturnType<typeof createServerClient> }) {
-  const teamIds = await loadTeamIds(db);
-  return (
-    <>
-      <PreseasonTable rows={buildComposite()} teamIds={teamIds} />
-      <PreseasonMethod />
-    </>
-  );
-}
-
-async function LastSeason({
-  db,
-  sort: sortParam,
-}: {
-  db: ReturnType<typeof createServerClient>;
-  sort?: string;
-}) {
+async function LastSeason({ sort: sortParam }: { sort?: string }) {
   const sort: RatingSort =
     sortParam === "off" || sortParam === "def" ? sortParam : "net";
-  const { data, error } = await loadRatings(db);
+  const { data, error } = await loadRatings(createServerClient());
 
   return (
     <>

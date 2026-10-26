@@ -1,33 +1,194 @@
 {
   "season": 2027,
-  "generated_at": "2026-10-26T03:50:26.010Z",
-  "league_pps": 1.0379,
-  "sources": {
-    "rosters": "CollegeBasketballData /teams/roster, season 2027",
-    "additions": "https://www.espn.com/mens-college-basketball/story/_/id/50191393/ap-mens-preseason-top-25-poll-reaction-2026-27"
+  "generated_at": "2026-10-26T03:59:26.642Z",
+  "weights": {
+    "offense": 0.27,
+    "oreb": 0.18,
+    "turnovers": 0.18,
+    "three": 0.13,
+    "defense": 0.14,
+    "competition": 0.1
   },
   "params": {
-    "SHRINK_ATTEMPTS": 150,
+    "SHRINK_MINUTES": 300,
+    "SHRINK_THREES": 200,
     "PROGRAM_CARRYOVER": 0.5,
-    "DEF_BASE": 0.35,
-    "DEF_CONTINUITY": 0.45,
+    "CONTINUITY_BASE": 0.35,
+    "CONTINUITY_RETURN": 0.45,
     "RANKED": 25,
     "HONORABLE": 10
+  },
+  "sources": {
+    "stats": "CollegeBasketballData season box-score totals, 2025-26",
+    "rosters": "CollegeBasketballData /teams/roster, season 2027",
+    "additions": "https://www.espn.com/mens-college-basketball/story/_/id/50191393/ap-mens-preseason-top-25-poll-reaction-2026-27",
+    "checks": [
+      "https://theacc.com/stats.aspx?path=mbball&year=2025",
+      "https://www.bigeast.com/stats.aspx?path=mbball&year=2025"
+    ]
   },
   "teams_rated": 364,
   "rows": [
     {
       "rk": 1,
+      "team_id": 125,
+      "school": "Iowa State",
+      "conference": "Big 12",
+      "score": 1.831,
+      "off_eff": 117.4,
+      "oreb_pct": 36.5,
+      "to_margin": 7,
+      "three_pct": 34.2,
+      "def_eff": 99.7,
+      "conf_strength": 14.8,
+      "ranks": {
+        "offense": 28,
+        "oreb": 3,
+        "turnovers": 2,
+        "three": 146,
+        "defense": 6,
+        "competition": 38
+      },
+      "returning": 0.531,
+      "incomplete": false,
+      "transfers_in": [
+        {
+          "name": "Leon Bond III",
+          "from": "Northern Iowa"
+        },
+        {
+          "name": "Ryan Prather Jr.",
+          "from": "Robert Morris"
+        },
+        {
+          "name": "Jaquan Johnson",
+          "from": "Bradley"
+        }
+      ]
+    },
+    {
+      "rk": 2,
+      "team_id": 185,
+      "school": "NC State",
+      "conference": "ACC",
+      "score": 1.539,
+      "off_eff": 120.9,
+      "oreb_pct": 32,
+      "to_margin": 5.5,
+      "three_pct": 38.5,
+      "def_eff": 109.6,
+      "conf_strength": 11.8,
+      "ranks": {
+        "offense": 4,
+        "oreb": 109,
+        "turnovers": 5,
+        "three": 5,
+        "defense": 195,
+        "competition": 63
+      },
+      "returning": 0.631,
+      "incomplete": true,
+      "transfers_in": []
+    },
+    {
+      "rk": 3,
+      "team_id": 329,
+      "school": "Utah State",
+      "conference": "Mountain West",
+      "score": 1.536,
+      "off_eff": 119,
+      "oreb_pct": 36.4,
+      "to_margin": 3.9,
+      "three_pct": 36.2,
+      "def_eff": 104.8,
+      "conf_strength": 5.5,
+      "ranks": {
+        "offense": 11,
+        "oreb": 4,
+        "turnovers": 13,
+        "three": 42,
+        "defense": 40,
+        "competition": 116
+      },
+      "returning": 0.457,
+      "incomplete": true,
+      "transfers_in": []
+    },
+    {
+      "rk": 4,
+      "team_id": 236,
+      "school": "Purdue",
+      "conference": "Big Ten",
+      "score": 1.481,
+      "off_eff": 121.4,
+      "oreb_pct": 32.5,
+      "to_margin": 3.4,
+      "three_pct": 37.2,
+      "def_eff": 105.7,
+      "conf_strength": 13.8,
+      "ranks": {
+        "offense": 3,
+        "oreb": 81,
+        "turnovers": 20,
+        "three": 15,
+        "defense": 63,
+        "competition": 48
+      },
+      "returning": 0.423,
+      "incomplete": true,
+      "transfers_in": []
+    },
+    {
+      "rk": 5,
+      "team_id": 313,
+      "school": "UCLA",
+      "conference": "Big Ten",
+      "score": 1.428,
+      "off_eff": 118.5,
+      "oreb_pct": 31.4,
+      "to_margin": 5.2,
+      "three_pct": 37,
+      "def_eff": 105.1,
+      "conf_strength": 14.4,
+      "ranks": {
+        "offense": 13,
+        "oreb": 134,
+        "turnovers": 6,
+        "three": 20,
+        "defense": 45,
+        "competition": 42
+      },
+      "returning": 0.871,
+      "incomplete": false,
+      "transfers_in": [
+        {
+          "name": "Jaylen Petty",
+          "from": "Texas Tech"
+        }
+      ]
+    },
+    {
+      "rk": 6,
       "team_id": 87,
       "school": "Florida",
       "conference": "SEC",
-      "off": 1.1317,
-      "def": 0.896,
-      "net": 0.2357,
-      "returning": 0.799,
-      "known": 0.966,
+      "score": 1.423,
+      "off_eff": 121.9,
+      "oreb_pct": 34.9,
+      "to_margin": 0.2,
+      "three_pct": 33.6,
+      "def_eff": 97.9,
+      "conf_strength": 14.9,
+      "ranks": {
+        "offense": 2,
+        "oreb": 12,
+        "turnovers": 167,
+        "three": 177,
+        "defense": 1,
+        "competition": 36
+      },
+      "returning": 0.788,
       "incomplete": false,
-      "last_net": 0.3116,
       "transfers_in": [
         {
           "name": "Denzel Aberdeen",
@@ -36,158 +197,145 @@
       ]
     },
     {
-      "rk": 2,
-      "team_id": 170,
-      "school": "Michigan",
-      "conference": "Big Ten",
-      "off": 1.1306,
-      "def": 0.9265,
-      "net": 0.2041,
-      "returning": 0.352,
-      "known": 0.755,
-      "incomplete": false,
-      "last_net": 0.4307,
-      "transfers_in": [
-        {
-          "name": "Kenny Noland",
-          "from": "Columbia"
-        },
-        {
-          "name": "Moustapha Thiam",
-          "from": "Cincinnati"
-        },
-        {
-          "name": "J.P. Estrella",
-          "from": "Tennessee"
-        }
-      ]
-    },
-    {
-      "rk": 3,
-      "team_id": 102,
-      "school": "Gonzaga",
-      "conference": "WCC",
-      "off": 1.131,
-      "def": 0.9363,
-      "net": 0.1947,
-      "returning": 0.456,
-      "known": 0.884,
-      "incomplete": false,
-      "last_net": 0.2989,
-      "transfers_in": [
-        {
-          "name": "Xaivian Lee",
-          "from": "Florida"
-        },
-        {
-          "name": "Chauncey Wiggins",
-          "from": "Florida State"
-        },
-        {
-          "name": "Massamba Diop",
-          "from": "Arizona State"
-        }
-      ]
-    },
-    {
-      "rk": 4,
-      "team_id": 118,
-      "school": "Illinois",
-      "conference": "Big Ten",
-      "off": 1.1342,
-      "def": 0.9403,
-      "net": 0.1939,
-      "returning": 0.573,
-      "known": 0.744,
-      "incomplete": false,
-      "last_net": 0.2855,
-      "transfers_in": [
-        {
-          "name": "Stefan Vaaks",
-          "from": "Providence"
-        }
-      ]
-    },
-    {
-      "rk": 5,
-      "team_id": 188,
-      "school": "Nebraska",
-      "conference": "Big Ten",
-      "off": 1.1447,
-      "def": 0.9536,
-      "net": 0.1911,
-      "returning": 0.44,
-      "known": 1,
-      "incomplete": false,
-      "last_net": 0.2572,
-      "transfers_in": [
-        {
-          "name": "Damon Wilkinson",
-          "from": "South Dakota State"
-        },
-        {
-          "name": "Trevan Leonhardt",
-          "from": "Utah Valley"
-        },
-        {
-          "name": "Sam Orme",
-          "from": "Belmont"
-        }
-      ]
-    },
-    {
-      "rk": 6,
-      "team_id": 252,
-      "school": "Saint Louis",
-      "conference": "A-10",
-      "off": 1.1281,
-      "def": 0.9402,
-      "net": 0.188,
-      "returning": 0.665,
-      "known": 0.665,
-      "incomplete": true,
-      "last_net": 0.2989,
-      "transfers_in": []
-    },
-    {
       "rk": 7,
-      "team_id": 72,
-      "school": "Duke",
-      "conference": "ACC",
-      "off": 1.1272,
-      "def": 0.9425,
-      "net": 0.1847,
-      "returning": 0.378,
-      "known": 0.783,
+      "team_id": 124,
+      "school": "Iowa",
+      "conference": "Big Ten",
+      "score": 1.373,
+      "off_eff": 117.1,
+      "oreb_pct": 33.7,
+      "to_margin": 4.6,
+      "three_pct": 36.3,
+      "def_eff": 106.3,
+      "conf_strength": 14.2,
+      "ranks": {
+        "offense": 32,
+        "oreb": 43,
+        "turnovers": 8,
+        "three": 38,
+        "defense": 86,
+        "competition": 45
+      },
+      "returning": 0.564,
       "incomplete": false,
-      "last_net": 0.3583,
       "transfers_in": [
         {
-          "name": "John Blackwell",
-          "from": "Wisconsin"
+          "name": "Ty'Reek Coleman",
+          "from": "Illinois State"
         },
         {
-          "name": "Jacob Theodosiou",
-          "from": "Loyola Maryland"
-        },
-        {
-          "name": "Drew Scharnowski",
-          "from": "Belmont"
+          "name": "Andrew McKeever",
+          "from": "Saint Mary's"
         }
       ]
     },
     {
       "rk": 8,
+      "team_id": 162,
+      "school": "McNeese",
+      "conference": "Southland",
+      "score": 1.334,
+      "off_eff": 116.5,
+      "oreb_pct": 33.9,
+      "to_margin": 10.2,
+      "three_pct": 31.3,
+      "def_eff": 105.9,
+      "conf_strength": -3.5,
+      "ranks": {
+        "offense": 37,
+        "oreb": 39,
+        "turnovers": 1,
+        "three": 315,
+        "defense": 71,
+        "competition": 258
+      },
+      "returning": 0.742,
+      "incomplete": true,
+      "transfers_in": []
+    },
+    {
+      "rk": 9,
+      "team_id": 18,
+      "school": "BYU",
+      "conference": "Big 12",
+      "score": 1.28,
+      "off_eff": 119.2,
+      "oreb_pct": 31.5,
+      "to_margin": 2.2,
+      "three_pct": 39.1,
+      "def_eff": 107.8,
+      "conf_strength": 15.4,
+      "ranks": {
+        "offense": 10,
+        "oreb": 128,
+        "turnovers": 60,
+        "three": 1,
+        "defense": 129,
+        "competition": 27
+      },
+      "returning": 0.267,
+      "incomplete": false,
+      "transfers_in": [
+        {
+          "name": "Collin Chandler",
+          "from": "Kentucky"
+        },
+        {
+          "name": "Jaxon Kohler",
+          "from": "Michigan State"
+        },
+        {
+          "name": "Jake Wahlin",
+          "from": "Clemson"
+        }
+      ]
+    },
+    {
+      "rk": 10,
+      "team_id": 312,
+      "school": "UCF",
+      "conference": "Big 12",
+      "score": 1.241,
+      "off_eff": 118,
+      "oreb_pct": 34.5,
+      "to_margin": 2.5,
+      "three_pct": 35.9,
+      "def_eff": 108,
+      "conf_strength": 16.1,
+      "ranks": {
+        "offense": 19,
+        "oreb": 22,
+        "turnovers": 44,
+        "three": 61,
+        "defense": 133,
+        "competition": 13
+      },
+      "returning": 0.702,
+      "incomplete": true,
+      "transfers_in": []
+    },
+    {
+      "rk": 11,
       "team_id": 11,
       "school": "Arizona",
       "conference": "Big 12",
-      "off": 1.1182,
-      "def": 0.9372,
-      "net": 0.181,
-      "returning": 0.236,
-      "known": 0.517,
+      "score": 1.234,
+      "off_eff": 118.3,
+      "oreb_pct": 33.6,
+      "to_margin": 1.1,
+      "three_pct": 34.9,
+      "def_eff": 100.6,
+      "conf_strength": 14.5,
+      "ranks": {
+        "offense": 15,
+        "oreb": 46,
+        "turnovers": 114,
+        "three": 103,
+        "defense": 11,
+        "competition": 41
+      },
+      "returning": 0.275,
       "incomplete": false,
-      "last_net": 0.3437,
       "transfers_in": [
         {
           "name": "RJ Godfrey",
@@ -204,17 +352,456 @@
       ]
     },
     {
-      "rk": 9,
+      "rk": 12,
+      "team_id": 20,
+      "school": "Baylor",
+      "conference": "Big 12",
+      "score": 1.214,
+      "off_eff": 120.6,
+      "oreb_pct": 29.4,
+      "to_margin": 3,
+      "three_pct": 38.3,
+      "def_eff": 108.3,
+      "conf_strength": 15.7,
+      "ranks": {
+        "offense": 5,
+        "oreb": 245,
+        "turnovers": 29,
+        "three": 7,
+        "defense": 139,
+        "competition": 19
+      },
+      "returning": 0.251,
+      "incomplete": false,
+      "transfers_in": [
+        {
+          "name": "Brett Decker Jr.",
+          "from": "Liberty"
+        },
+        {
+          "name": "Isaac Celiscar",
+          "from": "Yale"
+        },
+        {
+          "name": "Evan Chatman",
+          "from": "UAB"
+        }
+      ]
+    },
+    {
+      "rk": 13,
+      "team_id": 118,
+      "school": "Illinois",
+      "conference": "Big Ten",
+      "score": 1.207,
+      "off_eff": 122.6,
+      "oreb_pct": 34.4,
+      "to_margin": -0.3,
+      "three_pct": 34.5,
+      "def_eff": 105.4,
+      "conf_strength": 13.6,
+      "ranks": {
+        "offense": 1,
+        "oreb": 24,
+        "turnovers": 196,
+        "three": 125,
+        "defense": 52,
+        "competition": 49
+      },
+      "returning": 0.573,
+      "incomplete": false,
+      "transfers_in": [
+        {
+          "name": "Stefan Vaaks",
+          "from": "Providence"
+        }
+      ]
+    },
+    {
+      "rk": 14,
+      "team_id": 339,
+      "school": "Virginia",
+      "conference": "ACC",
+      "score": 1.201,
+      "off_eff": 117.4,
+      "oreb_pct": 34.6,
+      "to_margin": 0.7,
+      "three_pct": 36,
+      "def_eff": 102.4,
+      "conf_strength": 11.5,
+      "ranks": {
+        "offense": 29,
+        "oreb": 18,
+        "turnovers": 141,
+        "three": 54,
+        "defense": 20,
+        "competition": 66
+      },
+      "returning": 0.721,
+      "incomplete": false,
+      "transfers_in": [
+        {
+          "name": "Jurian Dixon",
+          "from": "UC Irvine"
+        }
+      ]
+    },
+    {
+      "rk": 15,
+      "team_id": 248,
+      "school": "SMU",
+      "conference": "ACC",
+      "score": 1.166,
+      "off_eff": 116.6,
+      "oreb_pct": 35.3,
+      "to_margin": 2.6,
+      "three_pct": 35.1,
+      "def_eff": 107.3,
+      "conf_strength": 11.9,
+      "ranks": {
+        "offense": 36,
+        "oreb": 10,
+        "turnovers": 41,
+        "three": 97,
+        "defense": 110,
+        "competition": 62
+      },
+      "returning": 0.387,
+      "incomplete": true,
+      "transfers_in": []
+    },
+    {
+      "rk": 16,
+      "team_id": 169,
+      "school": "Michigan State",
+      "conference": "Big Ten",
+      "score": 1.146,
+      "off_eff": 117.4,
+      "oreb_pct": 34.6,
+      "to_margin": -0.6,
+      "three_pct": 35.7,
+      "def_eff": 101,
+      "conf_strength": 14,
+      "ranks": {
+        "offense": 26,
+        "oreb": 19,
+        "turnovers": 229,
+        "three": 68,
+        "defense": 13,
+        "competition": 47
+      },
+      "returning": 0.604,
+      "incomplete": false,
+      "transfers_in": [
+        {
+          "name": "Anton Bonke",
+          "from": "Charlotte"
+        }
+      ]
+    },
+    {
+      "rk": 17,
+      "team_id": 261,
+      "school": "Santa Clara",
+      "conference": "WCC",
+      "score": 1.11,
+      "off_eff": 116,
+      "oreb_pct": 34.8,
+      "to_margin": 2.4,
+      "three_pct": 35.5,
+      "def_eff": 105.5,
+      "conf_strength": 5.5,
+      "ranks": {
+        "offense": 41,
+        "oreb": 14,
+        "turnovers": 47,
+        "three": 80,
+        "defense": 54,
+        "competition": 115
+      },
+      "returning": 0.65,
+      "incomplete": true,
+      "transfers_in": []
+    },
+    {
+      "rk": 18,
+      "team_id": 98,
+      "school": "Georgia",
+      "conference": "SEC",
+      "score": 1.095,
+      "off_eff": 117.2,
+      "oreb_pct": 33,
+      "to_margin": 1.9,
+      "three_pct": 35.8,
+      "def_eff": 106.5,
+      "conf_strength": 15.7,
+      "ranks": {
+        "offense": 30,
+        "oreb": 61,
+        "turnovers": 70,
+        "three": 64,
+        "defense": 92,
+        "competition": 20
+      },
+      "returning": 0.442,
+      "incomplete": false,
+      "transfers_in": [
+        {
+          "name": "Freddie Dilione V",
+          "from": "Penn State"
+        },
+        {
+          "name": "James Scott",
+          "from": "Ole Miss"
+        },
+        {
+          "name": "Brady Dunlap",
+          "from": "Saint Louis"
+        }
+      ]
+    },
+    {
+      "rk": 19,
+      "team_id": 355,
+      "school": "Wisconsin",
+      "conference": "Big Ten",
+      "score": 1.094,
+      "off_eff": 119.5,
+      "oreb_pct": 31.5,
+      "to_margin": 2.7,
+      "three_pct": 35.7,
+      "def_eff": 108.6,
+      "conf_strength": 14.3,
+      "ranks": {
+        "offense": 7,
+        "oreb": 131,
+        "turnovers": 38,
+        "three": 67,
+        "defense": 152,
+        "competition": 44
+      },
+      "returning": 0.581,
+      "incomplete": true,
+      "transfers_in": []
+    },
+    {
+      "rk": 20,
+      "team_id": 340,
+      "school": "Virginia Tech",
+      "conference": "ACC",
+      "score": 1.075,
+      "off_eff": 115.7,
+      "oreb_pct": 32.6,
+      "to_margin": 2.1,
+      "three_pct": 37.3,
+      "def_eff": 106.4,
+      "conf_strength": 12.2,
+      "ranks": {
+        "offense": 45,
+        "oreb": 79,
+        "turnovers": 61,
+        "three": 14,
+        "defense": 87,
+        "competition": 60
+      },
+      "returning": 0.749,
+      "incomplete": true,
+      "transfers_in": []
+    },
+    {
+      "rk": 21,
+      "team_id": 188,
+      "school": "Nebraska",
+      "conference": "Big Ten",
+      "score": 1.063,
+      "off_eff": 117.6,
+      "oreb_pct": 27.3,
+      "to_margin": 2.6,
+      "three_pct": 37.6,
+      "def_eff": 101,
+      "conf_strength": 14,
+      "ranks": {
+        "offense": 22,
+        "oreb": 314,
+        "turnovers": 40,
+        "three": 12,
+        "defense": 12,
+        "competition": 46
+      },
+      "returning": 0.398,
+      "incomplete": false,
+      "transfers_in": [
+        {
+          "name": "Trevan Leonhardt",
+          "from": "Utah Valley"
+        },
+        {
+          "name": "Boden Kapke",
+          "from": "Boston College"
+        },
+        {
+          "name": "Damon Wilkinson",
+          "from": "South Dakota State"
+        }
+      ]
+    },
+    {
+      "rk": 22,
+      "team_id": 113,
+      "school": "Houston",
+      "conference": "Big 12",
+      "score": 1.054,
+      "off_eff": 115.1,
+      "oreb_pct": 33.7,
+      "to_margin": 2.3,
+      "three_pct": 33.1,
+      "def_eff": 101.2,
+      "conf_strength": 14.8,
+      "ranks": {
+        "offense": 55,
+        "oreb": 42,
+        "turnovers": 52,
+        "three": 222,
+        "defense": 15,
+        "competition": 37
+      },
+      "returning": 0.234,
+      "incomplete": false,
+      "transfers_in": [
+        {
+          "name": "Delrecco Gillespie",
+          "from": "Kent State"
+        },
+        {
+          "name": "Corey Hadnot II",
+          "from": "Purdue Fort Wayne"
+        },
+        {
+          "name": "Chendall Weaver",
+          "from": "Texas"
+        }
+      ]
+    },
+    {
+      "rk": 23,
+      "team_id": 191,
+      "school": "New Mexico",
+      "conference": "Mountain West",
+      "score": 1.046,
+      "off_eff": 115.9,
+      "oreb_pct": 29.5,
+      "to_margin": 4,
+      "three_pct": 36.3,
+      "def_eff": 102.1,
+      "conf_strength": 6,
+      "ranks": {
+        "offense": 43,
+        "oreb": 241,
+        "turnovers": 12,
+        "three": 37,
+        "defense": 18,
+        "competition": 109
+      },
+      "returning": 0.877,
+      "incomplete": true,
+      "transfers_in": []
+    },
+    {
+      "rk": 24,
+      "team_id": 102,
+      "school": "Gonzaga",
+      "conference": "WCC",
+      "score": 1.031,
+      "off_eff": 118.1,
+      "oreb_pct": 29.8,
+      "to_margin": 2.6,
+      "three_pct": 34.9,
+      "def_eff": 99.5,
+      "conf_strength": 4.5,
+      "ranks": {
+        "offense": 16,
+        "oreb": 224,
+        "turnovers": 42,
+        "three": 106,
+        "defense": 5,
+        "competition": 127
+      },
+      "returning": 0.442,
+      "incomplete": false,
+      "transfers_in": [
+        {
+          "name": "Massamba Diop",
+          "from": "Arizona State"
+        },
+        {
+          "name": "Xaivian Lee",
+          "from": "Florida"
+        },
+        {
+          "name": "Chauncey Wiggins",
+          "from": "Florida State"
+        }
+      ]
+    },
+    {
+      "rk": 25,
+      "team_id": 338,
+      "school": "Villanova",
+      "conference": "Big East",
+      "score": 1.021,
+      "off_eff": 117.4,
+      "oreb_pct": 30.9,
+      "to_margin": 3,
+      "three_pct": 36.6,
+      "def_eff": 106.8,
+      "conf_strength": 8,
+      "ranks": {
+        "offense": 27,
+        "oreb": 158,
+        "turnovers": 28,
+        "three": 32,
+        "defense": 94,
+        "competition": 79
+      },
+      "returning": 0.268,
+      "incomplete": false,
+      "transfers_in": [
+        {
+          "name": "Darryl Simmons II",
+          "from": "St. Bonaventure"
+        },
+        {
+          "name": "Devin Royal",
+          "from": "Ohio State"
+        },
+        {
+          "name": "Kwame Evans Jr.",
+          "from": "Oregon"
+        }
+      ]
+    },
+    {
+      "rk": 26,
       "team_id": 5,
       "school": "Alabama",
       "conference": "SEC",
-      "off": 1.1394,
-      "def": 0.962,
-      "net": 0.1774,
-      "returning": 0.458,
-      "known": 0.645,
+      "score": 1.014,
+      "off_eff": 120.1,
+      "oreb_pct": 32.3,
+      "to_margin": -0.6,
+      "three_pct": 35.9,
+      "def_eff": 105.9,
+      "conf_strength": 15.3,
+      "ranks": {
+        "offense": 6,
+        "oreb": 91,
+        "turnovers": 219,
+        "three": 58,
+        "defense": 70,
+        "competition": 28
+      },
+      "returning": 0.487,
       "incomplete": false,
-      "last_net": 0.283,
       "transfers_in": [
         {
           "name": "Drew Fielder",
@@ -227,123 +814,169 @@
       ]
     },
     {
-      "rk": 10,
-      "team_id": 339,
-      "school": "Virginia",
-      "conference": "ACC",
-      "off": 1.0858,
-      "def": 0.9225,
-      "net": 0.1634,
-      "returning": 0.661,
-      "known": 0.874,
-      "incomplete": false,
-      "last_net": 0.2815,
-      "transfers_in": [
-        {
-          "name": "Jurian Dixon",
-          "from": "UC Irvine"
-        }
-      ]
-    },
-    {
-      "rk": 11,
-      "team_id": 169,
-      "school": "Michigan State",
-      "conference": "Big Ten",
-      "off": 1.1037,
-      "def": 0.9454,
-      "net": 0.1583,
-      "returning": 0.608,
-      "known": 0.729,
-      "incomplete": false,
-      "last_net": 0.2536,
-      "transfers_in": [
-        {
-          "name": "Anton Bonke",
-          "from": "Charlotte"
-        }
-      ]
-    },
-    {
-      "rk": 12,
-      "team_id": 150,
-      "school": "Louisville",
-      "conference": "ACC",
-      "off": 1.1365,
-      "def": 0.9885,
-      "net": 0.1481,
-      "returning": 0.109,
-      "known": 0.949,
-      "incomplete": false,
-      "last_net": 0.2829,
-      "transfers_in": [
-        {
-          "name": "De'Shayne Montgomery",
-          "from": "Dayton"
-        },
-        {
-          "name": "Flory Bidunga",
-          "from": "Kansas"
-        },
-        {
-          "name": "LJ Wells",
-          "from": "Northern Kentucky"
-        }
-      ]
-    },
-    {
-      "rk": 13,
-      "team_id": 131,
-      "school": "Kansas",
-      "conference": "Big 12",
-      "off": 1.0973,
-      "def": 0.9584,
-      "net": 0.1389,
-      "returning": 0.05,
-      "known": 0.678,
-      "incomplete": false,
-      "last_net": 0.2808,
-      "transfers_in": [
-        {
-          "name": "Leroy Blyden Jr.",
-          "from": "Toledo"
-        },
-        {
-          "name": "Dennis Parker Jr.",
-          "from": "Radford"
-        },
-        {
-          "name": "Keanu Dawes",
-          "from": "Utah"
-        }
-      ]
-    },
-    {
-      "rk": 14,
-      "team_id": 236,
-      "school": "Purdue",
-      "conference": "Big Ten",
-      "off": 1.1402,
-      "def": 1.0028,
-      "net": 0.1374,
-      "returning": 0.374,
-      "known": 0.374,
+      "rk": 27,
+      "team_id": 271,
+      "school": "South Florida",
+      "conference": "American",
+      "score": 1.002,
+      "off_eff": 115.1,
+      "oreb_pct": 34.7,
+      "to_margin": 3.5,
+      "three_pct": 34.1,
+      "def_eff": 105.5,
+      "conf_strength": 0.3,
+      "ranks": {
+        "offense": 57,
+        "oreb": 17,
+        "turnovers": 18,
+        "three": 155,
+        "defense": 55,
+        "competition": 177
+      },
+      "returning": 0.713,
       "incomplete": true,
-      "last_net": 0.2492,
       "transfers_in": []
     },
     {
-      "rk": 15,
+      "rk": 28,
+      "team_id": 287,
+      "school": "TCU",
+      "conference": "Big 12",
+      "score": 0.981,
+      "off_eff": 113.5,
+      "oreb_pct": 33.4,
+      "to_margin": 3.6,
+      "three_pct": 34,
+      "def_eff": 105.9,
+      "conf_strength": 15.9,
+      "ranks": {
+        "offense": 80,
+        "oreb": 49,
+        "turnovers": 17,
+        "three": 161,
+        "defense": 69,
+        "competition": 16
+      },
+      "returning": 0.743,
+      "incomplete": true,
+      "transfers_in": []
+    },
+    {
+      "rk": 29,
+      "team_id": 121,
+      "school": "Indiana",
+      "conference": "Big Ten",
+      "score": 0.966,
+      "off_eff": 114.8,
+      "oreb_pct": 36.9,
+      "to_margin": 0.8,
+      "three_pct": 33.6,
+      "def_eff": 107.3,
+      "conf_strength": 14.5,
+      "ranks": {
+        "offense": 62,
+        "oreb": 2,
+        "turnovers": 128,
+        "three": 183,
+        "defense": 112,
+        "competition": 40
+      },
+      "returning": 0.172,
+      "incomplete": false,
+      "transfers_in": [
+        {
+          "name": "Samet Yigitoglu",
+          "from": "SMU"
+        },
+        {
+          "name": "Bryce Lindsay",
+          "from": "Villanova"
+        },
+        {
+          "name": "Aiden Sherrell",
+          "from": "Alabama"
+        }
+      ]
+    },
+    {
+      "rk": 30,
+      "team_id": 12,
+      "school": "Arkansas",
+      "conference": "SEC",
+      "score": 0.964,
+      "off_eff": 119.4,
+      "oreb_pct": 31.8,
+      "to_margin": 2,
+      "three_pct": 33.5,
+      "def_eff": 107.3,
+      "conf_strength": 15.4,
+      "ranks": {
+        "offense": 8,
+        "oreb": 114,
+        "turnovers": 66,
+        "three": 188,
+        "defense": 109,
+        "competition": 26
+      },
+      "returning": 0.157,
+      "incomplete": false,
+      "transfers_in": [
+        {
+          "name": "Jeremiah Wilkinson",
+          "from": "Georgia"
+        },
+        {
+          "name": "Cooper Bowser",
+          "from": "Furman"
+        }
+      ]
+    },
+    {
+      "rk": 31,
+      "team_id": 257,
+      "school": "San Diego State",
+      "conference": "Mountain West",
+      "score": 0.957,
+      "off_eff": 113.6,
+      "oreb_pct": 32.3,
+      "to_margin": 2.3,
+      "three_pct": 35.1,
+      "def_eff": 100.5,
+      "conf_strength": 6.1,
+      "ranks": {
+        "offense": 78,
+        "oreb": 92,
+        "turnovers": 49,
+        "three": 95,
+        "defense": 9,
+        "competition": 105
+      },
+      "returning": 0.761,
+      "incomplete": true,
+      "transfers_in": []
+    },
+    {
+      "rk": 32,
       "team_id": 298,
       "school": "Texas Tech",
       "conference": "Big 12",
-      "off": 1.0918,
-      "def": 0.9574,
-      "net": 0.1344,
-      "returning": 0.623,
-      "known": 1,
+      "score": 0.956,
+      "off_eff": 116.3,
+      "oreb_pct": 32.2,
+      "to_margin": -0.6,
+      "three_pct": 36.9,
+      "def_eff": 103.5,
+      "conf_strength": 15.2,
+      "ranks": {
+        "offense": 39,
+        "oreb": 100,
+        "turnovers": 216,
+        "three": 22,
+        "defense": 25,
+        "competition": 32
+      },
+      "returning": 0.615,
       "incomplete": false,
-      "last_net": 0.2828,
       "transfers_in": [
         {
           "name": "Cruz Davis",
@@ -360,448 +993,113 @@
       ]
     },
     {
-      "rk": 16,
-      "team_id": 292,
-      "school": "Tennessee",
-      "conference": "SEC",
-      "off": 1.109,
-      "def": 0.9762,
-      "net": 0.1328,
-      "returning": 0.075,
-      "known": 1,
+      "rk": 33,
+      "team_id": 170,
+      "school": "Michigan",
+      "conference": "Big Ten",
+      "score": 0.932,
+      "off_eff": 117.6,
+      "oreb_pct": 30.3,
+      "to_margin": -1.2,
+      "three_pct": 36.8,
+      "def_eff": 100,
+      "conf_strength": 13.2,
+      "ranks": {
+        "offense": 21,
+        "oreb": 190,
+        "turnovers": 261,
+        "three": 25,
+        "defense": 7,
+        "competition": 50
+      },
+      "returning": 0.36,
       "incomplete": false,
-      "last_net": 0.2167,
       "transfers_in": [
         {
-          "name": "Juke Harris",
-          "from": "Wake Forest"
+          "name": "Kenny Noland",
+          "from": "Columbia"
         },
         {
-          "name": "Dai Dai Ames",
-          "from": "California"
+          "name": "Moustapha Thiam",
+          "from": "Cincinnati"
         },
         {
-          "name": "Terrence Hill Jr.",
-          "from": "VCU"
+          "name": "J.P. Estrella",
+          "from": "Tennessee"
         }
       ]
     },
     {
-      "rk": 17,
+      "rk": 34,
       "team_id": 314,
       "school": "UConn",
       "conference": "Big East",
-      "off": 1.084,
-      "def": 0.9517,
-      "net": 0.1324,
-      "returning": 0.32,
-      "known": 0.803,
+      "score": 0.931,
+      "off_eff": 114.9,
+      "oreb_pct": 33,
+      "to_margin": 1.2,
+      "three_pct": 36.1,
+      "def_eff": 104.2,
+      "conf_strength": 6.8,
+      "ranks": {
+        "offense": 61,
+        "oreb": 63,
+        "turnovers": 105,
+        "three": 48,
+        "defense": 32,
+        "competition": 92
+      },
+      "returning": 0.336,
       "incomplete": false,
-      "last_net": 0.2982,
       "transfers_in": [
         {
           "name": "Nils Machowski",
           "from": "Wofford"
         },
         {
-          "name": "Nikolas Khamenia",
+          "name": "Jaye Nash",
+          "from": "Jacksonville State"
+        },
+        {
+          "name": "Nik Khamenia",
           "from": "Duke"
-        },
-        {
-          "name": "Isaiah Shaw",
-          "from": "Northern Arizona"
-        }
-      ]
-    },
-    {
-      "rk": 18,
-      "team_id": 355,
-      "school": "Wisconsin",
-      "conference": "Big Ten",
-      "off": 1.1206,
-      "def": 0.9887,
-      "net": 0.1319,
-      "returning": 0.483,
-      "known": 0.483,
-      "incomplete": true,
-      "last_net": 0.2065,
-      "transfers_in": []
-    },
-    {
-      "rk": 19,
-      "team_id": 329,
-      "school": "Utah State",
-      "conference": "Mountain West",
-      "off": 1.125,
-      "def": 0.9931,
-      "net": 0.1319,
-      "returning": 0.451,
-      "known": 0.451,
-      "incomplete": true,
-      "last_net": 0.2163,
-      "transfers_in": []
-    },
-    {
-      "rk": 20,
-      "team_id": 135,
-      "school": "Kentucky",
-      "conference": "SEC",
-      "off": 1.115,
-      "def": 0.9844,
-      "net": 0.1306,
-      "returning": 0.156,
-      "known": 1,
-      "incomplete": false,
-      "last_net": 0.2235,
-      "transfers_in": [
-        {
-          "name": "Alex Wilkins",
-          "from": "Furman"
-        },
-        {
-          "name": "Milan Momcilovic",
-          "from": "Iowa State"
-        },
-        {
-          "name": "Zoom Diallo",
-          "from": "Washington"
-        }
-      ]
-    },
-    {
-      "rk": 21,
-      "team_id": 257,
-      "school": "San Diego State",
-      "conference": "Mountain West",
-      "off": 1.0848,
-      "def": 0.9586,
-      "net": 0.1261,
-      "returning": 0.743,
-      "known": 0.743,
-      "incomplete": true,
-      "last_net": 0.1783,
-      "transfers_in": []
-    },
-    {
-      "rk": 22,
-      "team_id": 18,
-      "school": "BYU",
-      "conference": "Big 12",
-      "off": 1.1251,
-      "def": 0.9993,
-      "net": 0.1257,
-      "returning": 0.273,
-      "known": 0.7,
-      "incomplete": false,
-      "last_net": 0.1908,
-      "transfers_in": [
-        {
-          "name": "Jaxon Kohler",
-          "from": "Michigan State"
-        },
-        {
-          "name": "Collin Chandler",
-          "from": "Kentucky"
-        },
-        {
-          "name": "Tyler Betsey",
-          "from": "Syracuse"
-        }
-      ]
-    },
-    {
-      "rk": 23,
-      "team_id": 347,
-      "school": "West Virginia",
-      "conference": "Big 12",
-      "off": 1.0793,
-      "def": 0.9548,
-      "net": 0.1246,
-      "returning": 0.828,
-      "known": 0.828,
-      "incomplete": true,
-      "last_net": 0.1438,
-      "transfers_in": []
-    },
-    {
-      "rk": 24,
-      "team_id": 113,
-      "school": "Houston",
-      "conference": "Big 12",
-      "off": 1.0818,
-      "def": 0.9572,
-      "net": 0.1246,
-      "returning": 0.211,
-      "known": 0.864,
-      "incomplete": false,
-      "last_net": 0.2406,
-      "transfers_in": [
-        {
-          "name": "Corey Hadnot II",
-          "from": "Purdue Fort Wayne"
-        },
-        {
-          "name": "Delrecco Gillespie",
-          "from": "Kent State"
-        },
-        {
-          "name": "Braden East",
-          "from": "Lamar"
-        }
-      ]
-    },
-    {
-      "rk": 25,
-      "team_id": 12,
-      "school": "Arkansas",
-      "conference": "SEC",
-      "off": 1.1275,
-      "def": 1.0029,
-      "net": 0.1246,
-      "returning": 0.143,
-      "known": 0.393,
-      "incomplete": false,
-      "last_net": 0.2362,
-      "transfers_in": [
-        {
-          "name": "Jeremiah Wilkinson",
-          "from": "Georgia"
-        },
-        {
-          "name": "Cooper Bowser",
-          "from": "Furman"
-        }
-      ]
-    },
-    {
-      "rk": 26,
-      "team_id": 168,
-      "school": "Miami",
-      "conference": "ACC",
-      "off": 1.1348,
-      "def": 1.0118,
-      "net": 0.123,
-      "returning": 0.464,
-      "known": 1,
-      "incomplete": false,
-      "last_net": 0.1576,
-      "transfers_in": [
-        {
-          "name": "Acaden Lewis",
-          "from": "Villanova"
-        },
-        {
-          "name": "Brent Bland",
-          "from": "Saint Peter's"
-        },
-        {
-          "name": "DeSean Goode",
-          "from": "Robert Morris"
-        }
-      ]
-    },
-    {
-      "rk": 27,
-      "team_id": 98,
-      "school": "Georgia",
-      "conference": "SEC",
-      "off": 1.1195,
-      "def": 0.9973,
-      "net": 0.1222,
-      "returning": 0.481,
-      "known": 0.799,
-      "incomplete": false,
-      "last_net": 0.1717,
-      "transfers_in": [
-        {
-          "name": "Freddie Dilione V",
-          "from": "Penn State"
-        },
-        {
-          "name": "Brady Dunlap",
-          "from": "Saint Louis"
-        },
-        {
-          "name": "James Scott",
-          "from": "Ole Miss"
-        }
-      ]
-    },
-    {
-      "rk": 28,
-      "team_id": 253,
-      "school": "Saint Mary's",
-      "conference": "WCC",
-      "off": 1.0891,
-      "def": 0.967,
-      "net": 0.1221,
-      "returning": 0.243,
-      "known": 0.243,
-      "incomplete": true,
-      "last_net": 0.2299,
-      "transfers_in": []
-    },
-    {
-      "rk": 29,
-      "team_id": 313,
-      "school": "UCLA",
-      "conference": "Big Ten",
-      "off": 1.0941,
-      "def": 0.9731,
-      "net": 0.1209,
-      "returning": 0.832,
-      "known": 0.961,
-      "incomplete": false,
-      "last_net": 0.1824,
-      "transfers_in": [
-        {
-          "name": "Jaylen Petty",
-          "from": "Texas Tech"
-        }
-      ]
-    },
-    {
-      "rk": 30,
-      "team_id": 279,
-      "school": "St. John's",
-      "conference": "Big East",
-      "off": 1.0777,
-      "def": 0.9575,
-      "net": 0.1202,
-      "returning": 0.41,
-      "known": 0.819,
-      "incomplete": false,
-      "last_net": 0.1995,
-      "transfers_in": [
-        {
-          "name": "Tounde Yessoufou",
-          "from": "Baylor"
-        },
-        {
-          "name": "Keyshawn Hall",
-          "from": "Auburn"
-        }
-      ]
-    },
-    {
-      "rk": 31,
-      "team_id": 209,
-      "school": "Northern Iowa",
-      "conference": "MVC",
-      "off": 1.0923,
-      "def": 0.9721,
-      "net": 0.1201,
-      "returning": 0.621,
-      "known": 0.621,
-      "incomplete": true,
-      "last_net": 0.1649,
-      "transfers_in": []
-    },
-    {
-      "rk": 32,
-      "team_id": 217,
-      "school": "Oklahoma",
-      "conference": "SEC",
-      "off": 1.119,
-      "def": 0.9991,
-      "net": 0.1199,
-      "returning": 0.385,
-      "known": 0.915,
-      "incomplete": false,
-      "last_net": 0.1786,
-      "transfers_in": [
-        {
-          "name": "B.J. Edwards",
-          "from": "SMU"
-        },
-        {
-          "name": "Pop Isaacs",
-          "from": "Texas A&M"
-        },
-        {
-          "name": "Tyler Hendricks",
-          "from": "Utah Valley"
-        }
-      ]
-    },
-    {
-      "rk": 33,
-      "team_id": 121,
-      "school": "Indiana",
-      "conference": "Big Ten",
-      "off": 1.1086,
-      "def": 0.9909,
-      "net": 0.1177,
-      "returning": 0.156,
-      "known": 0.97,
-      "incomplete": false,
-      "last_net": 0.2413,
-      "transfers_in": [
-        {
-          "name": "Bryce Lindsay",
-          "from": "Villanova"
-        },
-        {
-          "name": "Samet Yigitoglu",
-          "from": "SMU"
-        },
-        {
-          "name": "Aiden Sherrell",
-          "from": "Alabama"
-        }
-      ]
-    },
-    {
-      "rk": 34,
-      "team_id": 336,
-      "school": "Vanderbilt",
-      "conference": "SEC",
-      "off": 1.1063,
-      "def": 0.9905,
-      "net": 0.1159,
-      "returning": 0.27,
-      "known": 0.888,
-      "incomplete": false,
-      "last_net": 0.2244,
-      "transfers_in": [
-        {
-          "name": "Ace Glass",
-          "from": "Washington State"
-        },
-        {
-          "name": "Bangot Dak",
-          "from": "Colorado"
-        },
-        {
-          "name": "T.O. Barrett",
-          "from": "Missouri"
         }
       ]
     },
     {
       "rk": 35,
-      "team_id": 20,
-      "school": "Baylor",
-      "conference": "Big 12",
-      "off": 1.1351,
-      "def": 1.021,
-      "net": 0.1141,
-      "returning": 0.179,
-      "known": 0.737,
+      "team_id": 72,
+      "school": "Duke",
+      "conference": "ACC",
+      "score": 0.927,
+      "off_eff": 117.1,
+      "oreb_pct": 31,
+      "to_margin": -0.3,
+      "three_pct": 35.4,
+      "def_eff": 99.4,
+      "conf_strength": 10.7,
+      "ranks": {
+        "offense": 31,
+        "oreb": 154,
+        "turnovers": 192,
+        "three": 83,
+        "defense": 4,
+        "competition": 68
+      },
+      "returning": 0.432,
       "incomplete": false,
-      "last_net": 0.1416,
       "transfers_in": [
         {
-          "name": "Brett Decker Jr.",
-          "from": "Liberty"
+          "name": "John Blackwell",
+          "from": "Wisconsin"
         },
         {
-          "name": "Kayden Mingo",
-          "from": "Penn State"
+          "name": "Drew Scharnowski",
+          "from": "Belmont"
         },
         {
-          "name": "Isaac Celiscar",
-          "from": "Yale"
+          "name": "Jacob Theodosiou",
+          "from": "Loyola Maryland"
         }
       ]
     }

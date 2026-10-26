@@ -1,46 +1,77 @@
 /**
- * Our own 2026-27 preseason ranking. Uses no outside rankings: only this
- * project's 2025-26 shot data and ratings, plus 2026-27 rosters from CBBD.
+ * Our own 2026-27 preseason ranking. No outside rankings go into it.
  *
- *   npx tsx --env-file=.env.local scripts/project-2027.ts
- *   npx tsx --env-file=.env.local scripts/project-2027.ts --rosters path/to/roster.json
+ *   npx tsx --env-file=.env.local scripts/project-2027.ts           # cached payloads
+ *   npx tsx --env-file=.env.local scripts/project-2027.ts --refresh # re-fetch (3 calls)
  *
- * One CBBD call (/teams/roster?season=2027 returns every team), skipped
- * with --rosters when you already have the payload. Writes:
- *   - player_seasons rows for 2027 (who is on which team)
- *   - lib/formula-2027.json, which the rankings page reads
+ * What it weighs, and how heavily (see WEIGHTS):
+ *   offensive efficiency, offensive rebounding, turnover margin,
+ *   three-point shooting, defensive efficiency, and competition.
+ * Hustle (boards, turnovers) and efficient offense carry 63% between them.
  *
- * Re-run whenever rosters change. The method is explained on the page
- * (app/rankings/Formula.tsx); keep the two in step.
+ * Steps:
+ *   1. 2025-26 team stats for every D1 team, from CollegeBasketballData's
+ *      season box-score totals (spot-checked against official ACC and Big
+ *      East figures: turnover margin and 3PT totals match).
+ *   2. Every stat adjusted for competition: a team's number is corrected
+ *      by how its opponents allowed (or produced) that stat on average,
+ *      iterated until it settles. Opponents come from the games table.
+ *   3. Projected onto 2026-27 rosters through the players: each returning
+ *      player and transfer brings his own offensive rating, rebounding,
+ *      turnovers and shooting, weighted by minutes and corrected for the
+ *      schedule his old team played. Minutes nobody on the roster played
+ *      last season (freshmen, internationals, non-D1) are filled at half
+ *      the program's edge. Defense and forced turnovers, which box scores
+ *      can't pin on individuals, carry over by roster continuity.
+ *   4. Competition counts twice: once inside every stat (step 2), and
+ *      again as its own component, the strength of the team's conference.
+ *   5. Each component becomes a z-score across D1, weighted, summed.
+ *
+ * Payloads are cached in scripts/.cache (gitignored). Writes
+ * player_seasons rows for 2027 and lib/formula-2027.json for the page.
+ * The method text in app/rankings/Formula.tsx describes this file; keep
+ * the two in step.
  */
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
 
 const SEASON_FROM = 2026;
 const SEASON_TO = 2027;
+const CACHE = "scripts/.cache";
+
+/** Share of the final score. Must sum to 1. */
+const WEIGHTS = {
+  offense: 0.27,
+  oreb: 0.18,
+  turnovers: 0.18,
+  three: 0.13,
+  defense: 0.14,
+  competition: 0.1,
+} as const;
 
 // ── Tuning. Each one is described in the page's methodology. ─────────
 
-/** Attempts of league-average shooting blended into each player's rate. */
-const SHRINK_ATTEMPTS = 150;
-/** Share of a program's old offensive edge credited to minutes we can't
- *  attribute to a known player (freshmen, internationals, non-D1). */
+/** Minutes of league-average play blended into each player's rates. */
+const SHRINK_MINUTES = 300;
+/** Three-point attempts of league-average shooting blended into a roster. */
+const SHRINK_THREES = 200;
+/** Share of a program's edge credited to minutes no known player fills. */
 const PROGRAM_CARRYOVER = 0.5;
-/** Defense keeps this much of last season's edge with nobody back... */
-const DEF_BASE = 0.35;
-/** ...plus this much more in proportion to returning shot volume. */
-const DEF_CONTINUITY = 0.45;
-/** Ranked teams plus honorable mentions. */
+/** Team-level stats keep this much of last season's edge with nobody back... */
+const CONTINUITY_BASE = 0.35;
+/** ...plus this much more in proportion to returning minutes. */
+const CONTINUITY_RETURN = 0.45;
+/** Rounds of opponent adjustment. Converges well before this. */
+const ADJUST_ROUNDS = 12;
 const RANKED = 25;
 const HONORABLE = 10;
 
 /**
  * CBBD's 2027 rosters drop departed players but, for most teams, don't
  * yet list newcomers. These incoming transfers come from ESPN's AP
- * preseason poll breakdown (Oct 19, 2026), which lists each ranked
- * team's transfers and their old schools. Roster facts only; no rankings
- * are taken from it. Matched to 2025-26 stats by name and old school.
+ * preseason poll breakdown (Oct 19, 2026). Roster facts only; no rankings
+ * are taken from it. Matched to 2025-26 player stats by name and school.
  *   https://www.espn.com/mens-college-basketball/story/_/id/50191393
  */
 const ROSTER_ADDITIONS: Record<string, [player: string, from: string][]> = {
@@ -77,8 +108,8 @@ const ROSTER_ADDITIONS: Record<string, [player: string, from: string][]> = {
   BYU: [["Collin Chandler", "Kentucky"], ["Jake Wahlin", "Clemson"], ["Jaxon Kohler", "Michigan State"]],
 };
 
-/** Confirmed out for 2026-27; their shots don't count for anyone. */
-const OUT_FOR_SEASON: [player: string, team: string][] = [
+/** Confirmed out for 2026-27; they count for nobody. [player, 2025-26 school] */
+const OUT_FOR_SEASON: [player: string, school: string][] = [
   ["Solo Ball", "UConn"], // wrist surgery, medical redshirt (UConn, Apr 20)
   ["Donnie Freeman", "Syracuse"], // Achilles, St. John's transfer (Jul 2)
 ];
@@ -87,78 +118,162 @@ const db = createClient(env("SUPABASE_URL"), env("SUPABASE_SERVICE_ROLE_KEY"), {
   auth: { persistSession: false },
 });
 
+// ── CBBD payload shapes (only the fields used) ────────────────────────
+
+type BoxSide = {
+  possessions: number;
+  points: { total: number };
+  threePointFieldGoals: { made: number; attempted: number };
+  rebounds: { offensive: number; defensive: number };
+  turnovers: { total: number };
+};
+
+type TeamSeason = {
+  teamId: number;
+  games: number;
+  totalMinutes: number;
+  teamStats: BoxSide;
+  opponentStats: BoxSide;
+};
+
+type PlayerSeason = {
+  teamId: number;
+  athleteId: number;
+  name: string;
+  minutes: number;
+  turnovers: number;
+  usage: number | null;
+  offensiveRating: number | null;
+  offensiveReboundPct: number | null;
+  threePointFieldGoals: { made: number; attempted: number };
+};
+
+type Player = PlayerSeason & { fromTeam: number };
+
 type RosterTeam = {
   teamId: number;
-  team: string;
   players: { id: number; name: string; startSeason: number | null }[];
 };
 
-type PlayerTotals = {
-  player_id: number;
-  player_name: string;
-  team_id: number;
-  attempts: number;
-  makes: number;
-  three_makes: number;
+/** Offense and its defensive mirror, for one stat. */
+type Pair = { off: number; def: number };
+
+type Factors = {
+  eff: Pair; // points per 100 possessions scored / allowed
+  oreb: Pair; // OREB% gained / OREB% conceded to opponents
+  tov: Pair; // turnovers per 100 possessions committed / forced
+  three: Pair; // 3PT% made / allowed
 };
 
-type TeamRating = {
-  team_id: number;
-  adj_off: number;
-  adj_def: number;
-  raw_off: number;
-};
+const FACTOR_KEYS = ["eff", "oreb", "tov", "three"] as const;
+type FactorKey = (typeof FACTOR_KEYS)[number];
+type WeightKey = keyof typeof WEIGHTS;
 
 async function main() {
-  const rosterArg = process.argv.indexOf("--rosters");
-  const rosters: RosterTeam[] =
-    rosterArg > -1
-      ? JSON.parse(readFileSync(process.argv[rosterArg + 1], "utf8"))
-      : await fetchRosters();
-
-  const [teams, ratings, totals, league] = await Promise.all([
-    selectAll<{ id: number; school: string; conference: string | null }>(
-      "teams", "id, school, conference", "id", { is_d1: true },
-    ),
-    selectAll<TeamRating>(
-      "team_adjusted_ratings", "team_id, adj_off, adj_def, raw_off", "team_id",
-      { season: SEASON_FROM },
-    ),
-    selectAll<PlayerTotals>(
-      "player_season_totals",
-      "player_id, player_name, team_id, attempts, makes, three_makes",
-      "player_id",
-      { season: SEASON_FROM },
-      { attempts: 0 },
-    ),
-    db.from("d1_season_totals").select("attempts, makes, three_makes")
-      .eq("season", SEASON_FROM).single(),
+  const refresh = process.argv.includes("--refresh");
+  const [rosters, teamSeasons, playerSeasons] = await Promise.all([
+    cached<RosterTeam[]>("rosters-2027.json", "/teams/roster", SEASON_TO, refresh),
+    cached<TeamSeason[]>("team-stats-2026.json", "/stats/team/season", SEASON_FROM, refresh),
+    cached<PlayerSeason[]>("player-stats-2026.json", "/stats/player/season", SEASON_FROM, refresh),
   ]);
-  if (league.error) throw new Error(league.error.message);
 
-  const lg = pps(league.data);
+  const teams = await selectAll<{ id: number; school: string; conference: string | null }>(
+    "teams", "id, school, conference", "id", { is_d1: true },
+  );
+  const games = await selectAll<{ home_team_id: number; away_team_id: number }>(
+    "games", "id, home_team_id, away_team_id", "id", { season: SEASON_FROM },
+  );
+
   const d1 = new Map(teams.map((t) => [t.id, t]));
-  const rating = new Map(ratings.map((r) => [r.team_id, r]));
-  const lastSeason = new Map(totals.map((p) => [p.player_id, p]));
+  const box = new Map(
+    teamSeasons
+      .filter((t) => d1.has(t.teamId) && t.teamStats.possessions > 0)
+      .map((t) => [t.teamId, t]),
+  );
 
-  // Each team's total 2025-26 shot volume: the size of the hole to fill.
-  const teamVolume = new Map<number, number>();
-  for (const p of totals) {
-    teamVolume.set(p.team_id, (teamVolume.get(p.team_id) ?? 0) + p.attempts);
+  // ── 1. Raw 2025-26 factors ─────────────────────────────────────────
+  const raw = new Map<number, Factors>();
+  for (const [id, t] of box) raw.set(id, factorsOf(t));
+
+  // ── 2. Adjust for competition ─────────────────────────────────────
+  const schedule = new Map<number, number[]>();
+  for (const g of games) {
+    if (!box.has(g.home_team_id) || !box.has(g.away_team_id)) continue;
+    schedule.set(g.home_team_id, [...(schedule.get(g.home_team_id) ?? []), g.away_team_id]);
+    schedule.set(g.away_team_id, [...(schedule.get(g.away_team_id) ?? []), g.home_team_id]);
   }
 
+  // Offense and defense share one average per stat (every point scored
+  // is a point allowed), taken across both sides.
+  const league = {} as Record<FactorKey, number>;
+  for (const k of FACTOR_KEYS) {
+    league[k] = mean([...raw.values()].flatMap((f) => [f[k].off, f[k].def]));
+  }
+
+  // Additive adjustment, the same shape as adjusted efficiency: a team's
+  // offense is corrected by how far its opponents' defenses sat from
+  // average, and vice versa, repeated until the numbers stop moving.
+  let adj = new Map([...raw].map(([id, f]) => [id, structuredClone(f)]));
+  for (let round = 0; round < ADJUST_ROUNDS; round++) {
+    const next = new Map<number, Factors>();
+    for (const [id, f] of raw) {
+      const opps = (schedule.get(id) ?? []).map((o) => adj.get(o)!).filter(Boolean);
+      const out = structuredClone(f);
+      if (opps.length) {
+        for (const k of FACTOR_KEYS) {
+          out[k].off = f[k].off - (mean(opps.map((o) => o[k].def)) - league[k]);
+          out[k].def = f[k].def - (mean(opps.map((o) => o[k].off)) - league[k]);
+        }
+      }
+      next.set(id, out);
+    }
+    // Re-anchor on the D1 average. Without this the whole league drifts a
+    // little every round, and the drift lands on every team's numbers.
+    for (const k of FACTOR_KEYS) {
+      const offShift = mean([...next.values()].map((f) => f[k].off)) - league[k];
+      const defShift = mean([...next.values()].map((f) => f[k].def)) - league[k];
+      for (const f of next.values()) {
+        f[k].off -= offShift;
+        f[k].def -= defShift;
+      }
+    }
+    adj = next;
+  }
+
+  // Conference strength: the average adjusted net efficiency of the
+  // other teams in a team's conference, i.e. who it will mostly play.
+  const confNet = new Map<string, { id: number; net: number }[]>();
+  for (const [id, f] of adj) {
+    const conf = d1.get(id)?.conference;
+    if (!conf) continue;
+    confNet.set(conf, [...(confNet.get(conf) ?? []), { id, net: f.eff.off - f.eff.def }]);
+  }
+  const competitionOf = (id: number) => {
+    const others = (confNet.get(d1.get(id)?.conference ?? "") ?? []).filter((t) => t.id !== id);
+    return others.length ? mean(others.map((t) => t.net)) : 0;
+  };
+
+  // ── 3. Project onto 2026-27 rosters ───────────────────────────────
   const d1Rosters = rosters.filter((t) => d1.has(t.teamId) && t.players.length);
   await saveRosters(d1Rosters);
 
-  // Resolve hand-listed names to player ids through last season's stats.
+  // A player who switched teams mid-season has a row per team; keep the
+  // team where he played most.
+  const players = new Map<number, Player>();
+  for (const p of playerSeasons) {
+    if (!box.has(p.teamId) || p.minutes <= 0) continue;
+    const prev = players.get(p.athleteId);
+    if (!prev || p.minutes > prev.minutes) players.set(p.athleteId, { ...p, fromTeam: p.teamId });
+  }
+
   const schoolId = new Map(teams.map((t) => [t.school, t.id]));
   const findPlayer = (name: string, school: string) =>
-    totals.find((p) => p.player_name === name && p.team_id === schoolId.get(school));
+    [...players.values()].find((p) => p.name === name && p.fromTeam === schoolId.get(school));
 
   const sidelined = new Set<number>();
   for (const [name, school] of OUT_FOR_SEASON) {
     const p = findPlayer(name, school);
-    if (p) sidelined.add(p.player_id);
+    if (p) sidelined.add(p.athleteId);
     else console.warn(`  out-for-season not matched: ${name} (${school})`);
   }
 
@@ -171,133 +286,308 @@ async function main() {
     }
     for (const [name, from] of list) {
       const p = findPlayer(name, from);
-      if (p) added.set(id, [...(added.get(id) ?? []), p.player_id]);
+      if (p) added.set(id, [...(added.get(id) ?? []), p.athleteId]);
       else console.warn(`  addition not matched: ${name} (${from} -> ${school})`);
     }
   }
 
+  // League baselines for the player-level rates.
+  const allP = [...players.values()];
+  const lg = {
+    ortg: weighted(allP, (p) => p.offensiveRating ?? 0, (p) => p.minutes * (p.usage ?? 0)),
+    orebPct: weighted(allP, (p) => p.offensiveReboundPct ?? 0, (p) => p.minutes),
+    tovPerMin: sum(allP.map((p) => p.turnovers)) / sum(allP.map((p) => p.minutes)),
+    three:
+      sum(allP.map((p) => p.threePointFieldGoals.made)) /
+      sum(allP.map((p) => p.threePointFieldGoals.attempted)),
+  };
+
+  // Player box-score rates and team rates sit on slightly different
+  // scales; calibrate so a team's own players, summed the same way,
+  // land on the team's real numbers.
+  const calib = calibrate(box, players, raw, lg);
+
   const rows = [];
   for (const t of d1Rosters) {
-    const r = rating.get(t.teamId);
-    const volume = teamVolume.get(t.teamId);
-    if (!r || !volume) continue;
+    const tb = box.get(t.teamId);
+    const a = adj.get(t.teamId);
+    const r = raw.get(t.teamId);
+    if (!tb || !a || !r) continue;
 
-    let returningAtt = 0;
-    let shareSum = 0;
-    let valueSum = 0;
-    const transfersIn: { name: string; from: string; attempts: number }[] = [];
-
-    // A roster with nobody starting in 2027 hasn't had newcomers added
-    // yet. Flag it unless the hand-listed transfers fill the gap.
+    const teamMinutes = tb.totalMinutes * 5;
     const hasNewcomers = t.players.some((p) => p.startSeason === SEASON_TO);
     const ids = new Set([...t.players.map((p) => p.id), ...(added.get(t.teamId) ?? [])]);
 
+    let known = 0;
+    let returningMin = 0;
+    let ortgW = 0;
+    let ortgSum = 0;
+    let orebSum = 0;
+    let tovSum = 0;
+    let threeMade = 0;
+    let threeAtt = 0;
+    let threeSched = 0;
+    const transfersIn: { name: string; from: string; minutes: number }[] = [];
+
     for (const id of ids) {
       if (sidelined.has(id)) continue;
-      const p = lastSeason.get(id);
+      const p = players.get(id);
       if (!p) continue;
-      const from = rating.get(p.team_id);
 
-      // Shooting above average per shot, shrunk toward the D1 mean, and
-      // credited for the defenses the player's old team faced.
-      const shrunk = (pps(p) * p.attempts + lg * SHRINK_ATTEMPTS) /
-        (p.attempts + SHRINK_ATTEMPTS);
-      const schedule = from ? from.adj_off - from.raw_off : 0;
-      const value = shrunk - lg + schedule;
+      // Schedule correction carried from the player's old team.
+      const fromAdj = adj.get(p.fromTeam)!;
+      const fromRaw = raw.get(p.fromTeam)!;
+      const share = p.minutes / teamMinutes;
+      const shrink = p.minutes / (p.minutes + SHRINK_MINUTES);
 
-      const share = p.attempts / volume;
-      shareSum += share;
-      valueSum += share * value;
-
-      if (p.team_id === t.teamId) returningAtt += p.attempts;
+      known += share;
+      if (p.fromTeam === t.teamId) returningMin += p.minutes;
       else {
         transfersIn.push({
-          name: p.player_name,
-          from: d1.get(p.team_id)?.school ?? "non-D1",
-          attempts: p.attempts,
+          name: p.name,
+          from: d1.get(p.fromTeam)?.school ?? "non-D1",
+          minutes: p.minutes,
         });
       }
+
+      const ortg =
+        (lg.ortg + shrink * ((p.offensiveRating ?? lg.ortg) - lg.ortg)) * calib.eff +
+        (fromAdj.eff.off - fromRaw.eff.off);
+      const w = share * (p.usage ?? 20);
+      ortgW += w;
+      ortgSum += w * ortg;
+
+      const orebPct = lg.orebPct + shrink * ((p.offensiveReboundPct ?? lg.orebPct) - lg.orebPct);
+      orebSum += share * ((orebPct / 100) * calib.oreb + (fromAdj.oreb.off - fromRaw.oreb.off));
+
+      const tovRate = lg.tovPerMin + shrink * (p.turnovers / p.minutes - lg.tovPerMin);
+      tovSum += share * (tovRate * calib.tov + (fromAdj.tov.off - fromRaw.tov.off));
+
+      const att = p.threePointFieldGoals.attempted;
+      threeMade += p.threePointFieldGoals.made;
+      threeAtt += att;
+      threeSched += att * (fromAdj.three.off - fromRaw.three.off);
     }
 
-    // A roster can hold more shot volume than one team can use. Scale the
-    // known players down to a full team's worth rather than double count.
-    const scale = shareSum > 1 ? 1 / shareSum : 1;
-    const known = Math.min(shareSum, 1);
-    const returning = Math.min(returningAtt / volume, 1);
+    // More proven minutes than one team can play: scale to a full team.
+    const scale = known > 1 ? 1 / known : 1;
+    const knownShare = Math.min(known, 1);
+    const unknown = 1 - knownShare;
+    const returning = Math.min(returningMin / teamMinutes, 1);
+    const fill = (k: FactorKey) => league[k] + PROGRAM_CARRYOVER * (a[k].off - league[k]);
+    const carry = (k: FactorKey) =>
+      league[k] + (a[k].def - league[k]) * (CONTINUITY_BASE + CONTINUITY_RETURN * returning);
 
-    const off =
-      lg + valueSum * scale + (1 - known) * PROGRAM_CARRYOVER * (r.adj_off - lg);
-    const def = lg + (r.adj_def - lg) * (DEF_BASE + DEF_CONTINUITY * returning);
+    const proj = {
+      offense: knownShare * (ortgW ? ortgSum / ortgW : league.eff) + unknown * fill("eff"),
+      oreb: orebSum * scale + unknown * fill("oreb"),
+      tovCommitted: tovSum * scale + unknown * fill("tov"),
+      tovForced: carry("tov"),
+      three:
+        (threeMade + lg.three * SHRINK_THREES) / (threeAtt + SHRINK_THREES) +
+        (threeAtt ? threeSched / threeAtt : 0),
+      defense: carry("eff"),
+      competition: competitionOf(t.teamId),
+    };
 
     const team = d1.get(t.teamId)!;
     rows.push({
       team_id: t.teamId,
       school: team.school,
       conference: team.conference,
-      off: round(off),
-      def: round(def),
-      net: round(off - def),
-      returning: round(returning, 3),
-      known: round(known, 3),
-      // Roster may be missing newcomers: the projection leans more on
-      // last season's program strength than it should.
+      proj,
+      returning,
       incomplete: !hasNewcomers && !added.has(t.teamId),
-      last_net: round(r.adj_off - r.adj_def),
       transfers_in: transfersIn
-        .sort((a, b) => b.attempts - a.attempts)
+        .sort((x, y) => y.minutes - x.minutes)
         .slice(0, 3)
         .map(({ name, from }) => ({ name, from })),
     });
   }
 
-  rows.sort((a, b) => b.net - a.net);
-  const ranked = rows.slice(0, RANKED + HONORABLE).map((r, i) => ({ rk: i + 1, ...r }));
+  // ── 4. Score ───────────────────────────────────────────────────────
+  // Every component oriented so higher is better before z-scoring.
+  const parts: Record<WeightKey, number[]> = {
+    offense: rows.map((r) => r.proj.offense),
+    oreb: rows.map((r) => r.proj.oreb),
+    turnovers: rows.map((r) => r.proj.tovForced - r.proj.tovCommitted),
+    three: rows.map((r) => r.proj.three),
+    defense: rows.map((r) => -r.proj.defense),
+    competition: rows.map((r) => r.proj.competition),
+  };
+  const keys = Object.keys(WEIGHTS) as WeightKey[];
+  const z = Object.fromEntries(keys.map((k) => [k, zscores(parts[k])])) as Record<WeightKey, number[]>;
+  const ranks = Object.fromEntries(keys.map((k) => [k, rankDesc(parts[k])])) as Record<WeightKey, number[]>;
+  const scores = rows.map((_, i) => sum(keys.map((k) => WEIGHTS[k] * z[k][i])));
+
+  const ordered = rows
+    .map((r, i) => ({ r, i }))
+    .sort((x, y) => scores[y.i] - scores[x.i])
+    .slice(0, RANKED + HONORABLE);
 
   const out = {
     season: SEASON_TO,
     generated_at: new Date().toISOString(),
-    league_pps: round(lg),
-    sources: {
-      rosters: "CollegeBasketballData /teams/roster, season 2027",
-      additions: "https://www.espn.com/mens-college-basketball/story/_/id/50191393/ap-mens-preseason-top-25-poll-reaction-2026-27",
-    },
+    weights: WEIGHTS,
     params: {
-      SHRINK_ATTEMPTS, PROGRAM_CARRYOVER, DEF_BASE, DEF_CONTINUITY,
-      RANKED, HONORABLE,
+      SHRINK_MINUTES, SHRINK_THREES, PROGRAM_CARRYOVER, CONTINUITY_BASE,
+      CONTINUITY_RETURN, RANKED, HONORABLE,
+    },
+    sources: {
+      stats: "CollegeBasketballData season box-score totals, 2025-26",
+      rosters: "CollegeBasketballData /teams/roster, season 2027",
+      additions:
+        "https://www.espn.com/mens-college-basketball/story/_/id/50191393/ap-mens-preseason-top-25-poll-reaction-2026-27",
+      checks: [
+        "https://theacc.com/stats.aspx?path=mbball&year=2025",
+        "https://www.bigeast.com/stats.aspx?path=mbball&year=2025",
+      ],
     },
     teams_rated: rows.length,
-    rows: ranked,
+    rows: ordered.map(({ r, i }, n) => ({
+      rk: n + 1,
+      team_id: r.team_id,
+      school: r.school,
+      conference: r.conference,
+      score: round(scores[i], 3),
+      off_eff: round(r.proj.offense, 1),
+      oreb_pct: round(r.proj.oreb * 100, 1),
+      to_margin: round(r.proj.tovForced - r.proj.tovCommitted, 1),
+      three_pct: round(r.proj.three * 100, 1),
+      def_eff: round(r.proj.defense, 1),
+      conf_strength: round(r.proj.competition, 1),
+      ranks: Object.fromEntries(keys.map((k) => [k, ranks[k][i]])) as Record<WeightKey, number>,
+      returning: round(r.returning, 3),
+      incomplete: r.incomplete,
+      transfers_in: r.transfers_in,
+    })),
   };
+
   writeFileSync("lib/formula-2027.json", JSON.stringify(out, null, 2) + "\n");
-  console.log(`Rated ${rows.length} teams. Top 5:`);
-  for (const r of ranked.slice(0, 5)) console.log(`  ${r.rk}. ${r.school} ${r.net}`);
+  console.log(`Rated ${rows.length} teams (calibration ${JSON.stringify(calib)}). Top 10:`);
+  for (const r of out.rows.slice(0, 10)) {
+    console.log(
+      `  ${r.rk}. ${r.school} ${r.score} (off ${r.off_eff}, oreb ${r.oreb_pct}, ` +
+        `tom ${r.to_margin}, 3p ${r.three_pct}, def ${r.def_eff})`,
+    );
+  }
+}
+
+// ── Factors ───────────────────────────────────────────────────────────
+
+function factorsOf(t: TeamSeason): Factors {
+  const o = t.teamStats;
+  const d = t.opponentStats;
+  return {
+    eff: {
+      off: (100 * o.points.total) / o.possessions,
+      def: (100 * d.points.total) / d.possessions,
+    },
+    oreb: {
+      off: o.rebounds.offensive / (o.rebounds.offensive + d.rebounds.defensive),
+      def: d.rebounds.offensive / (d.rebounds.offensive + o.rebounds.defensive),
+    },
+    tov: {
+      off: (100 * o.turnovers.total) / o.possessions,
+      def: (100 * d.turnovers.total) / d.possessions,
+    },
+    three: {
+      off: o.threePointFieldGoals.made / o.threePointFieldGoals.attempted,
+      def: d.threePointFieldGoals.made / d.threePointFieldGoals.attempted,
+    },
+  };
+}
+
+/**
+ * Scale factors so each team's own 2025-26 players, combined the way the
+ * projection combines them, land on that team's real numbers (median
+ * across teams).
+ */
+function calibrate(
+  box: Map<number, TeamSeason>,
+  players: Map<number, Player>,
+  raw: Map<number, Factors>,
+  lg: { ortg: number },
+) {
+  const byTeam = new Map<number, Player[]>();
+  for (const p of players.values()) byTeam.set(p.fromTeam, [...(byTeam.get(p.fromTeam) ?? []), p]);
+
+  const eff: number[] = [];
+  const oreb: number[] = [];
+  const tov: number[] = [];
+  for (const [id, list] of byTeam) {
+    const f = raw.get(id)!;
+    const minutes = box.get(id)!.totalMinutes * 5;
+    const ortg = weighted(list, (p) => p.offensiveRating ?? lg.ortg, (p) => p.minutes * (p.usage ?? 20));
+    const orebSum = sum(list.map((p) => (p.minutes / minutes) * ((p.offensiveReboundPct ?? 0) / 100)));
+    const tovPerMin = sum(list.map((p) => p.turnovers)) / sum(list.map((p) => p.minutes));
+    if (ortg) eff.push(f.eff.off / ortg);
+    if (orebSum) oreb.push(f.oreb.off / orebSum);
+    // Turnovers per player-minute -> per 100 possessions.
+    if (tovPerMin) tov.push(f.tov.off / tovPerMin);
+  }
+  return { eff: round(median(eff), 4), oreb: round(median(oreb), 4), tov: round(median(tov), 2) };
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────
 
-/** Points per field goal attempt: 2 per make, plus 1 more per three. */
-function pps(t: { attempts: number; makes: number; three_makes: number }) {
-  return (2 * t.makes + t.three_makes) / t.attempts;
+function sum(xs: number[]) {
+  return xs.reduce((a, b) => a + b, 0);
 }
 
-function round(n: number, places = 4) {
+function mean(xs: number[]) {
+  return xs.length ? sum(xs) / xs.length : 0;
+}
+
+function median(xs: number[]) {
+  const s = [...xs].sort((a, b) => a - b);
+  return s.length ? s[Math.floor(s.length / 2)] : 1;
+}
+
+function weighted<T>(xs: T[], value: (x: T) => number, weight: (x: T) => number) {
+  const w = sum(xs.map(weight));
+  return w ? sum(xs.map((x) => value(x) * weight(x))) / w : 0;
+}
+
+function zscores(xs: number[]) {
+  const m = mean(xs);
+  const sd = Math.sqrt(mean(xs.map((x) => (x - m) ** 2))) || 1;
+  return xs.map((x) => (x - m) / sd);
+}
+
+/** 1 for the highest value. */
+function rankDesc(xs: number[]) {
+  const rk = new Array<number>(xs.length);
+  xs.map((v, i) => [v, i] as const)
+    .sort((a, b) => b[0] - a[0])
+    .forEach(([, i], n) => (rk[i] = n + 1));
+  return rk;
+}
+
+function round(n: number, places: number) {
   return Number(n.toFixed(places));
 }
 
-async function fetchRosters(): Promise<RosterTeam[]> {
+/** Read a cached CBBD payload, or fetch it (one call, logged to api_calls). */
+async function cached<T>(file: string, path: string, season: number, refresh: boolean): Promise<T> {
+  const at = `${CACHE}/${file}`;
+  if (!refresh && existsSync(at)) return JSON.parse(readFileSync(at, "utf8"));
+
   const started = Date.now();
-  const res = await fetch(
-    `https://api.collegebasketballdata.com/teams/roster?season=${SEASON_TO}`,
-    { headers: { Authorization: `Bearer ${env("CBBD_API_KEY")}` } },
-  );
+  const res = await fetch(`https://api.collegebasketballdata.com${path}?season=${season}`, {
+    headers: { Authorization: `Bearer ${env("CBBD_API_KEY")}` },
+  });
   await db.from("api_calls").insert({
-    endpoint: "/teams/roster",
-    params: { season: String(SEASON_TO) },
+    endpoint: path,
+    params: { season: String(season) },
     status: res.status,
     ms: Date.now() - started,
   });
-  if (!res.ok) throw new Error(`CBBD ${res.status}: ${await res.text()}`);
-  return res.json();
+  if (!res.ok) throw new Error(`CBBD ${res.status} ${path}: ${await res.text()}`);
+  const body = await res.text();
+  mkdirSync(CACHE, { recursive: true });
+  writeFileSync(at, body);
+  return JSON.parse(body);
 }
 
 /** Who is where in 2026-27. Players need a row first (foreign key). */
@@ -323,13 +613,11 @@ async function selectAll<T>(
   columns: string,
   orderBy: string,
   eq: Record<string, string | number | boolean>,
-  gt: Record<string, number> = {},
 ): Promise<T[]> {
   const out: T[] = [];
   for (let from = 0; ; from += 1000) {
     let q = db.from(table).select(columns);
     for (const [col, v] of Object.entries(eq)) q = q.eq(col, v);
-    for (const [col, v] of Object.entries(gt)) q = q.gt(col, v);
     const { data, error } = await q.order(orderBy).range(from, from + 999);
     if (error) throw new Error(`${table}: ${error.message}`);
     const rows = (data ?? []) as T[];
