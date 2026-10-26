@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Logo from "./Logo";
 
 /**
  * Season labels are part of the navigation, not decoration. The shot
@@ -20,8 +21,8 @@ export default function SiteNav() {
 
   return (
     <nav className="sitenav" aria-label="Main">
-      <Link href="/" className="sitenav-mark">
-        CBB
+      <Link href="/" className="sitenav-mark" aria-label="CBB home">
+        <Logo size={26} />
       </Link>
 
       <ul>

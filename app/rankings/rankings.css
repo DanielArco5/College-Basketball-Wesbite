@@ -319,3 +319,11 @@
   font-size: 1.05rem;
   color: var(--ink);
 }
+
+.rank-stage {
+  margin: 1.5rem 0 0;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  color: var(--ink-dim);
+}

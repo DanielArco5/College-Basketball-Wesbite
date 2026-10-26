@@ -233,3 +233,23 @@ body {
    dismissed ticker never flashes in on load. The class on .wire handles
    it once React has mounted; this covers the gap before that. */
 :root[data-wire="off"] .wire .wire-window { display: none; }
+
+/* ── Logo ────────────────────────────────────────────────────────── */
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logo-mark { flex: none; display: block; }
+
+.logo-word {
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.sitenav-mark { align-self: center; }

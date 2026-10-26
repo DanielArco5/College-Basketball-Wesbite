@@ -26,6 +26,12 @@
  *   4. Competition counts twice: once inside every stat (step 2), and
  *      again as its own component, the strength of the team's conference.
  *   5. Each component becomes a z-score across D1, weighted, summed.
+ *   6. Once 2026-27 games are played, real 2026-27 numbers take over.
+ *      scripts/ncaa-stats.ts reads NCAA.com's official team totals; each
+ *      component's z-score is blended as games / (games + BLEND_GAMES)
+ *      actual, the rest projection. NCAA.com publishes no schedule, so
+ *      in-season stats are adjusted by conference peers instead of
+ *      exact opponents.
  *
  * Payloads are cached in scripts/.cache (gitignored). Writes
  * player_seasons rows for 2027 and lib/formula-2027.json for the page.
@@ -66,6 +72,10 @@ const CONTINUITY_RETURN = 0.45;
 const ADJUST_ROUNDS = 12;
 const RANKED = 25;
 const HONORABLE = 10;
+/** Games at which a team's real 2026-27 numbers count half. */
+const BLEND_GAMES = 10;
+/** NCAA.com's 2026-27 totals, written by scripts/ncaa-stats.ts. */
+const IN_SEASON_FILE = process.env.IN_SEASON_FILE ?? `${CACHE}/ncaa-team-${SEASON_TO}.json`;
 
 /**
  * CBBD's 2027 rosters drop departed players but, for most teams, don't
@@ -417,7 +427,40 @@ async function main() {
   };
   const keys = Object.keys(WEIGHTS) as WeightKey[];
   const z = Object.fromEntries(keys.map((k) => [k, zscores(parts[k])])) as Record<WeightKey, number[]>;
-  const ranks = Object.fromEntries(keys.map((k) => [k, rankDesc(parts[k])])) as Record<WeightKey, number[]>;
+
+  // ── 6. Blend in real 2026-27 numbers ──────────────────────────────
+  const live = inSeason(rows.map((r) => r.team_id), d1);
+  const weightOf = rows.map((r) => {
+    const g = live.byTeam.get(r.team_id)?.games ?? 0;
+    return g / (g + BLEND_GAMES);
+  });
+  if (live.byTeam.size) {
+    for (const k of keys) {
+      if (k === "competition") continue; // same input either way
+      rows.forEach((r, i) => {
+        const az = live.z[k].get(r.team_id);
+        if (az !== undefined) z[k][i] = weightOf[i] * az + (1 - weightOf[i]) * z[k][i];
+      });
+    }
+  }
+
+  // Shown stats and their ranks: real numbers once a team has played.
+  const shown = rows.map((r) => live.byTeam.get(r.team_id)?.stats ?? {
+    offense: r.proj.offense,
+    oreb: r.proj.oreb,
+    turnovers: r.proj.tovForced - r.proj.tovCommitted,
+    three: r.proj.three,
+    defense: r.proj.defense,
+  });
+  const shownParts: Record<WeightKey, number[]> = {
+    offense: shown.map((x) => x.offense),
+    oreb: shown.map((x) => x.oreb),
+    turnovers: shown.map((x) => x.turnovers),
+    three: shown.map((x) => x.three),
+    defense: shown.map((x) => -x.defense),
+    competition: parts.competition,
+  };
+  const ranks = Object.fromEntries(keys.map((k) => [k, rankDesc(shownParts[k])])) as Record<WeightKey, number[]>;
   const scores = rows.map((_, i) => sum(keys.map((k) => WEIGHTS[k] * z[k][i])));
 
   const ordered = rows
@@ -425,16 +468,22 @@ async function main() {
     .sort((x, y) => scores[y.i] - scores[x.i])
     .slice(0, RANKED + HONORABLE);
 
+  const maxGames = Math.max(0, ...[...live.byTeam.values()].map((t) => t.games));
   const out = {
     season: SEASON_TO,
     generated_at: new Date().toISOString(),
+    stage: maxGames > 0 ? "in-season" : "preseason",
+    in_season: live.byTeam.size
+      ? { source: live.source, fetched: live.fetched, max_games: maxGames, blend_games: BLEND_GAMES }
+      : null,
     weights: WEIGHTS,
     params: {
       SHRINK_MINUTES, SHRINK_THREES, PROGRAM_CARRYOVER, CONTINUITY_BASE,
-      CONTINUITY_RETURN, RANKED, HONORABLE,
+      CONTINUITY_RETURN, RANKED, HONORABLE, BLEND_GAMES,
     },
     sources: {
       stats: "CollegeBasketballData season box-score totals, 2025-26",
+      in_season: "https://www.ncaa.com/stats/basketball-men/d1/2027/team",
       rosters: "CollegeBasketballData /teams/roster, season 2027",
       additions:
         "https://www.espn.com/mens-college-basketball/story/_/id/50191393/ap-mens-preseason-top-25-poll-reaction-2026-27",
@@ -450,11 +499,13 @@ async function main() {
       school: r.school,
       conference: r.conference,
       score: round(scores[i], 3),
-      off_eff: round(r.proj.offense, 1),
-      oreb_pct: round(r.proj.oreb * 100, 1),
-      to_margin: round(r.proj.tovForced - r.proj.tovCommitted, 1),
-      three_pct: round(r.proj.three * 100, 1),
-      def_eff: round(r.proj.defense, 1),
+      games: live.byTeam.get(r.team_id)?.games ?? 0,
+      actual_weight: round(weightOf[i], 2),
+      off_eff: round(shown[i].offense, 1),
+      oreb_pct: round(shown[i].oreb * 100, 1),
+      to_margin: round(shown[i].turnovers, 1),
+      three_pct: round(shown[i].three * 100, 1),
+      def_eff: round(shown[i].defense, 1),
       conf_strength: round(r.proj.competition, 1),
       ranks: Object.fromEntries(keys.map((k) => [k, ranks[k][i]])) as Record<WeightKey, number>,
       returning: round(r.returning, 3),
@@ -471,6 +522,99 @@ async function main() {
         `tom ${r.to_margin}, 3p ${r.three_pct}, def ${r.def_eff})`,
     );
   }
+}
+
+// ── In-season (NCAA.com) ──────────────────────────────────────────────
+
+type NcaaTotals = Record<
+  | "games" | "pts" | "opp_pts" | "fgm" | "fga" | "opp_fgm" | "opp_fga" | "fta"
+  | "oreb" | "dreb" | "tpm" | "tpa" | "opp_tpm" | "opp_tpa" | "tov" | "opp_tov",
+  number
+>;
+
+type Shown = { offense: number; oreb: number; turnovers: number; three: number; defense: number };
+
+/**
+ * Real 2026-27 numbers from NCAA.com's totals, adjusted by conference
+ * peers, as z-scores per component. Empty before the season starts.
+ */
+function inSeason(teamIds: number[], d1: Map<number, { conference: string | null }>) {
+  const empty = {
+    byTeam: new Map<number, { games: number; stats: Shown }>(),
+    z: {} as Record<WeightKey, Map<number, number>>,
+    source: "",
+    fetched: "",
+  };
+  if (!existsSync(IN_SEASON_FILE)) return empty;
+  const file = JSON.parse(readFileSync(IN_SEASON_FILE, "utf8")) as {
+    source: string;
+    fetched: string;
+    teams: Record<string, NcaaTotals>;
+  };
+
+  // NCAA.com totals -> per-possession factors. Possessions use the
+  // standard estimate; offensive rebounding is per missed shot, since the
+  // opponents' defensive rebounds aren't published.
+  const raw = new Map<number, Factors>();
+  for (const id of teamIds) {
+    const t = file.teams[id];
+    if (!t || !t.games) continue;
+    const poss = t.fga - t.oreb + t.tov + 0.475 * t.fta;
+    const misses = t.fga - t.fgm;
+    const oppMisses = t.opp_fga - t.opp_fgm;
+    raw.set(id, {
+      eff: { off: (100 * t.pts) / poss, def: (100 * t.opp_pts) / poss },
+      oreb: { off: t.oreb / misses, def: Math.max(oppMisses - t.dreb, 0) / oppMisses },
+      tov: { off: (100 * t.tov) / poss, def: (100 * t.opp_tov) / poss },
+      three: { off: t.tpm / t.tpa, def: t.opp_tpm / t.opp_tpa },
+    });
+  }
+  if (!raw.size) return empty;
+
+  const league = {} as Record<FactorKey, number>;
+  for (const k of FACTOR_KEYS) {
+    league[k] = mean([...raw.values()].flatMap((f) => [f[k].off, f[k].def]));
+  }
+
+  // Conference peers stand in for the schedule NCAA.com doesn't publish.
+  const peers = (id: number) =>
+    [...raw.keys()].filter((o) => o !== id && d1.get(o)?.conference === d1.get(id)?.conference);
+  const stats = new Map<number, Shown>();
+  for (const [id, f] of raw) {
+    const p = peers(id).map((o) => raw.get(o)!);
+    const a = structuredClone(f);
+    if (p.length) {
+      for (const k of FACTOR_KEYS) {
+        a[k].off = f[k].off - (mean(p.map((o) => o[k].def)) - league[k]);
+        a[k].def = f[k].def - (mean(p.map((o) => o[k].off)) - league[k]);
+      }
+    }
+    stats.set(id, {
+      offense: a.eff.off,
+      oreb: a.oreb.off,
+      turnovers: a.tov.def - a.tov.off,
+      three: a.three.off,
+      defense: a.eff.def,
+    });
+  }
+
+  const ids = [...stats.keys()];
+  const comp = (pick: (s: Shown) => number) => {
+    const zs = zscores(ids.map((id) => pick(stats.get(id)!)));
+    return new Map(ids.map((id, i) => [id, zs[i]]));
+  };
+  return {
+    byTeam: new Map(ids.map((id) => [id, { games: file.teams[id].games, stats: stats.get(id)! }])),
+    z: {
+      offense: comp((s) => s.offense),
+      oreb: comp((s) => s.oreb),
+      turnovers: comp((s) => s.turnovers),
+      three: comp((s) => s.three),
+      defense: comp((s) => -s.defense),
+    } as Record<WeightKey, Map<number, number>>,
+    source: file.source,
+    fetched: file.fetched,
+  };
 }
 
 // ── Factors ───────────────────────────────────────────────────────────

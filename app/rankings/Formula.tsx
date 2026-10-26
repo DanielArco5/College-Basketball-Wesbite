@@ -9,6 +9,8 @@ import formula from "@/lib/formula-2027.json";
 
 type FormulaRow = (typeof formula.rows)[number];
 
+type InSeason = { source: string; fetched: string; max_games: number; blend_games: number };
+
 const RANKED = formula.params.RANKED;
 const W = formula.weights;
 
@@ -34,8 +36,24 @@ export function FormulaRanking({ limit }: { limit?: number } = {}) {
   const top = formula.rows.slice(0, limit ?? RANKED);
   const honorable = limit ? [] : formula.rows.slice(RANKED);
 
+  // null in the preseason file, so the JSON import can't infer its shape.
+  const live = formula.in_season as InSeason | null;
   return (
     <>
+      <p className="rank-stage">
+        {live && formula.stage === "in-season" ? (
+          <>
+            Live: up to {live.max_games} games of 2026&ndash;27 results from
+            NCAA.com, updated {live.fetched}. A team&rsquo;s real numbers count
+            half once it has played {live.blend_games} games.
+          </>
+        ) : (
+          <>
+            Preseason projection. Real 2026&ndash;27 numbers start counting
+            after tip-off on November 2.
+          </>
+        )}
+      </p>
       <div className="ratings-scroll">
         <table className="ratings">
           <thead>
@@ -46,7 +64,17 @@ export function FormulaRanking({ limit }: { limit?: number } = {}) {
                 Score
               </th>
               <th scope="col" className="num" title="Points per 100 possessions">Off</th>
-              <th scope="col" className="num" title="Offensive rebound percentage">OREB%</th>
+              <th
+                scope="col"
+                className="num"
+                title={
+                  formula.stage === "in-season"
+                    ? "Offensive rebounds per missed shot"
+                    : "Offensive rebound percentage"
+                }
+              >
+                OREB%
+              </th>
               <th scope="col" className="num" title="Turnovers forced minus committed, per 100 possessions">
                 TO +/-
               </th>
@@ -217,6 +245,15 @@ export function FormulaMethod() {
           many minutes return.
         </li>
         <li>
+          <strong>Switch to real numbers as games are played.</strong> Once
+          the season starts, each team&rsquo;s official 2026&ndash;27 totals
+          from NCAA.com are put through the same formula and blended with the
+          projection: after {p.BLEND_GAMES} games they count half, and more
+          after that. NCAA.com doesn&rsquo;t publish schedules, so these
+          in-season numbers are adjusted for the strength of a team&rsquo;s
+          conference rather than its exact opponents.
+        </li>
+        <li>
           <strong>Score and rank.</strong> Each component becomes a standard
           score across all Division I teams (how many standard deviations
           above or below average), multiplied by its weight and added up. A
@@ -238,8 +275,14 @@ export function FormulaMethod() {
 
       <h3>Where the numbers come from</h3>
       <p className="rank-note">
-        Team and player box-score totals and 2026-27 rosters come from
-        CollegeBasketballData, which compiles official box scores. We
+        The preseason projection uses 2025-26 team and player box-score
+        totals and 2026-27 rosters from CollegeBasketballData, which compiles
+        official box scores. In-season numbers come straight from{" "}
+        <a href={formula.sources.in_season} target="_blank" rel="noopener noreferrer">
+          NCAA.com&rsquo;s official team stats
+        </a>
+        ; checked against last season, they agree with the box scores on
+        every stat used. We
         checked them against the conferences&rsquo; own published stats:
         turnover margins and three-point totals match the{" "}
         <a href={formula.sources.checks[0]} target="_blank" rel="noopener noreferrer">

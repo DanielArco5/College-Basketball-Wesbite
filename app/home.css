@@ -60,68 +60,6 @@
 
 .home-h2-link:hover { border-bottom-color: currentColor; }
 
-/* ── Section cards ───────────────────────────────────────────────── */
-
-.home-sections { margin-top: 4rem; }
-
-.home-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
-  gap: 1px;
-  background: #3A3028;
-  border: 1px solid #3A3028;
-}
-
-.home-card {
-  display: flex;
-  flex-direction: column;
-  padding: 1.6rem 1.4rem 1.4rem;
-  background: var(--page);
-  color: inherit;
-  text-decoration: none;
-  transition: background 140ms ease;
-}
-
-a.home-card:hover { background: var(--panel); }
-
-a.home-card:focus-visible {
-  outline: 2px solid var(--accent-warm);
-  outline-offset: -2px;
-}
-
-.home-card-season {
-  font-family: "Barlow Condensed", system-ui, sans-serif;
-  font-size: 0.88rem;
-  letter-spacing: 0.04em;
-  color: var(--accent-warm);
-}
-
-.home-card.is-static .home-card-season { color: var(--ink-faint); }
-
-.home-card h3 {
-  font-family: "Barlow Condensed", system-ui, sans-serif;
-  font-size: 1.7rem;
-  font-weight: 600;
-  margin: 0.15rem 0 0.6rem;
-}
-
-.home-card p {
-  margin: 0;
-  line-height: 1.55;
-  color: var(--ink-dim);
-  font-size: 0.95rem;
-}
-
-.home-card-go {
-  margin-top: auto;
-  padding-top: 1.1rem;
-  font-family: "Barlow Condensed", system-ui, sans-serif;
-  font-size: 0.9rem;
-  color: var(--ink-faint);
-}
-
-a.home-card:hover .home-card-go { color: var(--accent-warm); }
-
 /* ── Top ten ─────────────────────────────────────────────────────── */
 
 .home-top { margin-top: 4rem; }
@@ -210,7 +148,6 @@ a.home-card:hover .home-card-go { color: var(--accent-warm); }
 
 @media (max-width: 36rem) {
   .home { padding-top: 2.25rem; }
-  .home-sections, .home-top, .home-method { margin-top: 2.75rem; }
   .home-top-list li { grid-template-columns: 2rem 1fr 4.5rem; }
   .home-top-conf { display: none; }
 }
@@ -353,4 +290,73 @@ a.home-card:hover .home-card-go { color: var(--accent-warm); }
 @media (max-width: 36rem) {
   .home-tabs { gap: 1.25rem; margin-top: 2rem; }
   .home-panel .rank-method { margin-top: 2.75rem; }
+}
+
+
+/* ── Brand and intro ─────────────────────────────────────────────── */
+
+.home-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.home-kicker {
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-warm);
+}
+
+.home-intro-copy {
+  max-width: 60ch;
+  margin-top: 1.75rem;
+}
+
+.home-intro-copy p {
+  margin: 0 0 1rem;
+  line-height: 1.65;
+  color: var(--ink-dim);
+}
+
+.home-intro-copy .home-lede {
+  max-width: none;
+  margin: 0 0 1rem;
+  font-size: 1.15rem;
+  color: var(--ink);
+}
+
+.home-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1.75rem 0 0;
+}
+
+.home-action {
+  padding: 0.55rem 1.1rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 1.05rem;
+  color: var(--ink);
+  text-decoration: none;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.home-action:hover { border-color: var(--ink-dim); }
+
+.home-action.is-primary {
+  background: var(--accent-warm);
+  border-color: var(--accent-warm);
+  color: #FFF4F0;
+}
+
+.home-action.is-primary:hover { background: #B83E29; }
+
+.home-action:focus-visible {
+  outline: 2px solid var(--accent-warm);
+  outline-offset: 3px;
 }

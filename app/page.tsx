@@ -3,14 +3,16 @@ import { createServerClient } from "@/lib/supabase-server";
 import formula from "@/lib/formula-2027.json";
 import type { WireEntry } from "./LiveWire";
 import { FormulaMethod, FormulaRanking } from "./rankings/Formula";
+import { LogoMark } from "./Logo";
 import "./home.css";
 import "./rankings/rankings.css";
 
 export const metadata = {
-  title: { absolute: "College basketball shot charts and the 2026-27 Top 25" },
+  title: { absolute: "CBB · College basketball, ranked on hustle and efficiency" },
   description:
-    "Shot locations for every Division I team and player, and our 2026-27 " +
-    "preseason Top 25, built on hustle and efficient offense.",
+    "A 2026-27 Top 25 built from scratch on offensive rebounding, turnover " +
+    "margin, three-point shooting and points per possession, plus shot " +
+    "charts for every Division I team and player.",
 };
 
 type Db = ReturnType<typeof createServerClient>;
@@ -57,19 +59,61 @@ export default async function Home({
   return (
     <main className="home">
       <header className="home-hero">
+        <div className="home-brand">
+          <LogoMark size={56} />
+          <span className="home-kicker">
+            {formula.stage === "in-season" ? "2026–27 season" : "2026–27 preseason"}
+          </span>
+        </div>
         <h1>
-          Every shot,
+          The teams that work
           <br />
-          every team.
+          for every possession.
         </h1>
-        <p className="home-lede">
-          The 2026-27 preseason Top 25, and shot locations for all 365
-          Division I teams from 2025-26, mapped to the floor and measured
-          against what the rest of the country does from the same spot.
+        <div className="home-intro-copy">
+          <p className="home-lede">
+            CBB ranks college basketball on how games are actually won:
+            second chances off the offensive glass, turnovers forced and
+            avoided, threes that go in, and points squeezed out of every trip
+            down the floor. The Top 25 is built from scratch. No polls and no
+            borrowed rankings, just every Division I team&rsquo;s box scores
+            with each number adjusted for who they played.
+          </p>
+          <p>
+            {formula.stage === "in-season" ? (
+              <>
+                The season is underway. Real 2026&ndash;27 numbers from the
+                NCAA&rsquo;s official stats now count alongside the preseason
+                projection, and take over more each week as teams play more
+                games.
+              </>
+            ) : (
+              <>
+                Until tip-off on November 2 it&rsquo;s a projection: every
+                returning player and transfer, followed to his new team and
+                measured by what he did last season. Once games start, real
+                2026&ndash;27 numbers from the NCAA&rsquo;s official stats take
+                over a little more each week.
+              </>
+            )}
+          </p>
+          <p>
+            Alongside it are a shot chart for every team and player from
+            2025&ndash;26, and Live Wire, a hand-written feed of transfers and
+            injuries that runs across the top of every page.
+          </p>
+        </div>
+        <p className="home-actions">
+          <Link href="/?tab=top25" scroll={false} className="home-action is-primary">
+            See the Top 25
+          </Link>
+          <Link href="/?tab=shots" scroll={false} className="home-action">
+            Find a shot chart
+          </Link>
         </p>
         {counts && (
           <p className="home-counts">
-            {counts.shots.toLocaleString()} field goal attempts ·{" "}
+            {counts.shots.toLocaleString()} shots charted ·{" "}
             {counts.games.toLocaleString()} games ·{" "}
             {counts.players.toLocaleString()} players
           </p>
@@ -100,10 +144,9 @@ export default async function Home({
 
       <footer className="home-foot">
         <p>
-          Shot data from CollegeBasketballData. Locations are recorded
-          courtside rather than optically tracked, so they&rsquo;re accurate
-          to roughly a foot — enough to say &ldquo;left wing, about
-          sixteen feet,&rdquo; not enough to read precisely.
+          Box scores and shot locations from CollegeBasketballData;
+          2026&ndash;27 team stats from NCAA.com once the season starts. Shot
+          locations are recorded courtside, accurate to roughly a foot.
         </p>
       </footer>
     </main>
@@ -117,46 +160,6 @@ function Overview() {
 
   return (
     <>
-      <section className="home-sections">
-        <h2 className="home-h2">What&rsquo;s here</h2>
-
-        <div className="home-grid">
-          <Link href="/?tab=top25" className="home-card" scroll={false}>
-            <span className="home-card-season">2026-27 preseason</span>
-            <h3>Top 25</h3>
-            <p>
-              Our own formula, built for teams that crash the glass, win the
-              turnover battle and score efficiently, with every stat
-              adjusted for who they played.
-            </p>
-            <span className="home-card-go">Open the Top 25</span>
-          </Link>
-
-          <Link href="/?tab=shots" className="home-card" scroll={false}>
-            <span className="home-card-season">2025-26 season</span>
-            <h3>Shot charts</h3>
-            <p>
-              Where a player or team shoots from and how well, zone by zone.
-              Switch to the defensive side of a team to see what it allows
-              rather than what it scores.
-            </p>
-            <span className="home-card-go">Pick a team</span>
-          </Link>
-
-          <Link href="/?tab=wire" className="home-card" scroll={false}>
-            <span className="home-card-season">Updated by hand</span>
-            <h3>Live Wire</h3>
-            <p>
-              Transfers, commitments and injury news across the top of every
-              page. There&rsquo;s no feed for this in college basketball, so
-              each item is written rather than scraped. Hide it with the
-              button at the right of the bar.
-            </p>
-            <span className="home-card-go">Read the latest</span>
-          </Link>
-        </div>
-      </section>
-
       <section className="home-top">
         <h2 className="home-h2">
           Top ten, 2026-27 preseason
@@ -362,49 +365,6 @@ function Method() {
 
       <FormulaMethod />
 
-      <section className="home-method">
-        <h2 className="home-h2">
-          Last season&rsquo;s shooting ratings
-          <Link href="/rankings?view=last" className="home-h2-link">
-            See the table
-          </Link>
-        </h2>
-
-        <div className="home-method-body">
-          <article>
-            <h3>Schedule is adjusted for, because it has to be</h3>
-            <p>
-              Before adjustment the top of the ratings filled with mid-major
-              teams. Belmont&rsquo;s offense really is efficient — against
-              the Missouri Valley. An unadjusted rating counts a bucket
-              against Evansville the same as one against Houston.
-            </p>
-            <p>
-              So a team&rsquo;s offense is credited for the defenses it
-              faced, and those defenses are themselves rated against the
-              offenses <em>they</em> faced, repeated until the numbers
-              settle. It&rsquo;s the same shape as KenPom&rsquo;s adjusted
-              efficiency, applied to points per shot.
-            </p>
-          </article>
-
-          <article>
-            <h3>What this doesn&rsquo;t measure</h3>
-            <p>
-              The ratings are points per <em>field goal attempt</em>, not
-              per possession. Turnovers, offensive rebounds and free throws
-              aren&rsquo;t in the data, and together they&rsquo;re a large
-              share of what separates teams. A team that shoots well and
-              gives the ball away constantly will rate better here than it
-              deserves.
-            </p>
-            <p>
-              They also describe 2025-26 and aren&rsquo;t used in the 2026-27
-              Top 25, which is built from full box scores instead.
-            </p>
-          </article>
-        </div>
-      </section>
     </>
   );
 }

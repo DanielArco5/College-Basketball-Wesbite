@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "ingest": "tsx --env-file=.env.local scripts/ingest-shots.ts",
-    "enrich-teams": "tsx --env-file=.env.local scripts/enrich-teams.ts"
+    "enrich-teams": "tsx --env-file=.env.local scripts/enrich-teams.ts",
+    "ncaa-stats": "tsx --env-file=.env.local scripts/ncaa-stats.ts",
+    "rank": "tsx --env-file=.env.local scripts/project-2027.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.0",
