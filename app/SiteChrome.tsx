@@ -1,5 +1,5 @@
-import { createServerClient } from "@/lib/supabase-server";
-import LiveWire, { type WireEntry } from "./LiveWire";
+import { getWire } from "@/lib/wire";
+import LiveWire from "./LiveWire";
 import SiteNav from "./SiteNav";
 import "./site-chrome.css";
 
@@ -23,24 +23,14 @@ try {
  * rather than three tools sharing a palette.
  */
 export default async function SiteChrome() {
-  const db = createServerClient();
-
-  // A failure here must not take down every page on the site, so the
-  // error is swallowed and the ticker simply doesn't render. This is the
-  // one query in the app where silence is the right behaviour.
-  const { data } = await db
-    .from("live_wire_entries")
-    // "*" so a missing source column (before supabase/automation.sql)
-    // can't blank the ticker.
-    .select("*")
-    .eq("is_live", true)
-    .order("published_at", { ascending: false })
-    .limit(12);
+  // Scores, top scorers and injuries first, then the rest of the news.
+  // Every part fails soft: a missing source just leaves its items out.
+  const entries = await getWire();
 
   return (
     <>
       <script dangerouslySetInnerHTML={{ __html: WIRE_PREF }} />
-      <LiveWire entries={(data ?? []) as WireEntry[]} />
+      <LiveWire entries={entries} />
       <SiteNav />
     </>
   );

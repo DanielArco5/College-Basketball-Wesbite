@@ -3,8 +3,9 @@
 import { useSyncExternalStore } from "react";
 
 export type WireEntry = {
-  id: number;
-  kind: "transfer" | "commitment" | "injury" | "note";
+  id: number | string;
+  /** score, live and scorer come from the scoreboard (lib/scoreboard.ts). */
+  kind: "transfer" | "commitment" | "injury" | "note" | "score" | "live" | "scorer";
   headline: string;
   url: string | null;
   published_at: string;
@@ -17,6 +18,9 @@ export type WireEntry = {
  * player is up, losing one to injury is down, a note is flat.
  */
 const TICKER: Record<WireEntry["kind"], { sym: string; arrow: string; tone: string; label: string }> = {
+  live: { sym: "LIVE", arrow: "●", tone: "live", label: "In progress" },
+  score: { sym: "FINAL", arrow: "■", tone: "flat", label: "Final" },
+  scorer: { sym: "PTS", arrow: "▲", tone: "up", label: "Top scorer" },
   transfer: { sym: "XFER", arrow: "▲", tone: "up", label: "Transfer" },
   commitment: { sym: "COMMIT", arrow: "▲", tone: "up", label: "Commitment" },
   injury: { sym: "INJ", arrow: "▼", tone: "down", label: "Injury" },

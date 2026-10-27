@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createServerClient } from "@/lib/supabase-server";
 import { getRanking, type Ranking } from "@/lib/rankings";
+import { getWire } from "@/lib/wire";
 import type { WireEntry } from "./LiveWire";
 import { FormulaMethod, FormulaRanking } from "./rankings/Formula";
 import { LogoMark } from "./Logo";
@@ -140,7 +141,7 @@ export default async function Home({
         {tab === "overview" && <Overview ranking={ranking} />}
         {tab === "top25" && <Top25 ranking={ranking} />}
         {tab === "shots" && <ShotCharts db={db} />}
-        {tab === "wire" && <Wire db={db} />}
+        {tab === "wire" && <Wire />}
         {tab === "method" && <Method ranking={ranking} />}
       </div>
 
@@ -279,27 +280,22 @@ const KIND_LABEL: Record<WireEntry["kind"], string> = {
   commitment: "Commit",
   injury: "Injury",
   note: "Note",
+  live: "Live",
+  score: "Final",
+  scorer: "Top scorer",
 };
 
-async function Wire({ db }: { db: Db }) {
-  const { data } = await db
-    .from("live_wire_entries")
-    // "*" rather than a column list: before supabase/automation.sql adds
-    // the source column, naming it would fail the whole read.
-    .select("*")
-    .eq("is_live", true)
-    .order("published_at", { ascending: false })
-    .limit(30);
-
-  const entries = (data ?? []) as WireEntry[];
+async function Wire() {
+  const entries = await getWire();
 
   return (
     <section>
       <h2 className="home-h2">Live Wire</h2>
       <p className="home-intro">
-        Headlines from ESPN and CBS Sports, checked every few hours, plus
-        notes of our own. Transfers, commitments and injuries are tagged.
-        The same items scroll across the top of every page, and you can
+        The day&rsquo;s biggest scores and scoring nights first, live
+        during games, then the past week&rsquo;s injuries, then the rest of
+        the news: headlines from ESPN and CBS Sports, checked every few
+        hours, plus notes of our own. The same items scroll across the top of every page, and you can
         hide that bar with the button at its right edge.
       </p>
       {entries.length === 0 ? (
