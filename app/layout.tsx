@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import SiteChrome from "./SiteChrome";
 import "./globals.css";
@@ -21,6 +21,13 @@ export const metadata: Metadata = {
   description:
     "Shot locations for every Division I team and player, mapped to the " +
     "floor and measured against the rest of the country.",
+};
+
+// Phone browser chrome (Safari's top bar, Android's status bar) matches
+// the ticker instead of flashing white above a dark page.
+export const viewport: Viewport = {
+  themeColor: "#0E0B09",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

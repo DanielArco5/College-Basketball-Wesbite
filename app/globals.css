@@ -1,8 +1,13 @@
 @import "tailwindcss";
 
+/* The site is dark-only. These used to be the starter template's
+   light/dark pair, which painted the page white on phones in light mode
+   and overrode the palette in site-chrome.css. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #191512;
+  --foreground: #E8DFD4;
+  /* Native form controls, scrollbars and overscroll match the dark page. */
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -12,15 +17,13 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* html too: iOS shows it when you pull past the top or bottom. */
+html,
 body {
   background: var(--background);
   color: var(--foreground);
+}
+
+body {
   font-family: Arial, Helvetica, sans-serif;
 }
