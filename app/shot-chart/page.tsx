@@ -313,6 +313,26 @@ export default async function ShotChartPage({
                   </>
                 )}
               </figcaption>
+              {/* Same colors, opposite verdicts: red is a hot offense but a
+                  leaky defense. Easy to misread when flipping the toggle. */}
+              {mode === "team" && (
+                <p className="color-note">
+                  <strong>Heads up:</strong>{" "}
+                  {side === "defense" ? (
+                    <>
+                      on Shots allowed, <span className="is-blue">blue is good</span>:
+                      opponents shoot below average there. Red means they
+                      score more than usual. It&rsquo;s the reverse of Shots taken.
+                    </>
+                  ) : (
+                    <>
+                      on Shots taken, <span className="is-red">red is good</span>:
+                      this team shoots above average there. On Shots allowed
+                      it flips, and <span className="is-blue">blue is good</span>.
+                    </>
+                  )}
+                </p>
+              )}
             </figure>
 
             <ShotMix totals={totals} league={league} />

@@ -199,6 +199,19 @@ body:has(.wrap) {
   max-width: 44ch;
 }
 
+.color-note {
+  margin-top: 0.6rem;
+  max-width: 44ch;
+  padding: 0.5rem 0.7rem;
+  border-left: 2px solid var(--rule);
+  color: var(--ink-dim);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+.color-note strong { color: var(--ink); font-weight: 600; }
+.color-note .is-red { color: #E35F44; font-weight: 600; }
+.color-note .is-blue { color: #4F95DA; font-weight: 600; }
+
 .empty-state {
   color: var(--ink-dim);
   max-width: 48ch;
