@@ -81,13 +81,6 @@ export function FormulaRanking({ ranking, limit }: { ranking: Ranking; limit?: n
               <th
                 scope="col"
                 className="num"
-                title="Roster experience: last season's minutes back, plus half credit for minutes transfers played elsewhere in D1"
-              >
-                Exp
-              </th>
-              <th
-                scope="col"
-                className="num"
                 title="Rank in our formula alone · rank in the combined KenPom, Torvik and ESPN lists"
               >
                 Ours · Cons.
@@ -113,7 +106,7 @@ export function FormulaRanking({ ranking, limit }: { ranking: Ranking; limit?: n
                 </td>
                 {r.stub ? (
                   // Pinned from outside the formula's top 100: nothing to show.
-                  <td className="num ratings-src" colSpan={8}>
+                  <td className="num ratings-src" colSpan={7}>
                     Outside the formula&rsquo;s top 100
                   </td>
                 ) : (
@@ -124,7 +117,6 @@ export function FormulaRanking({ ranking, limit }: { ranking: Ranking; limit?: n
                     <td className="num"><Stat value={signed(r.to_margin)} rank={r.ranks.turnovers} /></td>
                     <td className="num"><Stat value={r.three_pct.toFixed(1)} rank={r.ranks.three} /></td>
                     <td className="num"><Stat value={r.def_eff.toFixed(1)} rank={r.ranks.defense} /></td>
-                    <td className="num"><Stat value={`${Math.round(r.experience * 100)}%`} rank={r.ranks.continuity} /></td>
                     <td className="num ratings-src">
                       {r.own_rank} · {r.external_rank ?? "–"}
                     </td>
