@@ -78,13 +78,6 @@ export function FormulaRanking({ ranking, limit }: { ranking: Ranking; limit?: n
               </th>
               <th scope="col" className="num" title="Three-point percentage">3P%</th>
               <th scope="col" className="num" title="Points allowed per 100 possessions">Def</th>
-              <th
-                scope="col"
-                className="num"
-                title="Rank in our formula alone · rank in the combined KenPom, Torvik and ESPN lists"
-              >
-                Ours · Cons.
-              </th>
             </tr>
           </thead>
           <tbody>
@@ -106,7 +99,7 @@ export function FormulaRanking({ ranking, limit }: { ranking: Ranking; limit?: n
                 </td>
                 {r.stub ? (
                   // Pinned from outside the formula's top 100: nothing to show.
-                  <td className="num ratings-src" colSpan={7}>
+                  <td className="num ratings-src" colSpan={6}>
                     Outside the formula&rsquo;s top 100
                   </td>
                 ) : (
@@ -117,9 +110,6 @@ export function FormulaRanking({ ranking, limit }: { ranking: Ranking; limit?: n
                     <td className="num"><Stat value={signed(r.to_margin)} rank={r.ranks.turnovers} /></td>
                     <td className="num"><Stat value={r.three_pct.toFixed(1)} rank={r.ranks.three} /></td>
                     <td className="num"><Stat value={r.def_eff.toFixed(1)} rank={r.ranks.defense} /></td>
-                    <td className="num ratings-src">
-                      {r.own_rank} · {r.external_rank ?? "–"}
-                    </td>
                   </>
                 )}
               </tr>
@@ -217,8 +207,7 @@ export function FormulaMethod({ formula }: { formula: Formula }) {
           </span>
         ))}
         . A team ranked k-th by the consensus gets the score our k-th best team
-        has, so both halves sit on one scale. The table shows where each team
-        ranks in each half.
+        has, so both halves sit on one scale.
       </p>
       <p>
         Our formula uses only box-score data, and it&rsquo;s built the same
