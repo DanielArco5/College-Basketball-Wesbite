@@ -321,7 +321,8 @@ export default async function ShotChartPage({
                   {side === "defense" ? (
                     <>
                       on Shots allowed, <span className="is-blue">blue is good</span>:
-                      opponents shoot below average there. Red means they
+                      opponents shoot below average there.{" "}
+                      <span className="is-red">Red</span> means they
                       score more than usual. It&rsquo;s the reverse of Shots taken.
                     </>
                   ) : (
