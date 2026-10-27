@@ -36,7 +36,9 @@
  *      exact opponents.
  *
  * Payloads are cached in scripts/.cache (gitignored). Writes
- * player_seasons rows for 2027 and lib/formula-2027.json for the page.
+ * player_seasons rows for 2027, lib/formula-2027.json, and today's row in
+ * formula_snapshots, which the site reads (the JSON is its fallback).
+ * --no-publish skips the snapshot, for trying out a change locally.
  * The method text in app/rankings/Formula.tsx describes this file; keep
  * the two in step.
  */
@@ -116,6 +118,11 @@ const EXTERNAL_WEIGHT = 0.6;
 const ADJUST_ROUNDS = 12;
 const RANKED = 25;
 const HONORABLE = 10;
+/**
+ * Rows kept in the output. More than the list shows, so a team pinned by
+ * hand (top25_overrides) from outside it still has its numbers.
+ */
+const OUTPUT_ROWS = 100;
 /** Games at which a team's real 2026-27 numbers count half. */
 const BLEND_GAMES = 10;
 /** NCAA.com's 2026-27 totals, written by scripts/ncaa-stats.ts. */
@@ -564,7 +571,7 @@ async function main() {
   const ordered = rows
     .map((r, i) => ({ r, i }))
     .sort((x, y) => scores[y.i] - scores[x.i])
-    .slice(0, RANKED + HONORABLE);
+    .slice(0, OUTPUT_ROWS);
 
   const maxGames = Math.max(0, ...[...live.byTeam.values()].map((t) => t.games));
   const out = {
@@ -623,6 +630,7 @@ async function main() {
   };
 
   writeFileSync("lib/formula-2027.json", JSON.stringify(out, null, 2) + "\n");
+  if (!process.argv.includes("--no-publish")) await publish(out);
   console.log(`Rated ${rows.length} teams (calibration ${JSON.stringify(calib)}). Top 10:`);
   for (const r of out.rows.slice(0, 10)) {
     console.log(
@@ -630,6 +638,24 @@ async function main() {
         `tom ${r.to_margin}, 3p ${r.three_pct}, def ${r.def_eff})`,
     );
   }
+}
+
+/**
+ * Today's snapshot, which the site reads within five minutes. One row per
+ * day: a second run the same day replaces it.
+ */
+async function publish(out: { season: number; generated_at: string }) {
+  const day = new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+  const { error } = await db
+    .from("formula_snapshots")
+    .upsert({ season: out.season, day, generated_at: out.generated_at, data: out }, { onConflict: "season,day" });
+  if (error) {
+    throw new Error(
+      `Publishing the snapshot failed: ${error.message}\n` +
+        "If formula_snapshots doesn't exist, run supabase/automation.sql once in the SQL editor.",
+    );
+  }
+  console.log(`Published the ${day} snapshot.`);
 }
 
 // ── KenPom / Torvik / ESPN ────────────────────────────────────────────

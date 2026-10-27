@@ -24,6 +24,7 @@ normal on screen.
 | 6 Posting news | **Option (a).** Use the saved SQL snippet below. |
 | 7 Tabbed home | **Done — true tabs, as the owner asked.** `/` has Overview, Top 25, Shot charts, How it works. Each tab is a URL (`/?tab=top25`) and only its data is fetched. |
 | Ticker toggle | **Done, unverified on screen.** Hide/Show button on the ticker's right edge; choice saved in localStorage and applied before first paint. Can't be seen until Phase 2 creates entries. |
+| Daily automation | **Built 2026-10-27, runs once pushed.** `.github/workflows/daily.yml` (11:15 UTC: `update-shots`, `ncaa-stats`, `rank`, which publishes the day's row to `formula_snapshots`) and `news.yml` (every 3 h: `fetch-news`, ESPN + CBS Sports RSS into Live Wire, tagged by keyword, deduped by link and headline overlap). The site reads the newest snapshot (bundled JSON is the fallback), so a re-rank needs no redeploy; `/rankings` revalidates every 5 min. **Hand picks:** Supabase Table Editor → `top25_overrides` (school, rank 1–35 or 0 to drop, note); applied in `lib/rankings.ts`, tagged "Our pick · formula #N". **YOU, once:** run `supabase/automation.sql`; add repo secrets `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `CBBD_API_KEY`. |
 | 8 Commit/push | **Committed locally. Push is YOU** — `gh` isn't installed. |
 | 9 Deploy | **YOU — not started.** |
 

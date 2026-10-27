@@ -1,4 +1,4 @@
-import formula from "@/lib/formula-2027.json";
+import { getRanking } from "@/lib/rankings";
 import { FormulaMethod, FormulaRanking } from "./Formula";
 import "./rankings.css";
 
@@ -9,7 +9,13 @@ export const metadata = {
     "Torvik and ESPN preseason rankings.",
 };
 
-export default function RankingsPage() {
+// Rebuilt at most every five minutes: picks up the morning re-rank, hand
+// picks from top25_overrides, and new Live Wire items in the ticker.
+export const revalidate = 300;
+
+export default async function RankingsPage() {
+  const ranking = await getRanking();
+  const { formula } = ranking;
   return (
     <main className="rank">
       <header>
@@ -24,8 +30,8 @@ export default function RankingsPage() {
         </p>
       </header>
 
-      <FormulaRanking />
-      <FormulaMethod />
+      <FormulaRanking ranking={ranking} />
+      <FormulaMethod formula={formula} />
     </main>
   );
 }

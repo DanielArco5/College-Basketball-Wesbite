@@ -30,7 +30,9 @@ export default async function SiteChrome() {
   // one query in the app where silence is the right behaviour.
   const { data } = await db
     .from("live_wire_entries")
-    .select("id, kind, headline, url, published_at")
+    // "*" so a missing source column (before supabase/automation.sql)
+    // can't blank the ticker.
+    .select("*")
     .eq("is_live", true)
     .order("published_at", { ascending: false })
     .limit(12);

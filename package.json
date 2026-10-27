@@ -11,7 +11,8 @@
     "enrich-teams": "tsx --env-file=.env.local scripts/enrich-teams.ts",
     "ncaa-stats": "tsx --env-file=.env.local scripts/ncaa-stats.ts",
     "rank": "tsx --env-file=.env.local scripts/project-2027.ts",
-    "update-shots": "tsx --env-file=.env.local scripts/update-shots.ts"
+    "update-shots": "tsx --env-file=.env.local scripts/update-shots.ts",
+    "fetch-news": "tsx --env-file=.env.local scripts/fetch-news.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.0",

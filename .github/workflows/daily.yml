@@ -1,0 +1,79 @@
+# Once a day: new shots into the shot charts, then re-rank the Top 25.
+#
+# Needs three repository secrets (Settings -> Secrets and variables ->
+# Actions): SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, CBBD_API_KEY. They're
+# written to a throwaway .env.local on the runner, the same file the npm
+# scripts read locally, and never printed.
+#
+# Run it by hand any time: Actions tab -> Daily update -> Run workflow.
+
+name: Daily update
+
+on:
+  schedule:
+    # 11:15 UTC: 7:15 a.m. Eastern in fall, 6:15 in winter. West Coast
+    # games are long over. GitHub may start it a few minutes late.
+    - cron: "15 11 * * *"
+  workflow_dispatch:
+
+concurrency: daily-update
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Write .env.local from secrets
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          CBBD_API_KEY: ${{ secrets.CBBD_API_KEY }}
+        run: |
+          printf 'SUPABASE_URL=%s\nSUPABASE_SERVICE_ROLE_KEY=%s\nCBBD_API_KEY=%s\n' \
+            "$SUPABASE_URL" "$SUPABASE_SERVICE_ROLE_KEY" "$CBBD_API_KEY" > .env.local
+
+      # The formula's preseason inputs (2025-26 stats, 2026-27 rosters)
+      # never change. Kept between runs so they cost 3 API calls once,
+      # not 3 every day.
+      - name: Restore CBBD preseason payloads
+        id: cbbd
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            scripts/.cache/rosters-2027.json
+            scripts/.cache/team-stats-2026.json
+            scripts/.cache/player-stats-2026.json
+          key: cbbd-preseason-2027-v1
+
+      # Does nothing before the season starts. About one API call per
+      # game day after that.
+      - name: Shot charts
+        run: npm run update-shots
+
+      # The ranking runs even if the shot import failed.
+      - name: NCAA.com team stats
+        if: ${{ !cancelled() }}
+        run: npm run ncaa-stats
+
+      - name: Re-rank and publish today's snapshot
+        if: ${{ !cancelled() }}
+        run: npm run rank
+
+      - name: Keep CBBD preseason payloads
+        if: ${{ !cancelled() && steps.cbbd.outputs.cache-hit != 'true' && hashFiles('scripts/.cache/player-stats-2026.json') != '' }}
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            scripts/.cache/rosters-2027.json
+            scripts/.cache/team-stats-2026.json
+            scripts/.cache/player-stats-2026.json
+          key: cbbd-preseason-2027-v1

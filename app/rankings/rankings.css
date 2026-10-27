@@ -340,6 +340,7 @@
 
 .rank-honorable .rank-badge { font-family: "Barlow Condensed", system-ui, sans-serif; }
 .rank-badge.is-defense { background: rgba(94, 142, 214, 0.18); color: #8FB4EC; }
+.rank-badge.is-pick { background: rgba(232, 184, 74, 0.16); color: #E8C46E; }
 
 /* ── Polish: room for every column, pinned team names on phones ──── */
 

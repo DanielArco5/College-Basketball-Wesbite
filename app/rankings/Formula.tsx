@@ -1,19 +1,13 @@
 import Link from "next/link";
-import formula from "@/lib/formula-2027.json";
+import type { Formula, RankedRow, Ranking } from "@/lib/rankings";
 
 /**
- * Our 2026-27 preseason ranking, built by scripts/project-2027.ts. No
- * outside rankings go into it. The method text below describes that
- * script; keep the two in step.
+ * Our 2026-27 ranking, built daily by scripts/project-2027.ts, with hand
+ * picks from top25_overrides applied by lib/rankings.ts. The method text
+ * below describes that script; keep the two in step.
  */
 
-type FormulaRow = (typeof formula.rows)[number];
-
 type InSeason = { source: string; fetched: string; max_games: number; blend_games: number };
-
-const RANKED = formula.params.RANKED;
-const X = formula.external;
-const W = formula.weights;
 
 function pctOf(w: number) {
   return `${Math.round(w * 100)}%`;
@@ -33,9 +27,11 @@ function Stat({ value, rank }: { value: string; rank: number }) {
   );
 }
 
-export function FormulaRanking({ limit }: { limit?: number } = {}) {
-  const top = formula.rows.slice(0, limit ?? RANKED);
-  const honorable = limit ? [] : formula.rows.slice(RANKED);
+export function FormulaRanking({ ranking, limit }: { ranking: Ranking; limit?: number }) {
+  const { formula } = ranking;
+  const RANKED = formula.params.RANKED;
+  const top = ranking.rows.slice(0, limit ?? RANKED);
+  const honorable = limit ? [] : ranking.rows.slice(RANKED);
 
   // null in the preseason file, so the JSON import can't infer its shape.
   const live = formula.in_season as InSeason | null;
@@ -46,7 +42,8 @@ export function FormulaRanking({ limit }: { limit?: number } = {}) {
           <>
             Live: up to {live.max_games} games of 2026&ndash;27 results from
             NCAA.com, updated {live.fetched}. A team&rsquo;s real numbers count
-            half once it has played {live.blend_games} games.
+            half once it has played {live.blend_games} games. Re-ranked every
+            morning.
           </>
         ) : (
           <>
@@ -106,6 +103,7 @@ export function FormulaRanking({ limit }: { limit?: number } = {}) {
                   <span className="ratings-team-conf">
                     {r.conference}
                     {r.identity && <IdentityBadge label={r.identity} />}
+                    {r.pinned && <PickBadge row={r} />}
                   </span>
                   {r.transfers_in.length > 0 && (
                     <span className="ratings-adds-line">
@@ -113,16 +111,25 @@ export function FormulaRanking({ limit }: { limit?: number } = {}) {
                     </span>
                   )}
                 </td>
-                <td className="num">{signed(r.score, 2)}</td>
-                <td className="num"><Stat value={r.off_eff.toFixed(1)} rank={r.ranks.offense} /></td>
-                <td className="num"><Stat value={r.oreb_pct.toFixed(1)} rank={r.ranks.oreb} /></td>
-                <td className="num"><Stat value={signed(r.to_margin)} rank={r.ranks.turnovers} /></td>
-                <td className="num"><Stat value={r.three_pct.toFixed(1)} rank={r.ranks.three} /></td>
-                <td className="num"><Stat value={r.def_eff.toFixed(1)} rank={r.ranks.defense} /></td>
-                <td className="num"><Stat value={`${Math.round(r.experience * 100)}%`} rank={r.ranks.continuity} /></td>
-                <td className="num ratings-src">
-                  {r.own_rank} · {r.external_rank ?? "–"}
-                </td>
+                {r.stub ? (
+                  // Pinned from outside the formula's top 100: nothing to show.
+                  <td className="num ratings-src" colSpan={8}>
+                    Outside the formula&rsquo;s top 100
+                  </td>
+                ) : (
+                  <>
+                    <td className="num">{signed(r.score, 2)}</td>
+                    <td className="num"><Stat value={r.off_eff.toFixed(1)} rank={r.ranks.offense} /></td>
+                    <td className="num"><Stat value={r.oreb_pct.toFixed(1)} rank={r.ranks.oreb} /></td>
+                    <td className="num"><Stat value={signed(r.to_margin)} rank={r.ranks.turnovers} /></td>
+                    <td className="num"><Stat value={r.three_pct.toFixed(1)} rank={r.ranks.three} /></td>
+                    <td className="num"><Stat value={r.def_eff.toFixed(1)} rank={r.ranks.defense} /></td>
+                    <td className="num"><Stat value={`${Math.round(r.experience * 100)}%`} rank={r.ranks.continuity} /></td>
+                    <td className="num ratings-src">
+                      {r.own_rank} · {r.external_rank ?? "–"}
+                    </td>
+                  </>
+                )}
               </tr>
             ))}
           </tbody>
@@ -135,8 +142,10 @@ export function FormulaRanking({ limit }: { limit?: number } = {}) {
           <ol start={RANKED + 1}>
             {honorable.map((r) => (
               <li key={r.team_id}>
-                <TeamLink row={r} /> <span className="rank-asof">{signed(r.score, 2)}</span>
+                <TeamLink row={r} />{" "}
+                {!r.stub && <span className="rank-asof">{signed(r.score, 2)}</span>}
                 {r.identity && <IdentityBadge label={r.identity} />}
+                {r.pinned && <PickBadge row={r} />}
               </li>
             ))}
           </ol>
@@ -146,7 +155,7 @@ export function FormulaRanking({ limit }: { limit?: number } = {}) {
       <p className="rank-note">
         Projected 2026-27 numbers. The small figure under each stat is that
         team&rsquo;s rank among all {formula.teams_rated} Division I teams.
-        {formula.rows.some((r) => r.incomplete) && (
+        {ranking.rows.some((r) => r.incomplete) && (
           <>
             {" "}
             <span className="rank-flag">*</span> Roster may be missing
@@ -172,7 +181,16 @@ function IdentityBadge({ label }: { label: string }) {
   );
 }
 
-function TeamLink({ row }: { row: FormulaRow }) {
+/** Placed by hand. The formula's own spot stays visible next to it. */
+function PickBadge({ row }: { row: RankedRow }) {
+  return (
+    <span className="rank-badge is-pick" title={row.note ?? "Placed by hand"}>
+      Our pick{row.formula_rk ? ` · formula #${row.formula_rk}` : ""}
+    </span>
+  );
+}
+
+function TeamLink({ row }: { row: RankedRow }) {
   return (
     <>
       <Link href={`/shot-chart?team=${row.team_id}`}>{row.school}</Link>
@@ -185,7 +203,10 @@ function TeamLink({ row }: { row: FormulaRow }) {
   );
 }
 
-export function FormulaMethod() {
+export function FormulaMethod({ formula }: { formula: Formula }) {
+  const RANKED = formula.params.RANKED;
+  const X = formula.external;
+  const W = formula.weights;
   const p = formula.params;
   const id = formula.identity;
   return (
@@ -360,7 +381,14 @@ export function FormulaMethod() {
           score across all Division I teams (how many standard deviations
           above or below average), multiplied by its weight and added up. A
           score of 0 is a typical team. The top {RANKED} are ranked and the
-          next {p.HONORABLE} are honorable mentions.
+          next {p.HONORABLE} are honorable mentions. All of this reruns every
+          morning.
+        </li>
+        <li>
+          <strong>Our picks.</strong> We can place a team by hand when we
+          see something the numbers don&rsquo;t. Those teams are tagged
+          &ldquo;Our pick&rdquo; with the spot the formula alone gave them,
+          and everyone else keeps the formula&rsquo;s order around them.
         </li>
       </ol>
 

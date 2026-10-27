@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createServerClient } from "@/lib/supabase-server";
-import formula from "@/lib/formula-2027.json";
+import { getRanking, type Ranking } from "@/lib/rankings";
 import type { WireEntry } from "./LiveWire";
 import { FormulaMethod, FormulaRanking } from "./rankings/Formula";
 import { LogoMark } from "./Logo";
@@ -46,6 +46,8 @@ export default async function Home({
   const params = await searchParams;
   const tab: TabKey = TABS.find((t) => t.key === params.tab)?.key ?? "overview";
   const db = createServerClient();
+  const ranking = await getRanking();
+  const { formula } = ranking;
 
   // Counts sit in the header on every tab. If the view is missing or the
   // read fails, the line is hidden rather than showing zeros.
@@ -99,8 +101,9 @@ export default async function Home({
           </p>
           <p>
             Alongside it are a shot chart for every team and player from
-            2025&ndash;26, and Live Wire, a hand-written feed of transfers and
-            injuries that runs across the top of every page.
+            2025&ndash;26, and Live Wire, the day&rsquo;s college basketball
+            news from ESPN and CBS Sports, running across the top of every
+            page.
           </p>
         </div>
         <p className="home-actions">
@@ -134,11 +137,11 @@ export default async function Home({
       </nav>
 
       <div className="home-panel">
-        {tab === "overview" && <Overview />}
-        {tab === "top25" && <Top25 />}
+        {tab === "overview" && <Overview ranking={ranking} />}
+        {tab === "top25" && <Top25 ranking={ranking} />}
         {tab === "shots" && <ShotCharts db={db} />}
         {tab === "wire" && <Wire db={db} />}
-        {tab === "method" && <Method />}
+        {tab === "method" && <Method ranking={ranking} />}
       </div>
 
       <footer className="home-foot">
@@ -154,8 +157,8 @@ export default async function Home({
 
 // ── Overview ──────────────────────────────────────────────────────────
 
-function Overview() {
-  const top = formula.rows.slice(0, 10);
+function Overview({ ranking }: { ranking: Ranking }) {
+  const top = ranking.rows.slice(0, 10);
 
   return (
     <>
@@ -174,10 +177,16 @@ function Overview() {
                 <Link href={`/shot-chart?team=${t.team_id}`}>{t.school}</Link>
               </span>
               <span className="home-top-conf">{t.conference}</span>
-              <span className="home-top-net" title="Formula score; 0 is a typical D1 team">
-                {t.score > 0 ? "+" : ""}
-                {t.score.toFixed(2)}
-              </span>
+              {t.pinned ? (
+                <span className="home-top-net" title={t.note ?? "Placed by hand"}>
+                  Our pick
+                </span>
+              ) : (
+                <span className="home-top-net" title="Formula score; 0 is a typical D1 team">
+                  {t.score > 0 ? "+" : ""}
+                  {t.score.toFixed(2)}
+                </span>
+              )}
             </li>
           ))}
         </ol>
@@ -188,7 +197,7 @@ function Overview() {
 
 // ── Top 25 ────────────────────────────────────────────────────────────
 
-function Top25() {
+function Top25({ ranking }: { ranking: Ranking }) {
   return (
     <section>
       <h2 className="home-h2">
@@ -205,7 +214,7 @@ function Top25() {
         </Link>{" "}
         has the weights.
       </p>
-      <FormulaRanking />
+      <FormulaRanking ranking={ranking} />
     </section>
   );
 }
@@ -275,7 +284,9 @@ const KIND_LABEL: Record<WireEntry["kind"], string> = {
 async function Wire({ db }: { db: Db }) {
   const { data } = await db
     .from("live_wire_entries")
-    .select("id, kind, headline, url, published_at")
+    // "*" rather than a column list: before supabase/automation.sql adds
+    // the source column, naming it would fail the whole read.
+    .select("*")
     .eq("is_live", true)
     .order("published_at", { ascending: false })
     .limit(30);
@@ -286,10 +297,10 @@ async function Wire({ db }: { db: Db }) {
     <section>
       <h2 className="home-h2">Live Wire</h2>
       <p className="home-intro">
-        Every entry is written by hand; there&rsquo;s no transfer or injury
-        feed for college basketball to pull from. The same items scroll
-        across the top of every page, and you can hide that bar with the
-        button at its right edge.
+        Headlines from ESPN and CBS Sports, checked every few hours, plus
+        notes of our own. Transfers, commitments and injuries are tagged.
+        The same items scroll across the top of every page, and you can
+        hide that bar with the button at its right edge.
       </p>
       {entries.length === 0 ? (
         <p className="home-empty">Nothing posted yet.</p>
@@ -304,6 +315,7 @@ async function Wire({ db }: { db: Db }) {
                   day: "numeric",
                   timeZone: "America/New_York",
                 })}
+                {e.source && <> · {e.source}</>}
               </span>
               {e.url ? (
                 <a href={e.url} target="_blank" rel="noopener noreferrer">
@@ -322,7 +334,7 @@ async function Wire({ db }: { db: Db }) {
 
 // ── How it works ──────────────────────────────────────────────────────
 
-function Method() {
+function Method({ ranking }: { ranking: Ranking }) {
   return (
     <>
       <section className="home-method">
@@ -361,7 +373,7 @@ function Method() {
         </div>
       </section>
 
-      <FormulaMethod />
+      <FormulaMethod formula={ranking.formula} />
 
     </>
   );

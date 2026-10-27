@@ -8,6 +8,8 @@ export type WireEntry = {
   headline: string;
   url: string | null;
   published_at: string;
+  /** Outlet for fetched headlines (ESPN, CBS Sports); null if ours. */
+  source?: string | null;
 };
 
 /**
@@ -48,7 +50,8 @@ function subscribeWire(onChange: () => void) {
 }
 
 /**
- * Scrolling news ticker, fed by hand from live_wire_entries, styled like
+ * Scrolling news ticker, fed from live_wire_entries (fetched headlines
+ * plus our own notes; scripts/fetch-news.ts), styled like
  * a market tape: symbol, direction arrow, headline, date.
  *
  * Two things a ticker has to get right or it becomes an irritant:
@@ -128,6 +131,7 @@ export default function LiveWire({ entries }: { entries: WireEntry[] }) {
                   </span>
                   <span className="sr-only">{t.label}: </span>
                   <span className="wire-head">{e.headline}</span>
+                  {e.source && <span className="wire-src">{e.source}</span>}
                   <time className="wire-time" dateTime={e.published_at}>
                     {stamp(e.published_at)}
                   </time>
