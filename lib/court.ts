@@ -50,9 +50,7 @@ export const HOOP = toSvg(BASKET_X_FT, BASKET_Y_FT);
 export type Zone =
   | "restricted_area"
   | "paint_non_ra"
-  | "mid_left"
-  | "mid_center"
-  | "mid_right"
+  | "mid_range"
   | "corner_3_left"
   | "corner_3_right"
   | "wing_3_left"
@@ -85,17 +83,13 @@ export function zoneOf(x: number, y: number): Zone {
   )
     return "paint_non_ra";
 
-  if (y > BASKET_Y_FT + LANE_HALF_WIDTH_FT) return "mid_left";
-  if (y < BASKET_Y_FT - LANE_HALF_WIDTH_FT) return "mid_right";
-  return "mid_center";
+  return "mid_range";
 }
 
 export const ZONE_LABELS: Record<Zone, string> = {
   restricted_area: "At the rim",
   paint_non_ra: "Paint",
-  mid_left: "Mid-range, left",
-  mid_center: "Mid-range, center",
-  mid_right: "Mid-range, right",
+  mid_range: "Mid-range",
   corner_3_left: "Left corner three",
   corner_3_right: "Right corner three",
   wing_3_left: "Left wing three",
@@ -107,9 +101,7 @@ export const ZONE_LABELS: Record<Zone, string> = {
 export const ZONE_ORDER: Zone[] = [
   "restricted_area",
   "paint_non_ra",
-  "mid_left",
-  "mid_center",
-  "mid_right",
+  "mid_range",
   "corner_3_left",
   "corner_3_right",
   "wing_3_left",

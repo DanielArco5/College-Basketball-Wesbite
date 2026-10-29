@@ -54,10 +54,9 @@ as $$
     when x <= 19 and y between 19 and 31
       then 'paint_non_ra'
 
-    -- Mid-range, split into thirds by angle.
-    when y > 31 then 'mid_left'
-    when y < 19 then 'mid_right'
-    else 'mid_center'
+    -- Everything else inside the arc is one mid-range zone (it was
+    -- split three ways until merge-mid-range.sql).
+    else 'mid_range'
   end;
 $$;
 

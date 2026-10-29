@@ -111,19 +111,7 @@ export default function ShotChart({ stats }: { stats: ZoneStat[] }) {
         {/* Inside the arc and between the corner lines: mid-range. */}
         <g clipPath="url(#zone-between-corners)">
           <g clipPath="url(#zone-inside-arc)">
-            <rect width={LANE_L} height={VIEW_H} fill={fillFor("mid_right")} />
-            <rect
-              x={LANE_L}
-              width={LANE_R - LANE_L}
-              height={VIEW_H}
-              fill={fillFor("mid_center")}
-            />
-            <rect
-              x={LANE_R}
-              width={VIEW_W - LANE_R}
-              height={VIEW_H}
-              fill={fillFor("mid_left")}
-            />
+            <rect width={VIEW_W} height={VIEW_H} fill={fillFor("mid_range")} />
           </g>
         </g>
 

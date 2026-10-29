@@ -25,7 +25,17 @@ as $$
 declare
   v text;
   done text[] := '{}';
+  zoned int;
 begin
+  -- Shots imported since the last run. Free throws and untracked shots
+  -- (no location) stay unzoned, as in zones-and-baselines.sql.
+  update shot_events
+  set zone = zone_of(x, y)
+  where zone is null
+    and x is not null and y is not null
+    and coalesce(cbbd_range, '') <> 'free_throw';
+  get diagnostics zoned = row_count;
+
   foreach v in array array[
     'zone_baselines',
     'zone_priors',
@@ -43,7 +53,7 @@ begin
       done := done || v;
     end if;
   end loop;
-  return 'refreshed: ' || array_to_string(done, ', ');
+  return 'zoned ' || zoned || ' new shots; refreshed: ' || array_to_string(done, ', ');
 end;
 $$;
 
