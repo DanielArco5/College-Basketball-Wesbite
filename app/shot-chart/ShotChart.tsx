@@ -80,7 +80,7 @@ export default function ShotChart({
 
   const fillFor = (zone: Zone) => {
     const stat = byZone.get(zone);
-    return zoneColor(stat?.fg_pct_vs_league ?? 0, mode);
+    return zoneColor(stat?.fg_pct_vs_league ?? 0, mode, side);
   };
   const isLow = (zone: Zone) => (byZone.get(zone)?.attempts ?? 0) < LOW_SAMPLE_SHOTS;
 
@@ -316,7 +316,7 @@ function ZoneTip({
             </span>
           </span>
           <span className="zone-tip-dim">D1 average {pct(stat.league_fg_pct)}</span>
-          <Gap diff={stat.raw_fg_pct - stat.league_fg_pct} />
+          <Gap diff={stat.raw_fg_pct - stat.league_fg_pct} side={side} />
           {/* The color and the table's vs D1 use the adjusted gap; say so
               when it's far enough off the raw one to look like a mismatch. */}
           {Math.abs(stat.raw_fg_pct - stat.league_fg_pct - stat.fg_pct_vs_league) >= 0.005 && (
@@ -339,11 +339,13 @@ function signed(diff: number) {
   return `${pts > 0 ? "+" : ""}${pts.toFixed(1)}`;
 }
 
-function Gap({ diff }: { diff: number }) {
+function Gap({ diff, side }: { diff: number; side: "offense" | "defense" }) {
   const pts = 100 * diff;
   const word = Math.abs(pts) < 0.05 ? "Even with" : pts > 0 ? "above" : "below";
+  // Green when it's good for this team, red when it isn't.
+  const good = side === "defense" ? -pts : pts;
   return (
-    <span className={pts > 0 ? "zone-tip-up" : pts < 0 ? "zone-tip-down" : ""}>
+    <span className={good > 0 ? "zone-tip-good" : good < 0 ? "zone-tip-bad" : ""}>
       {word === "Even with"
         ? "Even with D1 average"
         : `${Math.abs(pts).toFixed(1)} pts ${word} average`}
@@ -351,24 +353,35 @@ function Gap({ diff }: { diff: number }) {
   );
 }
 
-/** Key for the zone colors: the gradient, its ends, and the stripes. */
-export function ZoneLegend({ mode }: { mode: Mode }) {
+/** Key for the zone colors: the gradient, its ends, and the stripes.
+ *  Bad on the left, good on the right, on both sides of the ball. */
+export function ZoneLegend({ mode, side }: { mode: Mode; side: "offense" | "defense" }) {
   const range = COLOR_RANGE_PTS[mode];
-  // Sampled from the same function as the fills, so the bar matches them.
+  // Sampled from the same function as the fills (on the offense scale,
+  // where low is bad), so the bar matches them.
   const steps = Array.from({ length: 21 }, (_, i) => {
     const pts = -range + (i * 2 * range) / 20;
     return `${zoneColor(pts / 100, mode)} ${(i * 100) / 20}%`;
   });
+  const [worse, better] = side === "defense" ? ["+", "−"] : ["−", "+"];
 
   return (
     <div className="zone-legend">
-      <span className="zone-legend-title">FG% vs D1 average, in points</span>
+      <span className="zone-legend-title">
+        {side === "defense" ? "Opponents\u2019 FG%" : "FG%"} vs D1 average, in points
+      </span>
       <div className="zone-scale">
         <span className="zone-scale-bar" style={{ background: `linear-gradient(90deg, ${steps.join(", ")})` }} />
         <span className="zone-scale-ticks">
-          <span>−{range} or worse</span>
+          <span>
+            {worse}
+            {range} or worse
+          </span>
           <span>Average</span>
-          <span>+{range} or better</span>
+          <span>
+            {better}
+            {range} or better
+          </span>
         </span>
       </div>
       <span className="zone-legend-low">

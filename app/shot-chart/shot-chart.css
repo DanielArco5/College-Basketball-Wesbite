@@ -209,8 +209,8 @@ body:has(.wrap) {
   line-height: 1.5;
 }
 .color-note strong { color: var(--ink); font-weight: 600; }
-.color-note .is-red { color: #E0675C; font-weight: 600; }
-.color-note .is-blue { color: #7FA3EC; font-weight: 600; }
+.color-note .is-bad { color: #E0675C; font-weight: 600; }
+.color-note .is-good { color: #5FBF7A; font-weight: 600; }
 
 .empty-state {
   color: var(--ink-dim);
@@ -347,8 +347,8 @@ body:has(.wrap) {
 }
 
 .zone-tip-dim { color: var(--ink-dim); }
-.zone-tip-up { color: #E0675C; }
-.zone-tip-down { color: #7FA3EC; }
+.zone-tip-good { color: #5FBF7A; }
+.zone-tip-bad { color: #E0675C; }
 /* Shot mix and eFG% under the chart: three stats side by side. */
 .mix {
   display: grid;

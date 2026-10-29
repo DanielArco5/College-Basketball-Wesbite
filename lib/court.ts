@@ -110,15 +110,16 @@ export const ZONE_ORDER: Zone[] = [
 ];
 
 // ── Zone color ─────────────────────────────────────────────────────────
-// A continuous diverging scale: deep blue below the D1 average, a muted
-// gray at it, deep red above, every shade in between. The three stops sit
-// at about the same lightness, so a zone gets more colorful the further
-// it is from average rather than lighter or darker, and the two ends
-// never clash. Mixed in OKLab, where equal steps look equal.
+// A continuous scale from bad to good: deep red, through a muted yellow
+// at the D1 average, to deep green, with a shade for every point between.
+// "Good" depends on the side: shooting above average on offense, holding
+// opponents below it on defense. The yellow is toned down so average
+// zones don't outshine the ones that stand out. Mixed in OKLab, where
+// equal steps look equal.
 export const COLOR_STOPS = {
-  low: "#2A4E9E",
-  mid: "#56514C",
-  high: "#A52A22",
+  bad: "#A3221E",
+  mid: "#C4A43E",
+  good: "#1F7A3C",
 };
 
 /** Points vs D1 at which a zone reaches full color. Teams vary about half
@@ -131,10 +132,16 @@ export const COLOR_RANGE_PTS = { player: 10, team: 6 };
 export const LOW_SAMPLE_SHOTS = 5;
 
 /** Fill for a zone `diff` (a fraction: 0.031 is +3.1 points) from the D1
- *  average, on the given mode's scale. */
-export function zoneColor(diff: number, mode: "player" | "team") {
-  const t = Math.max(-1, Math.min(1, (100 * diff) / COLOR_RANGE_PTS[mode]));
-  const end = t < 0 ? COLOR_STOPS.low : COLOR_STOPS.high;
+ *  average, on the given mode's scale. On defense the diff is opponents'
+ *  shooting, so above average is the bad end. */
+export function zoneColor(
+  diff: number,
+  mode: "player" | "team",
+  side: "offense" | "defense" = "offense",
+) {
+  const good = side === "defense" ? -diff : diff;
+  const t = Math.max(-1, Math.min(1, (100 * good) / COLOR_RANGE_PTS[mode]));
+  const end = t < 0 ? COLOR_STOPS.bad : COLOR_STOPS.good;
   return mix(COLOR_STOPS.mid, end, Math.abs(t));
 }
 

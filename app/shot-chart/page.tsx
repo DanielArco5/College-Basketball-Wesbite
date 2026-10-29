@@ -296,7 +296,7 @@ export default async function ShotChartPage({
           <div className="chart-col">
             <figure className="chart">
               <ShotChart stats={stats} mode={mode} side={side} />
-              <ZoneLegend mode={mode} />
+              <ZoneLegend mode={mode} side={side} />
               <figcaption>
                 {side === "defense" ? (
                   <>
@@ -313,25 +313,13 @@ export default async function ShotChartPage({
                   </>
                 )}
               </figcaption>
-              {/* Same colors, opposite verdicts: red is a hot offense but a
-                  leaky defense. Easy to misread when flipping the toggle. */}
-              {mode === "team" && (
+              {/* Green is good on both tabs, so on defense it means low
+                  numbers. Worth one line, since that's backwards from offense. */}
+              {side === "defense" && (
                 <p className="color-note">
-                  <strong>Heads up:</strong>{" "}
-                  {side === "defense" ? (
-                    <>
-                      on Shots allowed, <span className="is-blue">blue is good</span>:
-                      opponents shoot below average there.{" "}
-                      <span className="is-red">Red</span> means they
-                      score more than usual. It&rsquo;s the reverse of Shots taken.
-                    </>
-                  ) : (
-                    <>
-                      on Shots taken, <span className="is-red">red is good</span>:
-                      this team shoots above average there. On Shots allowed
-                      it flips, and <span className="is-blue">blue is good</span>.
-                    </>
-                  )}
+                  <strong>Heads up:</strong> <span className="is-good">green is good</span>{" "}
+                  here too: opponents shoot below average there.{" "}
+                  <span className="is-bad">Red</span> means they score more than usual.
                 </p>
               )}
             </figure>
@@ -368,7 +356,7 @@ export default async function ShotChartPage({
                       <td>
                         <span
                           className={s.attempts < LOW_SAMPLE_SHOTS ? "swatch low" : "swatch"}
-                          style={{ ["--c" as string]: zoneColor(s.fg_pct_vs_league, mode) }}
+                          style={{ ["--c" as string]: zoneColor(s.fg_pct_vs_league, mode, side) }}
                         />
                         {ZONE_LABELS[zone]}
                       </td>
