@@ -109,20 +109,77 @@ export const ZONE_ORDER: Zone[] = [
   "wing_3_right",
 ];
 
-// Diverging scale built for the dark court: red above average, blue below,
-// a dark warm stone that recedes in between. The extremes are the deepest,
-// most saturated steps; the near steps are lighter and softer. Chosen in
-// OKLCH and checked for color-blind separation. "gray" (too
-// few attempts) is drawn as a hatch over the court, not a color, so it can't
-// be read as "average"; this value is only the fallback.
-export const BUCKET_COLORS: Record<string, string> = {
-  hot: "#B7191C",
-  warm: "#E35F44",
-  neutral: "#393530",
-  cool: "#4F95DA",
-  cold: "#1F5DC2",
-  gray: "#2B231D",
+// ── Zone color ─────────────────────────────────────────────────────────
+// A continuous diverging scale: deep blue below the D1 average, a muted
+// gray at it, deep red above, every shade in between. The three stops sit
+// at about the same lightness, so a zone gets more colorful the further
+// it is from average rather than lighter or darker, and the two ends
+// never clash. Mixed in OKLab, where equal steps look equal.
+export const COLOR_STOPS = {
+  low: "#2A4E9E",
+  mid: "#56514C",
+  high: "#A52A22",
 };
 
-/** SVG pattern id for the "too few attempts" hatch, shared by chart and swatches. */
-export const NO_DATA_PATTERN_ID = "zone-no-data";
+/** Points vs D1 at which a zone reaches full color. Teams vary about half
+ *  as much as players (a season of shots evens out), so their scale is
+ *  tighter: both put roughly the 97th percentile at the end. */
+export const COLOR_RANGE_PTS = { player: 10, team: 6 };
+
+/** Fewer attempts than this and the zone is striped: colored, but flagged
+ *  as a small sample. */
+export const LOW_SAMPLE_SHOTS = 5;
+
+/** Fill for a zone `diff` (a fraction: 0.031 is +3.1 points) from the D1
+ *  average, on the given mode's scale. */
+export function zoneColor(diff: number, mode: "player" | "team") {
+  const t = Math.max(-1, Math.min(1, (100 * diff) / COLOR_RANGE_PTS[mode]));
+  const end = t < 0 ? COLOR_STOPS.low : COLOR_STOPS.high;
+  return mix(COLOR_STOPS.mid, end, Math.abs(t));
+}
+
+function mix(a: string, b: string, t: number) {
+  const [x, y] = [toOklab(a), toOklab(b)];
+  return fromOklab(x.map((v, i) => v + (y[i] - v) * t) as Vec3);
+}
+
+type Vec3 = [number, number, number];
+
+function toOklab(hex: string): Vec3 {
+  const [r, g, b] = [1, 3, 5].map((i) => {
+    const c = parseInt(hex.slice(i, i + 2), 16) / 255;
+    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  });
+  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+  const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+  const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+  return [
+    0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s,
+    1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s,
+    0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s,
+  ];
+}
+
+function fromOklab([L, A, B]: Vec3) {
+  const l = (L + 0.3963377774 * A + 0.2158037573 * B) ** 3;
+  const m = (L - 0.1055613458 * A - 0.0638541728 * B) ** 3;
+  const s = (L - 0.0894841775 * A - 1.291485548 * B) ** 3;
+  const rgb = [
+    4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+    -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+    -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
+  ];
+  return (
+    "#" +
+    rgb
+      .map((c) => {
+        const v = Math.max(0, Math.min(1, c));
+        const srgb = v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055;
+        return Math.round(srgb * 255).toString(16).padStart(2, "0");
+      })
+      .join("")
+  );
+}
+
+/** SVG pattern id for the small-sample stripes, laid over a zone's color. */
+export const LOW_SAMPLE_PATTERN_ID = "zone-low-sample";

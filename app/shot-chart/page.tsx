@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createServerClient } from "@/lib/supabase-server";
-import { BUCKET_COLORS, ZONE_LABELS, ZONE_ORDER, type Zone } from "@/lib/court";
+import { LOW_SAMPLE_SHOTS, ZONE_LABELS, ZONE_ORDER, zoneColor, type Zone } from "@/lib/court";
 import ShotChart, { ZoneLegend, type ZoneStat } from "./ShotChart";
 import ShotMix, { type LeagueTotals, type SeasonTotals } from "./ShotMix";
 import EntityPicker, { type PickerItem } from "./EntityPicker";
@@ -295,7 +295,7 @@ export default async function ShotChartPage({
         <div className="layout">
           <div className="chart-col">
             <figure className="chart">
-              <ShotChart stats={stats} />
+              <ShotChart stats={stats} mode={mode} side={side} />
               <ZoneLegend mode={mode} />
               <figcaption>
                 {side === "defense" ? (
@@ -361,15 +361,14 @@ export default async function ShotChartPage({
                       </tr>
                     );
                   }
-                  const diff = 100 * s.fg_pct_vs_league;
+                  // Rounded first, so a hair under zero reads 0.0, not -0.0.
+                  const diff = Math.round(1000 * s.fg_pct_vs_league) / 10 || 0;
                   return (
                     <tr key={zone}>
                       <td>
                         <span
-                          className={
-                            s.color_bucket === "gray" ? "swatch no-data" : "swatch"
-                          }
-                          style={{ background: BUCKET_COLORS[s.color_bucket] }}
+                          className={s.attempts < LOW_SAMPLE_SHOTS ? "swatch low" : "swatch"}
+                          style={{ ["--c" as string]: zoneColor(s.fg_pct_vs_league, mode) }}
                         />
                         {ZONE_LABELS[zone]}
                       </td>
@@ -385,9 +384,7 @@ export default async function ShotChartPage({
                           The shrunk rate only drives color and vs D1. */}
                       <td className="num">{(100 * s.raw_fg_pct).toFixed(1)}</td>
                       <td className="num">
-                        {s.color_bucket === "gray"
-                          ? "—"
-                          : `${diff > 0 ? "+" : ""}${diff.toFixed(1)}`}
+                        {`${diff > 0 ? "+" : ""}${diff.toFixed(1)}`}
                       </td>
                     </tr>
                   );
@@ -395,14 +392,13 @@ export default async function ShotChartPage({
               </tbody>
             </table>
 
-            {/* Floors match the gray cutoffs in team-zones.sql,
-                team-defense-stats.sql and zones-and-baselines.sql. */}
             <p className="accuracy-note">
               FG% is the raw make rate. Colors and vs D1 use an adjusted rate
               that pulls small samples toward the Division I average, so a
               zone with few shots shows a smaller gap than its raw FG%
-              suggests. Zones with fewer than {mode === "team" ? 25 : 5}{" "}
-              attempts are gray: too few shots to say anything.
+              suggests. Zones with fewer than {LOW_SAMPLE_SHOTS} attempts are
+              striped: the color is there, but it rests on very few shots.
+              Hover a zone on the chart for its FG% against the D1 average.
               {side === "defense" &&
                 " Shots allowed are a rough read on defense: they reflect who a team played as much as how it defended, and opponent three-point shooting is largely luck."}
             </p>
