@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { createServerClient } from "@/lib/supabase-server";
-import { LOW_SAMPLE_SHOTS, ZONE_LABELS, ZONE_ORDER, zoneColor, type Zone } from "@/lib/court";
+import {
+  ABOVE_BREAK,
+  LOW_SAMPLE_SHOTS,
+  ZONE_LABELS,
+  ZONE_ORDER,
+  withAboveBreak,
+  zoneColor,
+  type Zone,
+} from "@/lib/court";
 import ShotChart, { ZoneLegend, type ZoneStat } from "./ShotChart";
 import ShotMix, { type LeagueTotals, type SeasonTotals } from "./ShotMix";
 import EntityPicker, { type PickerItem } from "./EntityPicker";
@@ -159,7 +167,7 @@ export default async function ShotChartPage({
           .eq("player_id", selectedId);
 
   if (statErr) return <Failure message={statErr.message} />;
-  const stats = (statRows ?? []) as ZoneStat[];
+  const stats = withAboveBreak((statRows ?? []) as ZoneStat[]);
 
   // Season totals count every field goal, including those from games
   // without location tracking, which the zone rows above can't hold.
@@ -341,9 +349,12 @@ export default async function ShotChartPage({
               <tbody>
                 {ZONE_ORDER.map((zone: Zone) => {
                   const s = stats.find((r) => r.zone === zone);
+                  // The spots the chart folds into "above the break" sit
+                  // indented under that row.
+                  const sub = ABOVE_BREAK.includes(zone) ? " sub" : "";
                   if (!s) {
                     return (
-                      <tr key={zone} className="empty">
+                      <tr key={zone} className={`empty${sub}`}>
                         <td>{ZONE_LABELS[zone]}</td>
                         <td colSpan={mode === "team" ? 4 : 3}>No attempts</td>
                       </tr>
@@ -352,7 +363,7 @@ export default async function ShotChartPage({
                   // Rounded first, so a hair under zero reads 0.0, not -0.0.
                   const diff = Math.round(1000 * s.fg_pct_vs_league) / 10 || 0;
                   return (
-                    <tr key={zone}>
+                    <tr key={zone} className={sub.trim() || undefined}>
                       <td>
                         <span
                           className={s.attempts < LOW_SAMPLE_SHOTS ? "swatch low" : "swatch"}

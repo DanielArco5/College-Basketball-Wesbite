@@ -250,6 +250,17 @@ body:has(.wrap) {
   color: var(--ink-dim);
 }
 
+/* Wing and top-of-key rows, indented under "Above the break three". */
+.breakdown tr.sub td {
+  color: var(--ink-dim);
+  font-size: 0.95rem;
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+}
+.breakdown tr.sub td:first-child {
+  padding-left: 1.25rem;
+}
+
 .swatch {
   background: var(--c);
   display: inline-block;

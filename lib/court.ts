@@ -55,7 +55,10 @@ export type Zone =
   | "corner_3_right"
   | "wing_3_left"
   | "top_3"
-  | "wing_3_right";
+  | "wing_3_right"
+  // Display only: the three spots above the break, combined. The database
+  // never files a shot here and zoneOf() never returns it.
+  | "above_break_3";
 
 export function zoneOf(x: number, y: number): Zone {
   // Corner threes first. A corner three sits closer to the rim than the
@@ -95,6 +98,7 @@ export const ZONE_LABELS: Record<Zone, string> = {
   wing_3_left: "Left wing three",
   top_3: "Top of the key three",
   wing_3_right: "Right wing three",
+  above_break_3: "Above the break three",
 };
 
 /** Reading order for the table: close to far. */
@@ -104,10 +108,59 @@ export const ZONE_ORDER: Zone[] = [
   "mid_range",
   "corner_3_left",
   "corner_3_right",
+  "above_break_3",
   "wing_3_left",
   "top_3",
   "wing_3_right",
 ];
+
+/** The spots the chart paints as one "above the break" zone. The table
+ *  still lists each one, under the combined row. */
+export const ABOVE_BREAK: Zone[] = ["wing_3_left", "top_3", "wing_3_right"];
+
+/** The zone the chart paints a spot as. */
+export function chartZone(zone: Zone): Zone {
+  return ABOVE_BREAK.includes(zone) ? "above_break_3" : zone;
+}
+
+type ZoneStatLike = {
+  zone: Zone;
+  attempts: number;
+  makes: number;
+  raw_fg_pct: number;
+  fg_pct: number;
+  league_fg_pct: number;
+  fg_pct_vs_league: number;
+  color_bucket: string;
+  attempt_share?: number;
+};
+
+/**
+ * `stats` plus one combined above-the-break row. Its D1 average and gap
+ * are weighted by where the shots came from, so a team that lives on the
+ * wings is measured against the D1 rate on the wings, not straightaway.
+ * The gap stays the small-sample-adjusted one, like every other zone's.
+ */
+export function withAboveBreak<T extends ZoneStatLike>(stats: T[]): T[] {
+  const parts = stats.filter((s) => ABOVE_BREAK.includes(s.zone) && s.attempts > 0);
+  const attempts = parts.reduce((n, s) => n + s.attempts, 0);
+  if (!attempts) return stats;
+  const makes = parts.reduce((n, s) => n + s.makes, 0);
+  const weighted = (f: (s: T) => number) =>
+    parts.reduce((n, s) => n + f(s) * s.attempts, 0) / attempts;
+  const combined = {
+    ...parts[0],
+    zone: "above_break_3" as const,
+    attempts,
+    makes,
+    raw_fg_pct: makes / attempts,
+    fg_pct: weighted((s) => s.fg_pct),
+    league_fg_pct: weighted((s) => s.league_fg_pct),
+    fg_pct_vs_league: weighted((s) => s.fg_pct_vs_league),
+    attempt_share: parts.reduce((n, s) => n + (s.attempt_share ?? 0), 0),
+  };
+  return [...stats, combined];
+}
 
 // ── Zone color ─────────────────────────────────────────────────────────
 // A continuous scale from bad to good: red, through yellow at the D1

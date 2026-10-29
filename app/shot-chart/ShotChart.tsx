@@ -15,10 +15,10 @@ import {
   RESTRICTED_AREA_FT,
   THREE_POINT_RADIUS_FT,
   VIEW_DEPTH_FT,
-  WING_SPLIT_DEG,
   VIEW_H,
   VIEW_W,
   ZONE_LABELS,
+  chartZone,
   toSvg,
   zoneColor,
   zoneOf,
@@ -53,14 +53,6 @@ const LANE_L = toSvg(0, BASKET_Y_FT - LANE_HALF_WIDTH_FT).sx;
 const LANE_R = toSvg(0, BASKET_Y_FT + LANE_HALF_WIDTH_FT).sx;
 const LANE_TOP = toSvg(LANE_DEPTH_FT, 0).sy;
 
-// Rays from the hoop that split the wings from the top of the key, in SVG
-// pixels: up the court and out to each side by WING_SPLIT_DEG.
-const SPLIT = (WING_SPLIT_DEG * Math.PI) / 180;
-const ray = (side: 1 | -1, len: number) => ({
-  x: HOOP.sx + side * Math.sin(SPLIT) * len,
-  y: HOOP.sy - Math.cos(SPLIT) * len,
-});
-const FAR = 1000; // long enough to leave the drawing in any direction
 /** Below this chart width the tooltip moves under the chart. */
 const NARROW_PX = 520;
 
@@ -78,11 +70,14 @@ export default function ShotChart({
   const maskId = useId();
   const lowMaskId = useId();
 
+  // The three spots above the break are painted as one zone, from the
+  // combined row page.tsx adds (see withAboveBreak in lib/court.ts).
   const fillFor = (zone: Zone) => {
-    const stat = byZone.get(zone);
+    const stat = byZone.get(chartZone(zone));
     return zoneColor(stat?.fg_pct_vs_league ?? 0, mode, side);
   };
-  const isLow = (zone: Zone) => (byZone.get(zone)?.attempts ?? 0) < LOW_SAMPLE_SHOTS;
+  const isLow = (zone: Zone) =>
+    (byZone.get(chartZone(zone))?.attempts ?? 0) < LOW_SAMPLE_SHOTS;
 
   // The pointer, in court feet, picks its zone with the same rules the
   // database used to file the shots, so the hover always matches the paint.
@@ -90,7 +85,7 @@ export default function ShotChart({
     const box = e.currentTarget.getBoundingClientRect();
     const sx = ((e.clientX - box.left) / box.width) * VIEW_W;
     const sy = ((e.clientY - box.top) / box.height) * VIEW_H;
-    const zone = zoneOf(VIEW_DEPTH_FT - sy / PX_PER_FT, sx / PX_PER_FT);
+    const zone = chartZone(zoneOf(VIEW_DEPTH_FT - sy / PX_PER_FT, sx / PX_PER_FT));
     const x = e.clientX - box.left;
     setHover({
       zone,
@@ -140,7 +135,7 @@ export default function ShotChart({
           {/* The hovered zone in white, every other zone in black. */}
           {hover && (
             <mask id={maskId}>
-              <ZoneShapes fill={(z) => (z === hover.zone ? "#fff" : "#000")} />
+              <ZoneShapes fill={(z) => (chartZone(z) === hover.zone ? "#fff" : "#000")} />
             </mask>
           )}
         </defs>
@@ -184,21 +179,9 @@ export default function ShotChart({
           <path d="M 466.6 320 L 466.6 221" />
           <path d="M 33.4 221 A 221.458 221.458 0 0 1 466.6 221" />
 
-          {/* Wing / top-of-key dividers, from the arc outward */}
-          {([1, -1] as const).map((side) => (
-            <line
-              key={side}
-              x1={ray(side, ARC_R).x}
-              y1={ray(side, ARC_R).y}
-              x2={ray(side, FAR).x}
-              y2={ray(side, FAR).y}
-              strokeWidth={1.25}
-            />
-          ))}
-
-          {/* Corner / wing dividers, where the corner line meets the arc.
-              A touch heavier than the other lines: the two zones meet along
-              a short edge and read as one strip otherwise. */}
+          {/* Corner / above-the-break dividers, where the corner line meets
+              the arc. A touch heavier than the other lines: the two zones
+              meet along a short edge and read as one strip otherwise. */}
           <path
             d={`M 0 ${CORNER_TOP} H ${CORNER_W} M ${VIEW_W - CORNER_W} ${CORNER_TOP} H ${VIEW_W}`}
             strokeWidth={3}
@@ -243,17 +226,9 @@ export default function ShotChart({
 function ZoneShapes({ fill }: { fill: (zone: Zone) => string }) {
   return (
     <g pointerEvents="none">
-      {/* Above the break: top of the key, then a wedge for each wing.
-          Higher court y is the shooter's left, which draws on the right. */}
-      <rect width={VIEW_W} height={VIEW_H} fill={fill("top_3")} />
-      <polygon
-        points={`${HOOP.sx},${HOOP.sy} ${ray(1, FAR).x},${ray(1, FAR).y} ${VIEW_W + FAR},${ray(1, FAR).y} ${VIEW_W + FAR},${VIEW_H + FAR} ${HOOP.sx},${VIEW_H + FAR}`}
-        fill={fill("wing_3_left")}
-      />
-      <polygon
-        points={`${HOOP.sx},${HOOP.sy} ${ray(-1, FAR).x},${ray(-1, FAR).y} ${-FAR},${ray(-1, FAR).y} ${-FAR},${VIEW_H + FAR} ${HOOP.sx},${VIEW_H + FAR}`}
-        fill={fill("wing_3_right")}
-      />
+      {/* Above the break, as one zone: everything past the arc. The
+          zones below carve the rest out of it. */}
+      <rect width={VIEW_W} height={VIEW_H} fill={fill("above_break_3")} />
 
       {/* Inside the arc and between the corner lines: mid-range. */}
       <g clipPath="url(#zone-between-corners)">
