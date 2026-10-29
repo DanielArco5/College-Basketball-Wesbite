@@ -36,7 +36,8 @@
  *      exact opponents.
  *
  * Payloads are cached in scripts/.cache (gitignored). Writes
- * player_seasons rows for 2027, lib/formula-2027.json, and today's row in
+ * player_seasons rows for 2027, lib/formula-2027.json, lib/conferences-2027.json
+ * (the 2026-27 alignment), and today's row in
  * formula_snapshots, which the site reads (the JSON is its fallback).
  * --no-publish skips the snapshot, for trying out a change locally.
  * The method text in app/rankings/Formula.tsx describes this file; keep
@@ -215,7 +216,17 @@ type Player = PlayerSeason & { fromTeam: number };
 
 type RosterTeam = {
   teamId: number;
-  players: { id: number; name: string; startSeason: number | null }[];
+  team: string;
+  conference: string | null;
+  players: {
+    id: number;
+    name: string;
+    startSeason: number | null;
+    jersey?: string | null;
+    position?: string | null;
+    height?: number | null;
+    weight?: number | null;
+  }[];
 };
 
 /** Offense and its defensive mirror, for one stat. */
@@ -247,7 +258,18 @@ async function main() {
     "games", "id, home_team_id, away_team_id", "id", { season: SEASON_FROM },
   );
 
-  const d1 = new Map(teams.map((t) => [t.id, t]));
+  // The teams table holds 2025-26 conferences. Every step below is about
+  // 2026-27 (who a team will play, whose numbers it's measured against),
+  // so the 2026-27 alignment from the rosters replaces them: Gonzaga is a
+  // Pac-12 team here, not WCC. A team leaving Division I has none.
+  const conf2027 = new Map(rosters.map((t) => [t.teamId, t.conference ?? null]));
+  const d1 = new Map(
+    teams.map((t) => [
+      t.id,
+      { ...t, conference: conf2027.has(t.id) ? conf2027.get(t.id)! : t.conference },
+    ]),
+  );
+  saveConferences(rosters, new Set(teams.map((t) => t.conference ?? "")), d1);
   const box = new Map(
     teamSeasons
       .filter((t) => d1.has(t.teamId) && t.teamStats.possessions > 0)
@@ -894,10 +916,37 @@ async function cached<T>(file: string, path: string, season: number, refresh: bo
 async function saveRosters(rosters: RosterTeam[]) {
   const players = rosters.flatMap((t) => t.players.map((p) => ({ id: p.id, name: p.name })));
   const seasons = rosters.flatMap((t) =>
-    t.players.map((p) => ({ player_id: p.id, season: SEASON_TO, team_id: t.teamId })),
+    t.players.map((p) => ({
+      player_id: p.id,
+      season: SEASON_TO,
+      team_id: t.teamId,
+      jersey: p.jersey ?? null,
+      position: p.position ?? null,
+      height_in: p.height ?? null,
+      weight_lb: p.weight ?? null,
+    })),
   );
   await upsertAll("players", players, "id");
   await upsertAll("player_seasons", seasons, "player_id,season");
+}
+
+/**
+ * lib/conferences-2027.json: each Division I program's 2026-27 conference,
+ * for the shot chart's conference pages (the teams table keeps 2025-26).
+ * Includes programs new to D1, which have no teams row yet, by name.
+ * Rosters from conferences outside D1 (D2 and below) are left out.
+ */
+function saveConferences(
+  rosters: RosterTeam[],
+  d1Conferences: Set<string>,
+  d1: Map<number, { school: string; conference: string | null }>,
+) {
+  const out: Record<number, { school: string; conference: string | null }> = {};
+  for (const t of rosters) {
+    if (!d1.has(t.teamId) && !(t.players.length && d1Conferences.has(t.conference ?? ""))) continue;
+    out[t.teamId] = { school: d1.get(t.teamId)?.school ?? t.team, conference: t.conference ?? null };
+  }
+  writeFileSync("lib/conferences-2027.json", JSON.stringify(out, null, 1) + "\n");
 }
 
 async function upsertAll(table: string, rows: Record<string, unknown>[], onConflict: string) {

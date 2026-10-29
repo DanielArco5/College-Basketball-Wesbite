@@ -1,0 +1,1466 @@
+{
+ "1": {
+  "school": "Abilene Christian",
+  "conference": "UAC"
+ },
+ "2": {
+  "school": "Air Force",
+  "conference": "Mountain West"
+ },
+ "3": {
+  "school": "Akron",
+  "conference": "MAC"
+ },
+ "4": {
+  "school": "Alabama A&M",
+  "conference": "SWAC"
+ },
+ "5": {
+  "school": "Alabama",
+  "conference": "SEC"
+ },
+ "6": {
+  "school": "Alabama State",
+  "conference": "SWAC"
+ },
+ "7": {
+  "school": "Alcorn State",
+  "conference": "SWAC"
+ },
+ "8": {
+  "school": "American University",
+  "conference": "Patriot"
+ },
+ "9": {
+  "school": "App State",
+  "conference": "Sun Belt"
+ },
+ "10": {
+  "school": "Arizona State",
+  "conference": "Big 12"
+ },
+ "11": {
+  "school": "Arizona",
+  "conference": "Big 12"
+ },
+ "12": {
+  "school": "Arkansas",
+  "conference": "SEC"
+ },
+ "13": {
+  "school": "Arkansas State",
+  "conference": "Sun Belt"
+ },
+ "14": {
+  "school": "Arkansas-Pine Bluff",
+  "conference": "SWAC"
+ },
+ "15": {
+  "school": "Army",
+  "conference": "Patriot"
+ },
+ "16": {
+  "school": "Auburn",
+  "conference": "SEC"
+ },
+ "17": {
+  "school": "Austin Peay",
+  "conference": "UAC"
+ },
+ "18": {
+  "school": "BYU",
+  "conference": "Big 12"
+ },
+ "19": {
+  "school": "Ball State",
+  "conference": "MAC"
+ },
+ "20": {
+  "school": "Baylor",
+  "conference": "Big 12"
+ },
+ "21": {
+  "school": "Bellarmine",
+  "conference": "ASUN"
+ },
+ "22": {
+  "school": "Belmont",
+  "conference": "MVC"
+ },
+ "23": {
+  "school": "Bethune-Cookman",
+  "conference": "SWAC"
+ },
+ "24": {
+  "school": "Binghamton",
+  "conference": "Am. East"
+ },
+ "25": {
+  "school": "Boise State",
+  "conference": "Pac-12"
+ },
+ "26": {
+  "school": "Boston College",
+  "conference": "ACC"
+ },
+ "27": {
+  "school": "Boston University",
+  "conference": "Patriot"
+ },
+ "28": {
+  "school": "Bowling Green",
+  "conference": "MAC"
+ },
+ "29": {
+  "school": "Bradley",
+  "conference": "MVC"
+ },
+ "30": {
+  "school": "Brown",
+  "conference": "Ivy"
+ },
+ "31": {
+  "school": "Bryant",
+  "conference": "Am. East"
+ },
+ "32": {
+  "school": "Bucknell",
+  "conference": "Patriot"
+ },
+ "33": {
+  "school": "Buffalo",
+  "conference": "MAC"
+ },
+ "34": {
+  "school": "Butler",
+  "conference": "Big East"
+ },
+ "35": {
+  "school": "Cal Poly",
+  "conference": "Big West"
+ },
+ "36": {
+  "school": "Cal State Bakersfield",
+  "conference": "Big West"
+ },
+ "37": {
+  "school": "Cal State Fullerton",
+  "conference": "Big West"
+ },
+ "38": {
+  "school": "Cal State Northridge",
+  "conference": "Big West"
+ },
+ "39": {
+  "school": "California Baptist",
+  "conference": "Big West"
+ },
+ "40": {
+  "school": "California",
+  "conference": "ACC"
+ },
+ "41": {
+  "school": "Campbell",
+  "conference": "CAA"
+ },
+ "42": {
+  "school": "Canisius",
+  "conference": "Metro"
+ },
+ "43": {
+  "school": "Central Arkansas",
+  "conference": "UAC"
+ },
+ "44": {
+  "school": "Central Connecticut",
+  "conference": "NEC"
+ },
+ "45": {
+  "school": "Central Michigan",
+  "conference": "MAC"
+ },
+ "46": {
+  "school": "Charleston",
+  "conference": "CAA"
+ },
+ "47": {
+  "school": "Charleston Southern",
+  "conference": "Big South"
+ },
+ "48": {
+  "school": "Charlotte",
+  "conference": "American"
+ },
+ "49": {
+  "school": "Chattanooga",
+  "conference": "SoCon"
+ },
+ "50": {
+  "school": "Chicago State",
+  "conference": "NEC"
+ },
+ "51": {
+  "school": "Cincinnati",
+  "conference": "Big 12"
+ },
+ "52": {
+  "school": "Clemson",
+  "conference": "ACC"
+ },
+ "53": {
+  "school": "Cleveland State",
+  "conference": "Horizon"
+ },
+ "54": {
+  "school": "Coastal Carolina",
+  "conference": "Sun Belt"
+ },
+ "55": {
+  "school": "Colgate",
+  "conference": "Patriot"
+ },
+ "56": {
+  "school": "Colorado",
+  "conference": "Big 12"
+ },
+ "57": {
+  "school": "Colorado State",
+  "conference": "Pac-12"
+ },
+ "58": {
+  "school": "Columbia",
+  "conference": "Ivy"
+ },
+ "59": {
+  "school": "Coppin State",
+  "conference": "MEAC"
+ },
+ "60": {
+  "school": "Cornell",
+  "conference": "Ivy"
+ },
+ "61": {
+  "school": "Creighton",
+  "conference": "Big East"
+ },
+ "62": {
+  "school": "Dartmouth",
+  "conference": "Ivy"
+ },
+ "63": {
+  "school": "Davidson",
+  "conference": "A-10"
+ },
+ "64": {
+  "school": "Dayton",
+  "conference": "A-10"
+ },
+ "65": {
+  "school": "DePaul",
+  "conference": "Big East"
+ },
+ "66": {
+  "school": "Delaware",
+  "conference": "CUSA"
+ },
+ "67": {
+  "school": "Delaware State",
+  "conference": "MEAC"
+ },
+ "68": {
+  "school": "Denver",
+  "conference": "WCC"
+ },
+ "69": {
+  "school": "Detroit Mercy",
+  "conference": "Horizon"
+ },
+ "70": {
+  "school": "Drake",
+  "conference": "MVC"
+ },
+ "71": {
+  "school": "Drexel",
+  "conference": "CAA"
+ },
+ "72": {
+  "school": "Duke",
+  "conference": "ACC"
+ },
+ "73": {
+  "school": "Duquesne",
+  "conference": "A-10"
+ },
+ "74": {
+  "school": "East Carolina",
+  "conference": "American"
+ },
+ "75": {
+  "school": "East Tennessee State",
+  "conference": "SoCon"
+ },
+ "76": {
+  "school": "East Texas A&M",
+  "conference": "Southland"
+ },
+ "77": {
+  "school": "Eastern Illinois",
+  "conference": "OVC"
+ },
+ "78": {
+  "school": "Eastern Kentucky",
+  "conference": "UAC"
+ },
+ "79": {
+  "school": "Eastern Michigan",
+  "conference": "MAC"
+ },
+ "80": {
+  "school": "Eastern Washington",
+  "conference": "Big Sky"
+ },
+ "81": {
+  "school": "Elon",
+  "conference": "CAA"
+ },
+ "82": {
+  "school": "Evansville",
+  "conference": "MVC"
+ },
+ "83": {
+  "school": "Fairfield",
+  "conference": "Metro"
+ },
+ "84": {
+  "school": "Fairleigh Dickinson",
+  "conference": "NEC"
+ },
+ "85": {
+  "school": "Florida A&M",
+  "conference": "SWAC"
+ },
+ "86": {
+  "school": "Florida Atlantic",
+  "conference": "American"
+ },
+ "87": {
+  "school": "Florida",
+  "conference": "SEC"
+ },
+ "88": {
+  "school": "Florida Gulf Coast",
+  "conference": "ASUN"
+ },
+ "89": {
+  "school": "Florida International",
+  "conference": "CUSA"
+ },
+ "90": {
+  "school": "Florida State",
+  "conference": "ACC"
+ },
+ "91": {
+  "school": "Fordham",
+  "conference": "A-10"
+ },
+ "92": {
+  "school": "Fresno State",
+  "conference": "Pac-12"
+ },
+ "93": {
+  "school": "Furman",
+  "conference": "SoCon"
+ },
+ "94": {
+  "school": "Gardner-Webb",
+  "conference": "Big South"
+ },
+ "95": {
+  "school": "George Mason",
+  "conference": "A-10"
+ },
+ "96": {
+  "school": "George Washington",
+  "conference": "A-10"
+ },
+ "97": {
+  "school": "Georgetown",
+  "conference": "Big East"
+ },
+ "98": {
+  "school": "Georgia",
+  "conference": "SEC"
+ },
+ "99": {
+  "school": "Georgia Southern",
+  "conference": "Sun Belt"
+ },
+ "100": {
+  "school": "Georgia State",
+  "conference": "Sun Belt"
+ },
+ "101": {
+  "school": "Georgia Tech",
+  "conference": "ACC"
+ },
+ "102": {
+  "school": "Gonzaga",
+  "conference": "Pac-12"
+ },
+ "103": {
+  "school": "Grambling",
+  "conference": "SWAC"
+ },
+ "104": {
+  "school": "Grand Canyon",
+  "conference": "Mountain West"
+ },
+ "105": {
+  "school": "Green Bay",
+  "conference": "Horizon"
+ },
+ "106": {
+  "school": "Hampton",
+  "conference": "CAA"
+ },
+ "107": {
+  "school": "Harvard",
+  "conference": "Ivy"
+ },
+ "108": {
+  "school": "Hawai'i",
+  "conference": "Mountain West"
+ },
+ "109": {
+  "school": "High Point",
+  "conference": "Big South"
+ },
+ "110": {
+  "school": "Hofstra",
+  "conference": "CAA"
+ },
+ "111": {
+  "school": "Holy Cross",
+  "conference": "Patriot"
+ },
+ "112": {
+  "school": "Houston Christian",
+  "conference": "Southland"
+ },
+ "113": {
+  "school": "Houston",
+  "conference": "Big 12"
+ },
+ "114": {
+  "school": "Howard",
+  "conference": "MEAC"
+ },
+ "115": {
+  "school": "IU Indianapolis",
+  "conference": "Horizon"
+ },
+ "116": {
+  "school": "Idaho State",
+  "conference": "Big Sky"
+ },
+ "117": {
+  "school": "Idaho",
+  "conference": "Big Sky"
+ },
+ "118": {
+  "school": "Illinois",
+  "conference": "Big Ten"
+ },
+ "119": {
+  "school": "Illinois State",
+  "conference": "MVC"
+ },
+ "120": {
+  "school": "Incarnate Word",
+  "conference": "Southland"
+ },
+ "121": {
+  "school": "Indiana",
+  "conference": "Big Ten"
+ },
+ "122": {
+  "school": "Indiana State",
+  "conference": "MVC"
+ },
+ "123": {
+  "school": "Iona",
+  "conference": "Metro"
+ },
+ "124": {
+  "school": "Iowa",
+  "conference": "Big Ten"
+ },
+ "125": {
+  "school": "Iowa State",
+  "conference": "Big 12"
+ },
+ "126": {
+  "school": "Jackson State",
+  "conference": "SWAC"
+ },
+ "127": {
+  "school": "Jacksonville",
+  "conference": "ASUN"
+ },
+ "128": {
+  "school": "Jacksonville State",
+  "conference": "CUSA"
+ },
+ "129": {
+  "school": "James Madison",
+  "conference": "Sun Belt"
+ },
+ "130": {
+  "school": "Kansas City",
+  "conference": "Summit"
+ },
+ "131": {
+  "school": "Kansas",
+  "conference": "Big 12"
+ },
+ "132": {
+  "school": "Kansas State",
+  "conference": "Big 12"
+ },
+ "133": {
+  "school": "Kennesaw State",
+  "conference": "CUSA"
+ },
+ "134": {
+  "school": "Kent State",
+  "conference": "MAC"
+ },
+ "135": {
+  "school": "Kentucky",
+  "conference": "SEC"
+ },
+ "136": {
+  "school": "LSU",
+  "conference": "SEC"
+ },
+ "137": {
+  "school": "La Salle",
+  "conference": "A-10"
+ },
+ "138": {
+  "school": "Lafayette",
+  "conference": "Patriot"
+ },
+ "139": {
+  "school": "Lamar",
+  "conference": "Southland"
+ },
+ "140": {
+  "school": "Le Moyne",
+  "conference": "NEC"
+ },
+ "141": {
+  "school": "Lehigh",
+  "conference": "Patriot"
+ },
+ "142": {
+  "school": "Liberty",
+  "conference": "CUSA"
+ },
+ "143": {
+  "school": "Lipscomb",
+  "conference": "ASUN"
+ },
+ "144": {
+  "school": "Little Rock",
+  "conference": "UAC"
+ },
+ "145": {
+  "school": "Long Beach State",
+  "conference": "Big West"
+ },
+ "146": {
+  "school": "Long Island University",
+  "conference": "NEC"
+ },
+ "147": {
+  "school": "Longwood",
+  "conference": "Big South"
+ },
+ "148": {
+  "school": "Louisiana",
+  "conference": "Sun Belt"
+ },
+ "149": {
+  "school": "Louisiana Tech",
+  "conference": "Sun Belt"
+ },
+ "150": {
+  "school": "Louisville",
+  "conference": "ACC"
+ },
+ "151": {
+  "school": "Loyola Chicago",
+  "conference": "A-10"
+ },
+ "152": {
+  "school": "Loyola Maryland",
+  "conference": "Patriot"
+ },
+ "153": {
+  "school": "Loyola Marymount",
+  "conference": "WCC"
+ },
+ "154": {
+  "school": "Maine",
+  "conference": "Am. East"
+ },
+ "155": {
+  "school": "Manhattan",
+  "conference": "Metro"
+ },
+ "156": {
+  "school": "Marist",
+  "conference": "Metro"
+ },
+ "157": {
+  "school": "Marquette",
+  "conference": "Big East"
+ },
+ "158": {
+  "school": "Marshall",
+  "conference": "Sun Belt"
+ },
+ "159": {
+  "school": "Maryland Eastern Shore",
+  "conference": "MEAC"
+ },
+ "160": {
+  "school": "Maryland",
+  "conference": "Big Ten"
+ },
+ "161": {
+  "school": "Massachusetts",
+  "conference": "MAC"
+ },
+ "162": {
+  "school": "McNeese",
+  "conference": "Southland"
+ },
+ "163": {
+  "school": "Memphis",
+  "conference": "American"
+ },
+ "164": {
+  "school": "Mercer",
+  "conference": "SoCon"
+ },
+ "165": {
+  "school": "Mercyhurst",
+  "conference": "NEC"
+ },
+ "166": {
+  "school": "Merrimack",
+  "conference": "Metro"
+ },
+ "167": {
+  "school": "Miami (OH)",
+  "conference": "MAC"
+ },
+ "168": {
+  "school": "Miami",
+  "conference": "ACC"
+ },
+ "169": {
+  "school": "Michigan State",
+  "conference": "Big Ten"
+ },
+ "170": {
+  "school": "Michigan",
+  "conference": "Big Ten"
+ },
+ "171": {
+  "school": "Middle Tennessee",
+  "conference": "CUSA"
+ },
+ "172": {
+  "school": "Milwaukee",
+  "conference": "Horizon"
+ },
+ "173": {
+  "school": "Minnesota",
+  "conference": "Big Ten"
+ },
+ "174": {
+  "school": "Mississippi State",
+  "conference": "SEC"
+ },
+ "175": {
+  "school": "Mississippi Valley State",
+  "conference": "SWAC"
+ },
+ "176": {
+  "school": "Missouri State",
+  "conference": "CUSA"
+ },
+ "177": {
+  "school": "Missouri",
+  "conference": "SEC"
+ },
+ "178": {
+  "school": "Monmouth",
+  "conference": "CAA"
+ },
+ "179": {
+  "school": "Montana",
+  "conference": "Big Sky"
+ },
+ "180": {
+  "school": "Montana State",
+  "conference": "Big Sky"
+ },
+ "181": {
+  "school": "Morehead State",
+  "conference": "OVC"
+ },
+ "182": {
+  "school": "Morgan State",
+  "conference": "MEAC"
+ },
+ "183": {
+  "school": "Mount St. Mary's",
+  "conference": "Metro"
+ },
+ "184": {
+  "school": "Murray State",
+  "conference": "MVC"
+ },
+ "185": {
+  "school": "NC State",
+  "conference": "ACC"
+ },
+ "186": {
+  "school": "NJIT",
+  "conference": "Am. East"
+ },
+ "187": {
+  "school": "Navy",
+  "conference": "Patriot"
+ },
+ "188": {
+  "school": "Nebraska",
+  "conference": "Big Ten"
+ },
+ "189": {
+  "school": "Nevada",
+  "conference": "Mountain West"
+ },
+ "190": {
+  "school": "New Hampshire",
+  "conference": "Am. East"
+ },
+ "191": {
+  "school": "New Mexico",
+  "conference": "Mountain West"
+ },
+ "192": {
+  "school": "New Mexico State",
+  "conference": "CUSA"
+ },
+ "193": {
+  "school": "New Orleans",
+  "conference": "Southland"
+ },
+ "194": {
+  "school": "Niagara",
+  "conference": "Metro"
+ },
+ "195": {
+  "school": "Nicholls",
+  "conference": "Southland"
+ },
+ "196": {
+  "school": "Norfolk State",
+  "conference": "MEAC"
+ },
+ "197": {
+  "school": "North Alabama",
+  "conference": "UAC"
+ },
+ "198": {
+  "school": "North Carolina A&T",
+  "conference": "CAA"
+ },
+ "199": {
+  "school": "North Carolina Central",
+  "conference": "MEAC"
+ },
+ "200": {
+  "school": "North Carolina",
+  "conference": "ACC"
+ },
+ "201": {
+  "school": "North Dakota",
+  "conference": "Summit"
+ },
+ "202": {
+  "school": "North Dakota State",
+  "conference": "Summit"
+ },
+ "203": {
+  "school": "North Florida",
+  "conference": "ASUN"
+ },
+ "204": {
+  "school": "North Texas",
+  "conference": "American"
+ },
+ "205": {
+  "school": "Northeastern",
+  "conference": "CAA"
+ },
+ "206": {
+  "school": "Northern Arizona",
+  "conference": "Big Sky"
+ },
+ "207": {
+  "school": "Northern Colorado",
+  "conference": "Big Sky"
+ },
+ "208": {
+  "school": "Northern Illinois",
+  "conference": "Horizon"
+ },
+ "209": {
+  "school": "Northern Iowa",
+  "conference": "MVC"
+ },
+ "210": {
+  "school": "Northern Kentucky",
+  "conference": "Horizon"
+ },
+ "211": {
+  "school": "Northwestern State",
+  "conference": "Southland"
+ },
+ "212": {
+  "school": "Northwestern",
+  "conference": "Big Ten"
+ },
+ "213": {
+  "school": "Notre Dame",
+  "conference": "ACC"
+ },
+ "214": {
+  "school": "Oakland",
+  "conference": "Horizon"
+ },
+ "215": {
+  "school": "Ohio",
+  "conference": "MAC"
+ },
+ "216": {
+  "school": "Ohio State",
+  "conference": "Big Ten"
+ },
+ "217": {
+  "school": "Oklahoma",
+  "conference": "SEC"
+ },
+ "218": {
+  "school": "Oklahoma State",
+  "conference": "Big 12"
+ },
+ "219": {
+  "school": "Old Dominion",
+  "conference": "Sun Belt"
+ },
+ "220": {
+  "school": "Ole Miss",
+  "conference": "SEC"
+ },
+ "221": {
+  "school": "Omaha",
+  "conference": "Summit"
+ },
+ "222": {
+  "school": "Oral Roberts",
+  "conference": "Summit"
+ },
+ "223": {
+  "school": "Oregon",
+  "conference": "Big Ten"
+ },
+ "224": {
+  "school": "Oregon State",
+  "conference": "Pac-12"
+ },
+ "225": {
+  "school": "Pacific",
+  "conference": "WCC"
+ },
+ "226": {
+  "school": "Penn State",
+  "conference": "Big Ten"
+ },
+ "227": {
+  "school": "Pennsylvania",
+  "conference": "Ivy"
+ },
+ "228": {
+  "school": "Pepperdine",
+  "conference": "WCC"
+ },
+ "229": {
+  "school": "Pittsburgh",
+  "conference": "ACC"
+ },
+ "230": {
+  "school": "Portland",
+  "conference": "WCC"
+ },
+ "231": {
+  "school": "Portland State",
+  "conference": "Big Sky"
+ },
+ "232": {
+  "school": "Prairie View A&M",
+  "conference": "SWAC"
+ },
+ "233": {
+  "school": "Presbyterian",
+  "conference": "Big South"
+ },
+ "234": {
+  "school": "Princeton",
+  "conference": "Ivy"
+ },
+ "235": {
+  "school": "Providence",
+  "conference": "Big East"
+ },
+ "236": {
+  "school": "Purdue",
+  "conference": "Big Ten"
+ },
+ "237": {
+  "school": "Purdue Fort Wayne",
+  "conference": "Horizon"
+ },
+ "238": {
+  "school": "Quinnipiac",
+  "conference": "Metro"
+ },
+ "239": {
+  "school": "Radford",
+  "conference": "Big South"
+ },
+ "240": {
+  "school": "Rhode Island",
+  "conference": "A-10"
+ },
+ "241": {
+  "school": "Rice",
+  "conference": "American"
+ },
+ "242": {
+  "school": "Richmond",
+  "conference": "A-10"
+ },
+ "243": {
+  "school": "Rider",
+  "conference": "Metro"
+ },
+ "244": {
+  "school": "Robert Morris",
+  "conference": "Horizon"
+ },
+ "245": {
+  "school": "Rutgers",
+  "conference": "Big Ten"
+ },
+ "246": {
+  "school": "SE Louisiana",
+  "conference": "Southland"
+ },
+ "247": {
+  "school": "SIU Edwardsville",
+  "conference": "OVC"
+ },
+ "248": {
+  "school": "SMU",
+  "conference": "ACC"
+ },
+ "249": {
+  "school": "Sacramento State",
+  "conference": "Big West"
+ },
+ "250": {
+  "school": "Sacred Heart",
+  "conference": "Metro"
+ },
+ "251": {
+  "school": "Saint Joseph's",
+  "conference": "A-10"
+ },
+ "252": {
+  "school": "Saint Louis",
+  "conference": "A-10"
+ },
+ "253": {
+  "school": "Saint Mary's",
+  "conference": "WCC"
+ },
+ "254": {
+  "school": "Saint Peter's",
+  "conference": "Metro"
+ },
+ "255": {
+  "school": "Sam Houston",
+  "conference": "CUSA"
+ },
+ "256": {
+  "school": "Samford",
+  "conference": "SoCon"
+ },
+ "257": {
+  "school": "San Diego State",
+  "conference": "Pac-12"
+ },
+ "258": {
+  "school": "San Diego",
+  "conference": "WCC"
+ },
+ "259": {
+  "school": "San Francisco",
+  "conference": "WCC"
+ },
+ "260": {
+  "school": "San José State",
+  "conference": "Mountain West"
+ },
+ "261": {
+  "school": "Santa Clara",
+  "conference": "WCC"
+ },
+ "262": {
+  "school": "Seattle U",
+  "conference": "WCC"
+ },
+ "263": {
+  "school": "Seton Hall",
+  "conference": "Big East"
+ },
+ "264": {
+  "school": "Siena",
+  "conference": "Metro"
+ },
+ "265": {
+  "school": "South Alabama",
+  "conference": "Sun Belt"
+ },
+ "266": {
+  "school": "South Carolina",
+  "conference": "SEC"
+ },
+ "267": {
+  "school": "South Carolina State",
+  "conference": "MEAC"
+ },
+ "268": {
+  "school": "South Carolina Upstate",
+  "conference": "Big South"
+ },
+ "269": {
+  "school": "South Dakota",
+  "conference": "Summit"
+ },
+ "270": {
+  "school": "South Dakota State",
+  "conference": "Summit"
+ },
+ "271": {
+  "school": "South Florida",
+  "conference": "American"
+ },
+ "272": {
+  "school": "Southeast Missouri State",
+  "conference": "OVC"
+ },
+ "273": {
+  "school": "Southern Illinois",
+  "conference": "MVC"
+ },
+ "274": {
+  "school": "Southern",
+  "conference": "SWAC"
+ },
+ "275": {
+  "school": "Southern Miss",
+  "conference": "Sun Belt"
+ },
+ "276": {
+  "school": "Southern Utah",
+  "conference": "Big Sky"
+ },
+ "277": {
+  "school": "St. Bonaventure",
+  "conference": "A-10"
+ },
+ "278": {
+  "school": "St. Francis (PA)",
+  "conference": null
+ },
+ "279": {
+  "school": "St. John's",
+  "conference": "Big East"
+ },
+ "280": {
+  "school": "St. Thomas-Minnesota",
+  "conference": "Summit"
+ },
+ "281": {
+  "school": "Stanford",
+  "conference": "ACC"
+ },
+ "282": {
+  "school": "Stephen F. Austin",
+  "conference": "Southland"
+ },
+ "283": {
+  "school": "Stetson",
+  "conference": "ASUN"
+ },
+ "284": {
+  "school": "Stonehill",
+  "conference": "NEC"
+ },
+ "285": {
+  "school": "Stony Brook",
+  "conference": "CAA"
+ },
+ "286": {
+  "school": "Syracuse",
+  "conference": "ACC"
+ },
+ "287": {
+  "school": "TCU",
+  "conference": "Big 12"
+ },
+ "288": {
+  "school": "Tarleton State",
+  "conference": "UAC"
+ },
+ "289": {
+  "school": "Temple",
+  "conference": "American"
+ },
+ "290": {
+  "school": "Tennessee State",
+  "conference": "OVC"
+ },
+ "291": {
+  "school": "Tennessee Tech",
+  "conference": "SoCon"
+ },
+ "292": {
+  "school": "Tennessee",
+  "conference": "SEC"
+ },
+ "293": {
+  "school": "Texas A&M",
+  "conference": "SEC"
+ },
+ "294": {
+  "school": "Texas A&M-Corpus Christi",
+  "conference": "Southland"
+ },
+ "295": {
+  "school": "Texas",
+  "conference": "SEC"
+ },
+ "296": {
+  "school": "Texas Southern",
+  "conference": "SWAC"
+ },
+ "297": {
+  "school": "Texas State",
+  "conference": "Pac-12"
+ },
+ "298": {
+  "school": "Texas Tech",
+  "conference": "Big 12"
+ },
+ "299": {
+  "school": "The Citadel",
+  "conference": "SoCon"
+ },
+ "300": {
+  "school": "Toledo",
+  "conference": "MAC"
+ },
+ "301": {
+  "school": "Towson",
+  "conference": "CAA"
+ },
+ "302": {
+  "school": "Troy",
+  "conference": "Sun Belt"
+ },
+ "303": {
+  "school": "Tulane",
+  "conference": "American"
+ },
+ "304": {
+  "school": "Tulsa",
+  "conference": "American"
+ },
+ "305": {
+  "school": "UAB",
+  "conference": "American"
+ },
+ "306": {
+  "school": "UAlbany",
+  "conference": "Am. East"
+ },
+ "307": {
+  "school": "UC Davis",
+  "conference": "Mountain West"
+ },
+ "308": {
+  "school": "UC Irvine",
+  "conference": "Big West"
+ },
+ "309": {
+  "school": "UC Riverside",
+  "conference": "Big West"
+ },
+ "310": {
+  "school": "UC San Diego",
+  "conference": "Big West"
+ },
+ "311": {
+  "school": "UC Santa Barbara",
+  "conference": "Big West"
+ },
+ "312": {
+  "school": "UCF",
+  "conference": "Big 12"
+ },
+ "313": {
+  "school": "UCLA",
+  "conference": "Big Ten"
+ },
+ "314": {
+  "school": "UConn",
+  "conference": "Big East"
+ },
+ "315": {
+  "school": "UIC",
+  "conference": "MVC"
+ },
+ "316": {
+  "school": "UL Monroe",
+  "conference": "Sun Belt"
+ },
+ "317": {
+  "school": "UMBC",
+  "conference": "Am. East"
+ },
+ "318": {
+  "school": "UMass Lowell",
+  "conference": "Am. East"
+ },
+ "319": {
+  "school": "UNC Asheville",
+  "conference": "Big South"
+ },
+ "320": {
+  "school": "UNC Greensboro",
+  "conference": "SoCon"
+ },
+ "321": {
+  "school": "UNC Wilmington",
+  "conference": "CAA"
+ },
+ "322": {
+  "school": "UNLV",
+  "conference": "Mountain West"
+ },
+ "323": {
+  "school": "USC",
+  "conference": "Big Ten"
+ },
+ "324": {
+  "school": "UT Arlington",
+  "conference": "UAC"
+ },
+ "325": {
+  "school": "UT Martin",
+  "conference": "OVC"
+ },
+ "326": {
+  "school": "UT Rio Grande Valley",
+  "conference": "Southland"
+ },
+ "327": {
+  "school": "UTEP",
+  "conference": "Mountain West"
+ },
+ "328": {
+  "school": "UTSA",
+  "conference": "American"
+ },
+ "329": {
+  "school": "Utah State",
+  "conference": "Pac-12"
+ },
+ "330": {
+  "school": "Utah Tech",
+  "conference": "Big Sky"
+ },
+ "331": {
+  "school": "Utah",
+  "conference": "Big 12"
+ },
+ "332": {
+  "school": "Utah Valley",
+  "conference": "Big West"
+ },
+ "333": {
+  "school": "VCU",
+  "conference": "A-10"
+ },
+ "334": {
+  "school": "VMI",
+  "conference": "SoCon"
+ },
+ "335": {
+  "school": "Valparaiso",
+  "conference": "MVC"
+ },
+ "336": {
+  "school": "Vanderbilt",
+  "conference": "SEC"
+ },
+ "337": {
+  "school": "Vermont",
+  "conference": "Am. East"
+ },
+ "338": {
+  "school": "Villanova",
+  "conference": "Big East"
+ },
+ "339": {
+  "school": "Virginia",
+  "conference": "ACC"
+ },
+ "340": {
+  "school": "Virginia Tech",
+  "conference": "ACC"
+ },
+ "341": {
+  "school": "Wagner",
+  "conference": "NEC"
+ },
+ "342": {
+  "school": "Wake Forest",
+  "conference": "ACC"
+ },
+ "343": {
+  "school": "Washington",
+  "conference": "Big Ten"
+ },
+ "344": {
+  "school": "Washington State",
+  "conference": "Pac-12"
+ },
+ "345": {
+  "school": "Weber State",
+  "conference": "Big Sky"
+ },
+ "346": {
+  "school": "West Georgia",
+  "conference": "UAC"
+ },
+ "347": {
+  "school": "West Virginia",
+  "conference": "Big 12"
+ },
+ "348": {
+  "school": "Western Carolina",
+  "conference": "SoCon"
+ },
+ "349": {
+  "school": "Western Illinois",
+  "conference": "OVC"
+ },
+ "350": {
+  "school": "Western Kentucky",
+  "conference": "CUSA"
+ },
+ "351": {
+  "school": "Western Michigan",
+  "conference": "MAC"
+ },
+ "352": {
+  "school": "Wichita State",
+  "conference": "American"
+ },
+ "353": {
+  "school": "William & Mary",
+  "conference": "CAA"
+ },
+ "354": {
+  "school": "Winthrop",
+  "conference": "Big South"
+ },
+ "355": {
+  "school": "Wisconsin",
+  "conference": "Big Ten"
+ },
+ "356": {
+  "school": "Wofford",
+  "conference": "SoCon"
+ },
+ "357": {
+  "school": "Wright State",
+  "conference": "Horizon"
+ },
+ "358": {
+  "school": "Wyoming",
+  "conference": "Mountain West"
+ },
+ "359": {
+  "school": "Xavier",
+  "conference": "Big East"
+ },
+ "360": {
+  "school": "Yale",
+  "conference": "Ivy"
+ },
+ "361": {
+  "school": "Youngstown State",
+  "conference": "Horizon"
+ },
+ "362": {
+  "school": "Queens University",
+  "conference": "ASUN"
+ },
+ "365": {
+  "school": "Southern Indiana",
+  "conference": "OVC"
+ },
+ "366": {
+  "school": "Lindenwood",
+  "conference": "OVC"
+ },
+ "1073": {
+  "school": "West Florida",
+  "conference": "ASUN"
+ },
+ "1507": {
+  "school": "New Haven",
+  "conference": "NEC"
+ }
+}

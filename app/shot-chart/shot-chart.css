@@ -20,6 +20,9 @@ body:has(.wrap) {
   --display: "Barlow Condensed", "Helvetica Neue", sans-serif;
   --body: "Barlow", system-ui, sans-serif;
 
+  /* Full width up to the cap, not as wide as the content: otherwise a
+     short page (a small conference) shrinks and lays out differently. */
+  width: 100%;
   max-width: 1080px;
   margin: 0 auto;
   padding: 3rem 1.5rem 5rem;
@@ -510,3 +513,163 @@ body:has(.wrap) {
   font-size: 0.78rem;
   color: var(--ink-dim);
 }
+
+/* --- Links under the name: conference on a team, team on a player --- */
+
+.sub-link {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 3px;
+}
+.sub-link:hover { text-decoration-thickness: 2px; }
+
+/* --- Roster ---------------------------------------------------- */
+
+.roster {
+  margin-top: 3rem;
+  border-top: 1px solid var(--rule);
+  padding-top: 1.5rem;
+}
+
+.roster-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.75rem 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.roster-head h2 {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 1.4rem;
+}
+
+.roster-tabs {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.roster-tabs button {
+  padding: 0.25rem 0.8rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: none;
+  color: var(--ink-dim);
+  font: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+.roster-tabs button:hover { color: var(--ink); }
+.roster-tabs button.on {
+  color: var(--ink);
+  border-color: var(--accent);
+}
+.roster-tabs button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.roster-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: 0 2rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.roster-list li {
+  display: grid;
+  grid-template-columns: 2.4rem 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 0.4rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.roster-num {
+  grid-row: span 2;
+  color: var(--ink-dim);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.9rem;
+  padding-top: 0.1rem;
+}
+
+.roster-name {
+  font-family: var(--display);
+  font-size: 1.05rem;
+}
+.roster-name a {
+  color: var(--ink);
+  text-decoration: none;
+}
+.roster-name a:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 3px;
+}
+
+.roster-nolink { color: var(--ink-dim); }
+
+.roster-pos {
+  margin-left: 0.45rem;
+  color: var(--ink-dim);
+  font-size: 0.8rem;
+}
+
+.roster-note {
+  color: var(--ink-dim);
+  font-size: 0.8rem;
+}
+
+/* --- Conference page ------------------------------------------- */
+
+.conf-teams {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  gap: 0 2rem;
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+}
+
+.conf-teams li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--display);
+  font-size: 1.1rem;
+}
+.conf-teams a {
+  color: var(--ink);
+  text-decoration: none;
+}
+.conf-teams a:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 3px;
+}
+
+.conf-new {
+  padding: 0.05rem 0.4rem;
+  border-radius: 3px;
+  background: rgba(77, 207, 110, 0.15);
+  color: #4DCF6E;
+  font-family: var(--body, inherit);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.conf-left {
+  margin-top: 1.25rem;
+  color: var(--ink-dim);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+.conf-left a { color: var(--ink); }

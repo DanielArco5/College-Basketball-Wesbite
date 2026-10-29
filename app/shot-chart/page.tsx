@@ -12,6 +12,8 @@ import {
 import ShotChart, { ZoneLegend, type ZoneStat } from "./ShotChart";
 import ShotMix, { type LeagueTotals, type SeasonTotals } from "./ShotMix";
 import EntityPicker, { type PickerItem } from "./EntityPicker";
+import Roster, { type RosterPlayer, type RosterSeason } from "./Roster";
+import { conferenceOf, membersOf } from "@/lib/conferences";
 import "./shot-chart.css";
 
 /**
@@ -69,7 +71,13 @@ type TeamRow = {
 export default async function ShotChartPage({
   searchParams,
 }: {
-  searchParams: Promise<{ player?: string; team?: string; side?: string; season?: string }>;
+  searchParams: Promise<{
+    player?: string;
+    team?: string;
+    side?: string;
+    season?: string;
+    conference?: string;
+  }>;
 }) {
   const params = await searchParams;
   const mode: "player" | "team" = params.team ? "team" : "player";
@@ -112,14 +120,29 @@ export default async function ShotChartPage({
   const teams = (teamRows ?? []) as TeamRow[];
   const teamById = new Map(teams.map((t) => [t.id, t]));
 
+  // A conference's member list. Both seasons are always open here: the
+  // alignment is known before a game is played.
+  if (params.conference) {
+    const confSeason = SEASONS.includes(requested) ? requested : LIVE_SEASON;
+    return (
+      <ConferenceView
+        conference={params.conference}
+        season={confSeason}
+        teams={teams}
+        chartSeason={(s) => (available.includes(s) ? s : season)}
+      />
+    );
+  }
+
   let items: PickerItem[] = [];
   let selectedId: number;
+  let playerTeam: { player_id: number; player_name: string; team_id: number } | undefined;
 
   if (mode === "team") {
     items = teams.map((t) => ({
       id: t.id,
       name: t.school,
-      detail: t.conference ?? "",
+      detail: conferenceOf(t.id, season, t.conference) ?? "",
     }));
     selectedId = Number(params.team) || teams[0]?.id;
   } else {
@@ -149,6 +172,19 @@ export default async function ShotChartPage({
       detail: teamById.get(row.team_id)?.school ?? "",
     }));
     selectedId = Number(params.player) || items[0]?.id;
+    playerTeam = candidates.find((c) => c.player_id === selectedId);
+
+    // Roster links reach players under the picker's shot floor too; look
+    // them up directly so the page still knows their name and team.
+    if (!playerTeam && selectedId) {
+      const { data } = await db
+        .from("player_season_totals")
+        .select("player_id, player_name, team_id")
+        .eq("season", season)
+        .eq("player_id", selectedId)
+        .maybeSingle();
+      if (data) playerTeam = data;
+    }
   }
 
   const { data: statRows, error: statErr } =
@@ -209,21 +245,25 @@ export default async function ShotChartPage({
   };
 
   let heading = "";
-  let subheading = "";
+  // Under the name: the conference on a team's page, the team on a
+  // player's, each linking to its own page.
+  let subheading: { label: string; href: string } | null = null;
   let accent = "#6B5D4F";
 
   if (mode === "team") {
     const t = teamById.get(selectedId);
     heading = t?.school ?? "Team";
-    subheading = t?.conference ?? "";
+    const conf = t ? conferenceOf(t.id, season, t.conference) : null;
+    if (conf) subheading = { label: conf, href: conferenceHref(conf, season) };
     accent = t?.color_override ?? t?.primary_color ?? accent;
   } else {
-    const picked = items.find((i) => i.id === selectedId);
-    heading = picked?.name ?? "Shot chart";
-    subheading = picked?.detail ?? "";
-    const team = teams.find((t) => t.school === picked?.detail);
+    heading = playerTeam?.player_name ?? "Shot chart";
+    const team = playerTeam ? teamById.get(playerTeam.team_id) : undefined;
+    if (team) subheading = { label: team.school, href: `/shot-chart?team=${team.id}&season=${season}` };
     accent = team?.color_override ?? team?.primary_color ?? accent;
   }
+
+  const rosters = mode === "team" ? await loadRosters(db, selectedId, teamById) : [];
 
   const { attempts, makes } = totals;
 
@@ -239,7 +279,14 @@ export default async function ShotChartPage({
         <span className="accent-rule" />
         <h1>{heading}</h1>
         <p className="sub">
-          {subheading ? `${subheading} · ` : ""}
+          {subheading && (
+            <>
+              <Link href={subheading.href} className="sub-link">
+                {subheading.label}
+              </Link>
+              {" · "}
+            </>
+          )}
           {seasonLabel(season)}
           {season === LIVE_SEASON ? " so far" : ""} ·{" "}
           {attempts.toLocaleString()} field goal attempts ·{" "}
@@ -403,6 +450,188 @@ export default async function ShotChartPage({
             </p>
           </section>
         </div>
+      )}
+
+      {mode === "team" && <Roster seasons={rosters} initial={season} />}
+    </main>
+  );
+}
+
+function conferenceHref(conference: string, season: number) {
+  return `/shot-chart?conference=${encodeURIComponent(conference)}&season=${season}`;
+}
+
+const POSITION: Record<string, string> = { Guard: "G", Forward: "F", Center: "C" };
+
+/**
+ * A team's roster for each season. A season with roster rows (2026-27,
+ * from the CBBD rosters scripts/project-2027.ts saves) lists everyone on
+ * it; a season without (2025-26) lists everyone who took a shot for the
+ * team. Each name links to the player's most recent chart: this season's
+ * if he has one, otherwise last season's, wherever he played it.
+ */
+async function loadRosters(
+  db: ReturnType<typeof createServerClient>,
+  teamId: number,
+  teamById: Map<number, TeamRow>,
+): Promise<RosterSeason[]> {
+  return Promise.all(
+    SEASONS.map(async (season): Promise<RosterSeason> => {
+      const label = `${seasonLabel(season)}`;
+      const [{ data: listed }, { data: shooters }] = await Promise.all([
+        db
+          .from("player_seasons")
+          .select("player_id, jersey, position, players(name)")
+          .eq("season", season)
+          .eq("team_id", teamId),
+        db
+          .from("player_season_totals")
+          .select("player_id, player_name, team_id, attempts, makes")
+          .eq("season", season)
+          .eq("team_id", teamId),
+      ]);
+
+      if (!listed?.length) {
+        const players = (shooters ?? [])
+          .sort((a, b) => b.attempts - a.attempts)
+          .map((p) => ({
+            id: p.player_id,
+            name: p.player_name,
+            jersey: null,
+            position: null,
+            href: `/shot-chart?player=${p.player_id}&season=${season}`,
+            note: `${p.attempts} FGA · ${p.attempts ? ((100 * p.makes) / p.attempts).toFixed(1) : "0.0"}%`,
+          }));
+        return { season, label, players };
+      }
+
+      // Last season's shots, for anyone on this roster: returning players
+      // and transfers have a chart there; freshmen don't.
+      const ids = listed.map((p) => p.player_id);
+      const { data: before } = await db
+        .from("player_season_totals")
+        .select("player_id, team_id, attempts")
+        .eq("season", season - 1)
+        .in("player_id", ids);
+      const now = new Map((shooters ?? []).map((p) => [p.player_id, p]));
+      const prev = new Map<number, { team_id: number; attempts: number }>();
+      for (const p of before ?? []) {
+        // A mid-season transfer has a row per team; keep the bigger one.
+        if ((prev.get(p.player_id)?.attempts ?? -1) < p.attempts) prev.set(p.player_id, p);
+      }
+
+      const players = listed
+        .map((p): RosterPlayer & { rank: number[] } => {
+          const name = (p.players as unknown as { name: string } | null)?.name ?? "Unknown";
+          const cur = now.get(p.player_id);
+          const old = prev.get(p.player_id);
+          let href: string | null = null;
+          let note = "No D1 shots yet";
+          if (cur) {
+            href = `/shot-chart?player=${p.player_id}&season=${season}`;
+            note = `${cur.attempts} FGA`;
+          } else if (old) {
+            href = `/shot-chart?player=${p.player_id}&season=${season - 1}`;
+            note =
+              old.team_id === teamId
+                ? `${old.attempts} FGA last season`
+                : `Transfer from ${teamById.get(old.team_id)?.school ?? "another D1 team"}`;
+          }
+          return {
+            id: p.player_id,
+            name,
+            jersey: p.jersey,
+            position: p.position ? (POSITION[p.position] ?? p.position) : null,
+            href,
+            note,
+            rank: [cur?.attempts ?? -1, old?.attempts ?? -1],
+          };
+        })
+        // This season's shooters, then last season's, then newcomers.
+        .sort((a, b) => b.rank[0] - a.rank[0] || b.rank[1] - a.rank[1] || a.name.localeCompare(b.name))
+        .map((p) => ({ ...p, rank: undefined }));
+      return { season, label, players };
+    }),
+  );
+}
+
+/** A conference's members in one season, each linking to its chart. */
+function ConferenceView({
+  conference,
+  season,
+  teams,
+  chartSeason,
+}: {
+  conference: string;
+  season: number;
+  teams: TeamRow[];
+  chartSeason: (season: number) => number;
+}) {
+  const members = membersOf(conference, season, teams);
+  // Realignment, against the season before: who joined, who left.
+  const before = membersOf(conference, season - 1, teams);
+  const was = new Set(before.map((t) => t.school));
+  const is = new Set(members.map((t) => t.school));
+  const joined = SEASONS.includes(season - 1) ? members.filter((t) => !was.has(t.school)) : [];
+  const left = SEASONS.includes(season - 1) ? before.filter((t) => !is.has(t.school)) : [];
+  const target = chartSeason(season);
+
+  return (
+    <main className="wrap">
+      <header className="masthead">
+        <span className="accent-rule" />
+        <h1>{conference}</h1>
+        <p className="sub">
+          {seasonLabel(season)} · {members.length} teams
+        </p>
+        <nav className="season-toggle" aria-label="Season">
+          {SEASONS.map((s) => (
+            <Link
+              key={s}
+              href={conferenceHref(conference, s)}
+              className={s === season ? "on" : ""}
+              aria-current={s === season ? "page" : undefined}
+              scroll={false}
+            >
+              {seasonLabel(s)}
+            </Link>
+          ))}
+        </nav>
+      </header>
+
+      {members.length === 0 ? (
+        <p className="empty-state">No Division I teams in the {conference} in {seasonLabel(season)}.</p>
+      ) : (
+        <ul className="conf-teams">
+          {members.map((t) => (
+            <li key={t.school}>
+              {t.id ? (
+                <Link href={`/shot-chart?team=${t.id}&season=${target}`}>{t.school}</Link>
+              ) : (
+                <span className="roster-nolink">{t.school}</span>
+              )}
+              {joined.some((j) => j.school === t.school) && <span className="conf-new">New</span>}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {left.length > 0 && (
+        <p className="conf-left">
+          Left after {seasonLabel(season - 1)}:{" "}
+          {left.map((t, i) => (
+            <span key={t.school}>
+              {i > 0 && ", "}
+              {t.id ? <Link href={`/shot-chart?team=${t.id}&season=${target}`}>{t.school}</Link> : t.school}
+            </span>
+          ))}
+        </p>
+      )}
+      {target !== season && (
+        <p className="conf-left">
+          {seasonLabel(season)} charts open once the season has enough shots; team links show{" "}
+          {seasonLabel(target)} until then.
+        </p>
       )}
     </main>
   );
