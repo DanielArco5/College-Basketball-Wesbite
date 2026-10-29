@@ -19,6 +19,7 @@ import {
   VIEW_W,
   ZONE_LABELS,
   chartZone,
+  gapOf,
   toSvg,
   zoneColor,
   zoneOf,
@@ -74,7 +75,7 @@ export default function ShotChart({
   // combined row page.tsx adds (see withAboveBreak in lib/court.ts).
   const fillFor = (zone: Zone) => {
     const stat = byZone.get(chartZone(zone));
-    return zoneColor(stat?.fg_pct_vs_league ?? 0, mode, side);
+    return zoneColor(stat ? gapOf(stat) : 0, mode, side);
   };
   const isLow = (zone: Zone) =>
     (byZone.get(chartZone(zone))?.attempts ?? 0) < LOW_SAMPLE_SHOTS;
@@ -291,14 +292,7 @@ function ZoneTip({
             </span>
           </span>
           <span className="zone-tip-dim">D1 average {pct(stat.league_fg_pct)}</span>
-          <Gap diff={stat.raw_fg_pct - stat.league_fg_pct} side={side} />
-          {/* The color and the table's vs D1 use the adjusted gap; say so
-              when it's far enough off the raw one to look like a mismatch. */}
-          {Math.abs(stat.raw_fg_pct - stat.league_fg_pct - stat.fg_pct_vs_league) >= 0.005 && (
-            <span className="zone-tip-dim">
-              {signed(stat.fg_pct_vs_league)} after the small-sample adjustment
-            </span>
-          )}
+          <Gap diff={gapOf(stat)} side={side} />
           {stat.attempts < LOW_SAMPLE_SHOTS && (
             <span className="zone-tip-dim">Small sample: under {LOW_SAMPLE_SHOTS} shots</span>
           )}
@@ -306,12 +300,6 @@ function ZoneTip({
       )}
     </div>
   );
-}
-
-/** 0.048 -> "+4.8", with no "-0.0". */
-function signed(diff: number) {
-  const pts = Math.round(1000 * diff) / 10 || 0;
-  return `${pts > 0 ? "+" : ""}${pts.toFixed(1)}`;
 }
 
 function Gap({ diff, side }: { diff: number; side: "offense" | "defense" }) {

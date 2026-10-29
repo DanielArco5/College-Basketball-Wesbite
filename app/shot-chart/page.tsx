@@ -5,6 +5,7 @@ import {
   LOW_SAMPLE_SHOTS,
   ZONE_LABELS,
   ZONE_ORDER,
+  gapOf,
   withAboveBreak,
   zoneColor,
   type Zone,
@@ -355,16 +356,14 @@ export default async function ShotChartPage({
               <figcaption>
                 {side === "defense" ? (
                   <>
-                    Color compares opponents against this team to the Division
-                    I average in each zone, adjusted for how many shots were
-                    actually taken there.
+                    Color compares how opponents shot against this team to the
+                    Division I average in each zone.
                   </>
                 ) : (
                   <>
                     Color compares{" "}
-                    {mode === "team" ? "this team" : "this player"} to the
-                    Division I average in each zone, adjusted for how many
-                    shots were actually taken there.
+                    {mode === "team" ? "this team" : "this player"}&rsquo;s FG%
+                    to the Division I average in each zone.
                   </>
                 )}
               </figcaption>
@@ -408,13 +407,13 @@ export default async function ShotChartPage({
                     );
                   }
                   // Rounded first, so a hair under zero reads 0.0, not -0.0.
-                  const diff = Math.round(1000 * s.fg_pct_vs_league) / 10 || 0;
+                  const diff = Math.round(1000 * gapOf(s)) / 10 || 0;
                   return (
                     <tr key={zone} className={sub.trim() || undefined}>
                       <td>
                         <span
                           className={s.attempts < LOW_SAMPLE_SHOTS ? "swatch low" : "swatch"}
-                          style={{ ["--c" as string]: zoneColor(s.fg_pct_vs_league, mode, side) }}
+                          style={{ ["--c" as string]: zoneColor(gapOf(s), mode, side) }}
                         />
                         {ZONE_LABELS[zone]}
                       </td>
@@ -426,8 +425,6 @@ export default async function ShotChartPage({
                           {((s.attempt_share ?? 0) * 100).toFixed(1)}%
                         </td>
                       )}
-                      {/* Raw, so it agrees with makes/attempts beside it.
-                          The shrunk rate only drives color and vs D1. */}
                       <td className="num">{(100 * s.raw_fg_pct).toFixed(1)}</td>
                       <td className="num">
                         {`${diff > 0 ? "+" : ""}${diff.toFixed(1)}`}
@@ -439,12 +436,11 @@ export default async function ShotChartPage({
             </table>
 
             <p className="accuracy-note">
-              FG% is the raw make rate. Colors and vs D1 use an adjusted rate
-              that pulls small samples toward the Division I average, so a
-              zone with few shots shows a smaller gap than its raw FG%
-              suggests. Zones with fewer than {LOW_SAMPLE_SHOTS} attempts are
-              striped: the color is there, but it rests on very few shots.
-              Hover a zone on the chart for its FG% against the D1 average.
+              Colors and vs D1 compare each zone&rsquo;s FG% straight to the
+              Division I average there, in percentage points. Zones with
+              fewer than {LOW_SAMPLE_SHOTS} attempts are striped: the color is
+              the real FG%, but it rests on few shots, so a hot or cold streak
+              can swing it. Hover a zone on the chart for its numbers.
               {side === "defense" &&
                 " Shots allowed are a rough read on defense: they reflect who a team played as much as how it defended, and opponent three-point shooting is largely luck."}
             </p>

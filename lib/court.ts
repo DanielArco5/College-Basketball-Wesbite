@@ -139,7 +139,6 @@ type ZoneStatLike = {
  * `stats` plus one combined above-the-break row. Its D1 average and gap
  * are weighted by where the shots came from, so a team that lives on the
  * wings is measured against the D1 rate on the wings, not straightaway.
- * The gap stays the small-sample-adjusted one, like every other zone's.
  */
 export function withAboveBreak<T extends ZoneStatLike>(stats: T[]): T[] {
   const parts = stats.filter((s) => ABOVE_BREAK.includes(s.zone) && s.attempts > 0);
@@ -156,7 +155,7 @@ export function withAboveBreak<T extends ZoneStatLike>(stats: T[]): T[] {
     raw_fg_pct: makes / attempts,
     fg_pct: weighted((s) => s.fg_pct),
     league_fg_pct: weighted((s) => s.league_fg_pct),
-    fg_pct_vs_league: weighted((s) => s.fg_pct_vs_league),
+    fg_pct_vs_league: makes / attempts - weighted((s) => s.league_fg_pct),
     attempt_share: parts.reduce((n, s) => n + (s.attempt_share ?? 0), 0),
   };
   return [...stats, combined];
@@ -186,9 +185,16 @@ export const COLOR_STOPS = [
  *  reaches the end and typical gaps stay gentle. */
 export const COLOR_RANGE_PTS = { player: 12, team: 7 };
 
-/** Fewer attempts than this and the zone is striped: colored, but flagged
- *  as a small sample. */
-export const LOW_SAMPLE_SHOTS = 5;
+/** Fewer attempts than this and the zone is striped: colored by its real
+ *  FG% all the same, but flagged as a small sample. */
+export const LOW_SAMPLE_SHOTS = 15;
+
+/** A zone's FG% minus the D1 average there, as a fraction (0.031 is +3.1
+ *  points). The plain make rate, with no small-sample adjustment: what
+ *  the chart colors and the table's vs D1 show. */
+export function gapOf(s: { raw_fg_pct: number; league_fg_pct: number }) {
+  return s.raw_fg_pct - s.league_fg_pct;
+}
 
 /** Fill for a zone `diff` (a fraction: 0.031 is +3.1 points) from the D1
  *  average, on the given mode's scale. On defense the diff is opponents'
