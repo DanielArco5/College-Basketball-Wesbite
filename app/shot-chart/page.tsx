@@ -15,6 +15,7 @@ import ShotMix, { type LeagueTotals, type SeasonTotals } from "./ShotMix";
 import EntityPicker, { type PickerItem } from "./EntityPicker";
 import Roster, { type RosterPlayer, type RosterSeason } from "./Roster";
 import { conferenceOf, membersOf } from "@/lib/conferences";
+import { apRankOf } from "@/lib/ap";
 import "./shot-chart.css";
 
 /**
@@ -264,7 +265,10 @@ export default async function ShotChartPage({
     accent = team?.color_override ?? team?.primary_color ?? accent;
   }
 
-  const rosters = mode === "team" ? await loadRosters(db, selectedId, teamById) : [];
+  const [rosters, ap] = await Promise.all([
+    mode === "team" ? loadRosters(db, selectedId, teamById) : Promise.resolve([]),
+    mode === "team" ? apRankOf(selectedId, season) : Promise.resolve(null),
+  ]);
 
   const { attempts, makes } = totals;
 
@@ -285,6 +289,15 @@ export default async function ShotChartPage({
               <Link href={subheading.href} className="sub-link">
                 {subheading.label}
               </Link>
+              {" · "}
+            </>
+          )}
+          {ap && (
+            <>
+              <span className="ap-badge">
+                AP No. {ap.rank}
+                {ap.label === "Final" ? " final" : ""}
+              </span>
               {" · "}
             </>
           )}

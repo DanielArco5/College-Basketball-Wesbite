@@ -5,6 +5,11 @@
  *   npx tsx scripts/ingest-shots.ts --season 2026 --resume
  *   npx tsx scripts/ingest-shots.ts --date 2026-01-15
  *   npx tsx scripts/ingest-shots.ts --season 2026 --untracked [--resume]
+ *   npx tsx scripts/ingest-shots.ts --season 2025 --resume --no-archive
+ *
+ * --no-archive skips the raw payload copy in ingest_raw. Each game day's
+ * payload is several MB, so a full past season archived would outgrow the
+ * free database by itself; use it for backfills of finished seasons.
  *
  * --untracked backfills only the field goals that have no court location,
  * which ingests before supabase/untracked-shots.sql dropped. It never
@@ -176,7 +181,7 @@ async function logCall(endpoint: string, params: object, status: number, ms: num
 // can't be told apart from a free throw, so it isn't kept.
 const FIELD_GOAL_RANGES = new Set(["rim", "jumper", "three_pointer"]);
 
-async function ingestDate(dateISO: string, season: number, untrackedOnly = false) {
+async function ingestDate(dateISO: string, season: number, untrackedOnly = false, archive = true) {
   // NOTE: verify this param name against the live docs before your first real
   // backfill — the wrappers expose it as shooting_plays_only. The filter below
   // makes the result correct either way, it just costs a bigger payload.
@@ -194,7 +199,7 @@ async function ingestDate(dateISO: string, season: number, untrackedOnly = false
   }
 
   // Archive raw before touching anything else. This is the failover.
-  if (!untrackedOnly) {
+  if (!untrackedOnly && archive) {
     await db.from("ingest_raw").insert({
       endpoint: "/plays/date",
       params,
@@ -373,7 +378,7 @@ async function main() {
   let totalShots = 0;
   for (const d of dates) {
     try {
-      const { shots } = await ingestDate(d, season, untrackedOnly);
+      const { shots } = await ingestDate(d, season, untrackedOnly, args["no-archive"] !== true);
       totalShots += shots;
       await db.from("ingest_checkpoints").upsert({ job, cursor: d, updated_at: new Date().toISOString() });
     } catch (err) {

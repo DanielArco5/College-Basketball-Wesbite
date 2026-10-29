@@ -1,4 +1,6 @@
+import { getApPolls } from "@/lib/ap";
 import { getRanking } from "@/lib/rankings";
+import ApPolls from "./ApPoll";
 import { FormulaMethod, FormulaRanking } from "./Formula";
 import "./rankings.css";
 
@@ -14,7 +16,7 @@ export const metadata = {
 export const revalidate = 300;
 
 export default async function RankingsPage() {
-  const ranking = await getRanking();
+  const [ranking, polls] = await Promise.all([getRanking(), getApPolls([2027, 2026, 2025])]);
   const { formula } = ranking;
   return (
     <main className="rank">
@@ -31,6 +33,7 @@ export default async function RankingsPage() {
       </header>
 
       <FormulaRanking ranking={ranking} />
+      <ApPolls polls={polls} />
       <FormulaMethod formula={formula} />
     </main>
   );

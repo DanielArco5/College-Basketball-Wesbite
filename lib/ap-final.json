@@ -1,0 +1,312 @@
+{
+ "2025": {
+  "date": "2025-04-08T07:00Z",
+  "rows": [
+   {
+    "rank": 1,
+    "school": "Florida",
+    "team_id": 87,
+    "record": "36-4"
+   },
+   {
+    "rank": 2,
+    "school": "Houston",
+    "team_id": 113,
+    "record": "35-5"
+   },
+   {
+    "rank": 3,
+    "school": "Duke",
+    "team_id": 72,
+    "record": "35-4"
+   },
+   {
+    "rank": 4,
+    "school": "Auburn",
+    "team_id": 16,
+    "record": "32-6"
+   },
+   {
+    "rank": 5,
+    "school": "Tennessee",
+    "team_id": 292,
+    "record": "30-8"
+   },
+   {
+    "rank": 6,
+    "school": "Alabama",
+    "team_id": 5,
+    "record": "28-9"
+   },
+   {
+    "rank": 7,
+    "school": "Michigan State",
+    "team_id": 169,
+    "record": "30-7"
+   },
+   {
+    "rank": 8,
+    "school": "Texas Tech",
+    "team_id": 298,
+    "record": "28-9"
+   },
+   {
+    "rank": 9,
+    "school": "Maryland",
+    "team_id": 160,
+    "record": "27-9"
+   },
+   {
+    "rank": 10,
+    "school": "Michigan",
+    "team_id": 170,
+    "record": "27-10"
+   },
+   {
+    "rank": 11,
+    "school": "St. John's",
+    "team_id": 279,
+    "record": "31-5"
+   },
+   {
+    "rank": 12,
+    "school": "Kentucky",
+    "team_id": 135,
+    "record": "24-12"
+   },
+   {
+    "rank": 13,
+    "school": "BYU",
+    "team_id": 18,
+    "record": "26-10"
+   },
+   {
+    "rank": 14,
+    "school": "Purdue",
+    "team_id": 236,
+    "record": "24-12"
+   },
+   {
+    "rank": 15,
+    "school": "Arizona",
+    "team_id": 11,
+    "record": "24-13"
+   },
+   {
+    "rank": 16,
+    "school": "Wisconsin",
+    "team_id": 355,
+    "record": "27-10"
+   },
+   {
+    "rank": 17,
+    "school": "Iowa State",
+    "team_id": 125,
+    "record": "25-10"
+   },
+   {
+    "rank": 18,
+    "school": "Ole Miss",
+    "team_id": 220,
+    "record": "24-12"
+   },
+   {
+    "rank": 19,
+    "school": "Texas A&M",
+    "team_id": 293,
+    "record": "23-11"
+   },
+   {
+    "rank": 20,
+    "school": "Arkansas",
+    "team_id": 12,
+    "record": "22-14"
+   },
+   {
+    "rank": 21,
+    "school": "Louisville",
+    "team_id": 150,
+    "record": "27-8"
+   },
+   {
+    "rank": 22,
+    "school": "Clemson",
+    "team_id": 52,
+    "record": "27-7"
+   },
+   {
+    "rank": 23,
+    "school": "Gonzaga",
+    "team_id": 102,
+    "record": "26-9"
+   },
+   {
+    "rank": 24,
+    "school": "Saint Mary's",
+    "team_id": 253,
+    "record": "29-6"
+   },
+   {
+    "rank": 25,
+    "school": "Memphis",
+    "team_id": 163,
+    "record": "29-6"
+   }
+  ]
+ },
+ "2026": {
+  "date": "2026-04-07T07:00Z",
+  "rows": [
+   {
+    "rank": 1,
+    "school": "Michigan",
+    "team_id": 170,
+    "record": "37-3"
+   },
+   {
+    "rank": 2,
+    "school": "UConn",
+    "team_id": 314,
+    "record": "34-6"
+   },
+   {
+    "rank": 3,
+    "school": "Arizona",
+    "team_id": 11,
+    "record": "36-3"
+   },
+   {
+    "rank": 4,
+    "school": "Duke",
+    "team_id": 72,
+    "record": "35-3"
+   },
+   {
+    "rank": 5,
+    "school": "Illinois",
+    "team_id": 118,
+    "record": "28-9"
+   },
+   {
+    "rank": 6,
+    "school": "Purdue",
+    "team_id": 236,
+    "record": "30-9"
+   },
+   {
+    "rank": 7,
+    "school": "Houston",
+    "team_id": 113,
+    "record": "30-7"
+   },
+   {
+    "rank": 8,
+    "school": "Iowa State",
+    "team_id": 125,
+    "record": "29-8"
+   },
+   {
+    "rank": 9,
+    "school": "Florida",
+    "team_id": 87,
+    "record": "27-8"
+   },
+   {
+    "rank": 10,
+    "school": "St. John's",
+    "team_id": 279,
+    "record": "30-7"
+   },
+   {
+    "rank": 11,
+    "school": "Michigan State",
+    "team_id": 169,
+    "record": "27-8"
+   },
+   {
+    "rank": 12,
+    "school": "Tennessee",
+    "team_id": 292,
+    "record": "25-12"
+   },
+   {
+    "rank": 13,
+    "school": "Arkansas",
+    "team_id": 12,
+    "record": "28-9"
+   },
+   {
+    "rank": 14,
+    "school": "Nebraska",
+    "team_id": 188,
+    "record": "28-7"
+   },
+   {
+    "rank": 15,
+    "school": "Iowa",
+    "team_id": 124,
+    "record": "24-13"
+   },
+   {
+    "rank": 16,
+    "school": "Alabama",
+    "team_id": 5,
+    "record": "25-10"
+   },
+   {
+    "rank": 17,
+    "school": "Virginia",
+    "team_id": 339,
+    "record": "30-6"
+   },
+   {
+    "rank": 18,
+    "school": "Gonzaga",
+    "team_id": 102,
+    "record": "31-4"
+   },
+   {
+    "rank": 19,
+    "school": "Vanderbilt",
+    "team_id": 336,
+    "record": "27-9"
+   },
+   {
+    "rank": 20,
+    "school": "Kansas",
+    "team_id": 131,
+    "record": "24-11"
+   },
+   {
+    "rank": 21,
+    "school": "Texas Tech",
+    "team_id": 298,
+    "record": "23-11"
+   },
+   {
+    "rank": 22,
+    "school": "Texas",
+    "team_id": 295,
+    "record": "21-15"
+   },
+   {
+    "rank": 23,
+    "school": "Louisville",
+    "team_id": 150,
+    "record": "24-11"
+   },
+   {
+    "rank": 24,
+    "school": "Miami",
+    "team_id": 168,
+    "record": "26-9"
+   },
+   {
+    "rank": 25,
+    "school": "Wisconsin",
+    "team_id": 355,
+    "record": "24-11"
+   }
+  ]
+ }
+}

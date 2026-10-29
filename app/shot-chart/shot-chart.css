@@ -673,3 +673,9 @@ body:has(.wrap) {
   line-height: 1.6;
 }
 .conf-left a { color: var(--ink); }
+
+/* AP rank beside a team's conference: final for past seasons, live now. */
+.ap-badge {
+  color: var(--ink);
+  font-weight: 600;
+}

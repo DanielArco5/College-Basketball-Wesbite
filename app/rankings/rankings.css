@@ -396,3 +396,90 @@ body:has(.rank) .sitenav { max-width: 72rem; }
 @media (max-width: 36rem) {
   .ratings-adds-line { display: none; }
 }
+
+/* --- AP Top 25, one tab per season --------------------------------- */
+
+.ap {
+  margin: 3rem 0 0;
+  padding-top: 1.5rem;
+  border-top: 1px solid #3A3028;
+}
+
+.ap h2 {
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+}
+
+.ap-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.ap-tabs button {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  padding: 0.25rem 0.8rem;
+  border: 1px solid #3A3028;
+  border-radius: 999px;
+  background: none;
+  color: var(--ink-dim);
+  font: inherit;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.ap-tabs button:hover { color: var(--ink); }
+.ap-tabs button.on {
+  color: var(--ink);
+  border-color: var(--accent-warm);
+}
+.ap-tabs button:focus-visible {
+  outline: 2px solid var(--accent-warm);
+  outline-offset: 2px;
+}
+
+.ap-tab-note {
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+}
+
+.ap-list {
+  columns: 14rem;
+  column-gap: 2rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ap-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.3rem 0;
+  break-inside: avoid;
+}
+
+.ap-rk {
+  width: 1.6rem;
+  text-align: right;
+  color: var(--ink-faint);
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+.ap-list a {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+.ap-list a:hover { border-bottom-color: var(--accent-warm); }
+
+.ap-rec {
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+}
