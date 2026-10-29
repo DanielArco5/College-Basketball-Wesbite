@@ -110,22 +110,26 @@ export const ZONE_ORDER: Zone[] = [
 ];
 
 // ── Zone color ─────────────────────────────────────────────────────────
-// A continuous scale from bad to good: deep red, through a muted yellow
-// at the D1 average, to deep green, with a shade for every point between.
-// "Good" depends on the side: shooting above average on offense, holding
-// opponents below it on defense. The yellow is toned down so average
-// zones don't outshine the ones that stand out. Mixed in OKLab, where
-// equal steps look equal.
+// A continuous scale from bad to good: red, through yellow at the D1
+// average, to green, with a shade for every point between. "Good" depends
+// on the side: shooting above average on offense, holding opponents below
+// it on defense.
+//
+// Soft on purpose, in the manner of NBA.com's zone charts: all three stops
+// are muted and close in lightness, so neighboring zones a few points
+// apart drift in hue instead of jumping in brightness. Mixed in OKLab,
+// where equal steps look equal.
 export const COLOR_STOPS = {
-  bad: "#A3221E",
-  mid: "#C4A43E",
-  good: "#1F7A3C",
+  bad: "#A65545",
+  mid: "#AE9C5C",
+  good: "#5D8F5B",
 };
 
 /** Points vs D1 at which a zone reaches full color. Teams vary about half
  *  as much as players (a season of shots evens out), so their scale is
- *  tighter: both put roughly the 97th percentile at the end. */
-export const COLOR_RANGE_PTS = { player: 10, team: 6 };
+ *  tighter. Both sit past the 99th percentile, so only a true outlier
+ *  reaches the end and typical gaps stay gentle. */
+export const COLOR_RANGE_PTS = { player: 12, team: 7 };
 
 /** Fewer attempts than this and the zone is striped: colored, but flagged
  *  as a small sample. */
