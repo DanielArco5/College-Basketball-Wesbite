@@ -187,6 +187,15 @@ export default function ShotChart({ stats }: { stats: ZoneStat[] }) {
           />
         ))}
 
+        {/* Corner / wing dividers, where the corner line meets the arc.
+            A touch heavier than the other lines: the two zones meet along
+            a short edge and read as one strip otherwise. */}
+        <path
+          d={`M 0 ${CORNER_TOP} H ${CORNER_W} M ${VIEW_W - CORNER_W} ${CORNER_TOP} H ${VIEW_W}`}
+          strokeWidth={3}
+          strokeLinecap="butt"
+        />
+
         {/* Backboard and rim */}
         <path d="M 220 280 L 280 280" strokeWidth={3} />
         <circle cx={250} cy={HOOP.sy} r={7.5} strokeWidth={2} />
