@@ -42,6 +42,7 @@ begin
     'player_zone_stats',
     'team_zone_priors',
     'team_zone_stats',
+    'team_defense_zones',
     'team_defense_zone_priors',
     'team_defense_zone_stats',
     'player_season_totals',
