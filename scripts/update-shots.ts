@@ -58,6 +58,13 @@ async function main() {
 
   console.log("\nRefreshing shot-chart summaries...");
   const { data, error } = await db.rpc("refresh_shot_views");
+  // Supabase's API gateway gives up on a request after about two minutes,
+  // and with more than one season loaded the refresh takes longer. The
+  // database finishes it regardless, so a gateway timeout isn't a failure.
+  if (error && /upstream request timeout/i.test(error.message)) {
+    console.log("Refresh is still running in the database (it outlasts the API's 2-minute limit); it finishes on its own.");
+    return;
+  }
   if (error) {
     console.error(
       `Refresh failed: ${error.message}\n` +

@@ -304,7 +304,11 @@ async function ingestDate(dateISO: string, season: number, untrackedOnly = false
   // Order matters: parents before children. A backfill only fills gaps:
   // stub rows must not overwrite teams and players enriched since.
   const insertOnly = untrackedOnly;
-  await upsertChunked("teams", [...teams.values()], "id", insertOnly);
+  // Teams are only ever added here, never updated: a play carries the
+  // conference of its own season, and writing that back would put a past
+  // season's alignment over the current one (a 2024-25 backfill would
+  // move Seattle U back to the WAC). scripts/enrich-teams.ts owns them.
+  await upsertChunked("teams", [...teams.values()], "id", true);
   await upsertChunked("players", [...players.values()], "id", insertOnly);
   await upsertChunked("games", [...games.values()], "id", insertOnly);
   await upsertChunked("shot_events", shots, "source_play_id");

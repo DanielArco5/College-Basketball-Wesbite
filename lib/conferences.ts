@@ -1,3 +1,4 @@
+import conferences2025 from "./conferences-2025.json";
 import conferences2027 from "./conferences-2027.json";
 
 /**
@@ -5,6 +6,10 @@ import conferences2027 from "./conferences-2027.json";
  * 2026-27, after realignment (Gonzaga, Boise State, San Diego State and
  * others to the Pac-12, and so on), comes from the CBBD rosters via
  * lib/conferences-2027.json, which scripts/project-2027.ts writes.
+ * 2024-25 (Seattle U and Grand Canyon in the WAC, Missouri State in the
+ * MVC, ...) is lib/conferences-2025.json, taken from the conference each
+ * team carried in that season's play-by-play. A team with null there
+ * wasn't in Division I that season.
  *
  * Seasons are named by the year they end: 2027 is 2026-27.
  */
@@ -12,6 +17,7 @@ import conferences2027 from "./conferences-2027.json";
 type Alignment = Record<string, { school: string; conference: string | null }>;
 
 const BY_SEASON: Record<number, Alignment> = {
+  2025: conferences2025 as Alignment,
   2027: conferences2027 as Alignment,
 };
 
