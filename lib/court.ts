@@ -115,15 +115,17 @@ export const ZONE_ORDER: Zone[] = [
 // on the side: shooting above average on offense, holding opponents below
 // it on defense.
 //
-// Soft on purpose, in the manner of NBA.com's zone charts: all three stops
-// are muted and close in lightness, so neighboring zones a few points
-// apart drift in hue instead of jumping in brightness. Mixed in OKLab,
-// where equal steps look equal.
-export const COLOR_STOPS = {
-  bad: "#A65545",
-  mid: "#AE9C5C",
-  good: "#5D8F5B",
-};
+// The stops are Basketball University's zone-chart gauge (@UofBasketball),
+// sampled from their graphic: red through orange to yellow, then
+// yellow-green to green. Each pair is mixed in OKLab, where equal steps
+// look equal. `at` runs -1 (worst) to 1 (best).
+export const COLOR_STOPS = [
+  { at: -1, color: "#E94039" },
+  { at: -0.5, color: "#F29830" },
+  { at: 0, color: "#FAC821" },
+  { at: 0.3, color: "#BADA46" },
+  { at: 1, color: "#4DCF6E" },
+];
 
 /** Points vs D1 at which a zone reaches full color. Teams vary about half
  *  as much as players (a season of shots evens out), so their scale is
@@ -145,8 +147,9 @@ export function zoneColor(
 ) {
   const good = side === "defense" ? -diff : diff;
   const t = Math.max(-1, Math.min(1, (100 * good) / COLOR_RANGE_PTS[mode]));
-  const end = t < 0 ? COLOR_STOPS.bad : COLOR_STOPS.good;
-  return mix(COLOR_STOPS.mid, end, Math.abs(t));
+  const i = Math.max(1, COLOR_STOPS.findIndex((stop) => stop.at >= t));
+  const [lo, hi] = [COLOR_STOPS[i - 1], COLOR_STOPS[i]];
+  return mix(lo.color, hi.color, (t - lo.at) / (hi.at - lo.at));
 }
 
 function mix(a: string, b: string, t: number) {
