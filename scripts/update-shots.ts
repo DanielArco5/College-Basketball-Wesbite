@@ -1,10 +1,13 @@
 /**
  * Keep the live season's shot charts current.
  *
- *   npm run update-shots
+ *   npm run update-shots              # through yesterday (Eastern)
+ *   npm run update-shots -- --today   # through today, games finished so far
  *
- * Imports every game day since the last run, up to and including
- * yesterday (Eastern), then refreshes the shot-chart summaries. Safe to
+ * Imports every game day since the last run, then refreshes the
+ * shot-chart summaries. The day the last run ended on is always fetched
+ * again: if that run was an evening --today pass, the day's late games
+ * (West Coast, Hawai'i) weren't over yet. Safe to
  * run as often as you like: days already imported are skipped by the
  * checkpoint, and re-imported plays are de-duplicated.
  *
@@ -33,8 +36,8 @@ const db = createClient(env("SUPABASE_URL"), env("SUPABASE_SERVICE_ROLE_KEY"), {
 });
 
 async function main() {
-  const yesterday = easternDate(-1);
-  const to = yesterday < SEASON_END ? yesterday : SEASON_END;
+  const through = easternDate(process.argv.includes("--today") ? 0 : -1);
+  const to = through < SEASON_END ? through : SEASON_END;
 
   if (to < SEASON_START) {
     console.log(`The ${SEASON - 1}-${String(SEASON).slice(2)} season starts ${SEASON_START}. Nothing to import yet.`);
@@ -42,14 +45,22 @@ async function main() {
   }
 
   // --resume picks up after the last imported day; --from only applies
-  // on the very first run. --to stops at yesterday so no call is spent
-  // on a day that hasn't been played.
+  // on the very first run. --to stops at `to` so no call is spent on a
+  // day that hasn't been played. If the last run already reached `to`,
+  // fetch that day again instead: it may have been imported mid-evening.
+  // Plays already loaded are skipped, so this costs one call, nothing more.
+  const { data: checkpoint } = await db
+    .from("ingest_checkpoints")
+    .select("cursor")
+    .eq("job", `shots:${SEASON}`)
+    .maybeSingle();
+  const range =
+    checkpoint?.cursor && checkpoint.cursor >= to
+      ? ["--from", to, "--to", to]
+      : ["--resume", "--from", SEASON_START, "--to", to];
   const run = spawnSync(
     "npx",
-    [
-      "tsx", "--env-file=.env.local", "scripts/ingest-shots.ts",
-      "--season", String(SEASON), "--resume", "--from", SEASON_START, "--to", to,
-    ],
+    ["tsx", "--env-file=.env.local", "scripts/ingest-shots.ts", "--season", String(SEASON), ...range],
     { stdio: "inherit" },
   );
   if (run.status !== 0) {

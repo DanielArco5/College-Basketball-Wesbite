@@ -1,4 +1,9 @@
-# Once a day: new shots into the shot charts, then re-rank the Top 25.
+# Shot charts three times a day, Top 25 once.
+#
+#   Morning:  yesterday's games (re-checked for late finishes), then the
+#             NCAA stats and the Top 25 re-rank.
+#   Evening:  today's games finished so far, shots only, twice.
+#   By hand:  everything, including today's games so far.
 #
 # Needs three repository secrets (Settings -> Secrets and variables ->
 # Actions): SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, CBBD_API_KEY. They're
@@ -14,6 +19,9 @@ on:
     # 11:15 UTC: 7:15 a.m. Eastern in fall, 6:15 in winter. West Coast
     # games are long over. GitHub may start it a few minutes late.
     - cron: "15 11 * * *"
+    # 01:30 and 04:30 UTC: about 8:30 and 11:30 p.m. Eastern.
+    - cron: "30 1 * * *"
+    - cron: "30 4 * * *"
   workflow_dispatch:
 
 concurrency: daily-update
@@ -54,18 +62,19 @@ jobs:
             scripts/.cache/player-stats-2026.json
           key: cbbd-preseason-2027-v1
 
-      # Does nothing before the season starts. About one API call per
-      # game day after that.
+      # About one API call per run: today's games in the evening, yesterday
+      # in the morning.
       - name: Shot charts
-        run: npm run update-shots
+        run: npm run update-shots ${{ github.event.schedule == '15 11 * * *' && ' ' || '-- --today' }}
 
-      # The ranking runs even if the shot import failed.
+      # Morning and by-hand runs only. The ranking runs even if the shot
+      # import failed.
       - name: NCAA.com team stats
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && github.event.schedule != '30 1 * * *' && github.event.schedule != '30 4 * * *' }}
         run: npm run ncaa-stats
 
       - name: Re-rank and publish today's snapshot
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && github.event.schedule != '30 1 * * *' && github.event.schedule != '30 4 * * *' }}
         run: npm run rank
 
       - name: Keep CBBD preseason payloads

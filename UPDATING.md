@@ -7,10 +7,13 @@ Most of it updates itself. This is what you do by hand, and where.
 | What | When | Where to check |
 |---|---|---|
 | Live Wire news (ESPN, CBS Sports) | Every 3 hours | GitHub → Actions → **Live Wire news** |
-| Shot charts, NCAA stats, Top 25 re-rank | Every morning, ~7 a.m. ET | GitHub → Actions → **Daily update** |
+| Shot charts: today's finished games | ~8:30 and ~11:30 p.m. ET | GitHub → Actions → **Daily update** |
+| Shot charts (late games), NCAA stats, Top 25 re-rank | Every morning, ~6–7 a.m. ET | GitHub → Actions → **Daily update** |
 | Scores and top scorers in the ticker | Live, every 2 minutes | Nothing to do |
 
-To run either job now: Actions → pick the job → **Run workflow**.
+To run either job now: Actions → pick the job → **Run workflow**. Running
+Daily update by hand also pulls in today's games that have finished.
+GitHub's scheduled runs often start late, sometimes by hours.
 A red ✗ there means a run failed; click it to see why. The site keeps
 showing the last good data in the meantime.
 
