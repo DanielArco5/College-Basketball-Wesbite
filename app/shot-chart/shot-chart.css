@@ -679,3 +679,62 @@ body:has(.wrap) {
   color: var(--ink);
   font-weight: 600;
 }
+
+/* --- Player box-score season ---------------------------------------- */
+
+.box {
+  margin: 0 0 2.25rem;
+}
+
+.box-head {
+  margin: 0 0 0.6rem;
+  color: var(--ink-dim);
+  font-size: 0.9rem;
+}
+.box-head strong {
+  color: var(--ink);
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 1.05rem;
+}
+
+.box-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(6.5rem, 1fr));
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  border-top: 3px solid var(--accent);
+}
+
+.box-splits {
+  margin-top: 0.75rem;
+  border-top-width: 1px;
+}
+
+.box-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.6rem 0.8rem;
+  background: var(--panel);
+}
+
+.box-label {
+  font-family: var(--display);
+  font-size: 0.85rem;
+  color: var(--ink-dim);
+}
+
+.box-value {
+  font-family: var(--display);
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.box-sub {
+  font-size: 0.75rem;
+  color: var(--ink-dim);
+}

@@ -14,6 +14,7 @@ import ShotChart, { ZoneLegend, type ZoneStat } from "./ShotChart";
 import ShotMix, { type LeagueTotals, type SeasonTotals } from "./ShotMix";
 import EntityPicker, { type PickerItem } from "./EntityPicker";
 import Roster, { type RosterPlayer, type RosterSeason } from "./Roster";
+import PlayerStats, { type BoxRow } from "./PlayerStats";
 import { conferenceOf, membersOf } from "@/lib/conferences";
 import { apRankOf } from "@/lib/ap";
 import "./shot-chart.css";
@@ -281,9 +282,19 @@ export default async function ShotChartPage({
     accent = team?.color_override ?? team?.primary_color ?? accent;
   }
 
-  const [rosters, ap] = await Promise.all([
+  const [rosters, ap, box] = await Promise.all([
     mode === "team" ? loadRosters(db, selectedId, teamById) : Promise.resolve([]),
     mode === "team" ? apRankOf(selectedId, season) : Promise.resolve(null),
+    // Box-score stats. Before supabase/player-box-stats.sql the table is
+    // missing; the read fails quietly and the panel just doesn't show.
+    mode === "player"
+      ? db
+          .from("player_box_seasons")
+          .select("*")
+          .eq("season", season)
+          .eq("player_id", selectedId)
+          .then(({ data }) => (data ?? []) as BoxRow[])
+      : Promise.resolve([] as BoxRow[]),
   ]);
 
   const { attempts, makes } = totals;
@@ -369,6 +380,8 @@ export default async function ShotChartPage({
           </nav>
         )}
       </header>
+
+      {mode === "player" && <PlayerStats rows={box} seasonLabel={seasonLabel(season)} />}
 
       {stats.length === 0 ? (
         <p className="empty-state">
