@@ -25,7 +25,7 @@ import "./shot-chart.css";
  */
 const SEASONS = [2027, 2026, 2025];
 const LIVE_SEASON = 2027;
-const LIVE_SEASON_START = "November 2";
+const LIVE_SEASON_START = "November 1";
 const LIVE_SEASON_NOTE_EARLY = "charts open once every zone has enough shots";
 const TOTALS_COLUMNS =
   "attempts, makes, three_attempts, three_makes, untracked_attempts, jumper_attempts, jumper_makes";
@@ -89,12 +89,13 @@ export default async function ShotChartPage({
     mode === "team" && params.side === "defense" ? "defense" : "offense";
   const db = createServerClient();
 
-  // A season is shown only once every zone's small-sample correction can
-  // be fitted from that season's own shots. The priors need players and
-  // teams with real volume in each zone, and the stats views join them
-  // with inner joins, so a season shown too early would silently drop
-  // its thinly-shot zones (corner threes first) from every chart. Until
-  // then the tab is visible but disabled.
+  // The stats views join each season's priors, which need real volume in
+  // every zone, so they stay empty for the first weeks of a season. A
+  // season is "fitted" once they're filled. The live season opens with
+  // its first game all the same: until it's fitted, its charts are
+  // counted straight from the shots (shotZoneStats) against the last
+  // fitted season's D1 averages. The page still opens on the newest
+  // fitted season until then.
   const [{ data: seasonRows }, { data: playerPriors }, { data: teamPriors }] = await Promise.all([
     db.from("d1_season_totals").select("season"),
     db.from("zone_priors").select("season, zone"),
@@ -104,11 +105,19 @@ export default async function ShotChartPage({
   const ready = (s: number, rows: { season: number }[] | null) =>
     (rows ?? []).filter((r) => r.season === s).length >= zones;
   const hasShots = (s: number) => (seasonRows ?? []).some((r) => r.season === s);
-  const available = SEASONS.filter(
+  const fitted = SEASONS.filter(
     (s) => hasShots(s) && ready(s, playerPriors) && ready(s, teamPriors),
   );
+  const available = SEASONS.filter(
+    (s) => fitted.includes(s) || (s === LIVE_SEASON && hasShots(s)),
+  );
   const requested = Number(params.season);
-  const season = available.includes(requested) ? requested : (available[0] ?? SEASONS.at(-1)!);
+  const season = available.includes(requested)
+    ? requested
+    : (fitted[0] ?? available[0] ?? SEASONS.at(-1)!);
+  const young = !fitted.includes(season);
+  /** Whose D1 averages the page compares against. */
+  const baseSeason = young ? (fitted[0] ?? season) : season;
   const minAttempts = season === LIVE_SEASON ? MIN_LIVE_ATTEMPTS : MIN_SEASON_ATTEMPTS;
 
   const { data: teamRows, error: teamErr } = await db
@@ -189,8 +198,15 @@ export default async function ShotChartPage({
     }
   }
 
-  const { data: statRows, error: statErr } =
-    mode === "team"
+  const { data: statRows, error: statErr } = young
+    ? await shotZoneStats(
+        db,
+        mode === "player" ? "player_id" : side === "defense" ? "opponent_id" : "team_id",
+        selectedId,
+        season,
+        baseSeason,
+      )
+    : mode === "team"
       ? await db
           .from(
             side === "defense" ? "team_defense_zone_stats" : "team_zone_stats",
@@ -233,7 +249,7 @@ export default async function ShotChartPage({
   const { data: league, error: leagueErr } = await db
     .from("d1_season_totals")
     .select("attempts, makes, three_attempts, three_makes")
-    .eq("season", season)
+    .eq("season", baseSeason)
     .maybeSingle<LeagueTotals>();
   if (leagueErr) return <Failure message={leagueErr.message} />;
   const totals: SeasonTotals = totalsRow ?? {
@@ -454,6 +470,8 @@ export default async function ShotChartPage({
               fewer than {LOW_SAMPLE_SHOTS} attempts are striped: the color is
               the real FG%, but it rests on few shots, so a hot or cold streak
               can swing it. Hover a zone on the chart for its numbers.
+              {young &&
+                ` Early in ${seasonLabel(season)}, D1 averages are ${seasonLabel(baseSeason)}'s until the new season has enough shots.`}
               {side === "defense" &&
                 " Shots allowed are a rough read on defense: they reflect who a team played as much as how it defended, and opponent three-point shooting is largely luck."}
             </p>
@@ -464,6 +482,63 @@ export default async function ShotChartPage({
       {mode === "team" && <Roster seasons={rosters} initial={season} />}
     </main>
   );
+}
+
+/**
+ * Zone stats counted straight from the shots, for a season too young for
+ * the stats views (see `fitted` above). Same shape as a stats-view row;
+ * the D1 average per zone comes from `baseSeason`.
+ */
+async function shotZoneStats(
+  db: ReturnType<typeof createServerClient>,
+  column: "team_id" | "opponent_id" | "player_id",
+  id: number,
+  season: number,
+  baseSeason: number,
+): Promise<{ data: ZoneStat[]; error: { message: string } | null }> {
+  const [shots, { data: base, error: baseErr }] = await Promise.all([
+    fetchAll<{ zone: Zone; made: boolean }>((from, to) =>
+      db
+        .from("shot_events")
+        .select("zone, made")
+        .eq("season", season)
+        .eq(column, id)
+        .not("zone", "is", null)
+        .order("id")
+        .range(from, to),
+    ),
+    db.from("zone_baselines").select("zone, fg_pct").eq("season", baseSeason),
+  ]);
+  if (shots.error) return { data: [], error: { message: shots.error } };
+  if (baseErr) return { data: [], error: baseErr };
+
+  const league = new Map((base ?? []).map((b) => [b.zone as Zone, Number(b.fg_pct)]));
+  const byZone = new Map<Zone, { attempts: number; makes: number }>();
+  for (const shot of shots.data) {
+    const z = byZone.get(shot.zone) ?? { attempts: 0, makes: 0 };
+    z.attempts++;
+    if (shot.made) z.makes++;
+    byZone.set(shot.zone, z);
+  }
+  const total = shots.data.length;
+  return {
+    data: [...byZone].map(([zone, { attempts, makes }]) => {
+      const raw = makes / attempts;
+      const avg = league.get(zone) ?? raw;
+      return {
+        zone,
+        attempts,
+        makes,
+        raw_fg_pct: raw,
+        fg_pct: raw,
+        league_fg_pct: avg,
+        fg_pct_vs_league: raw - avg,
+        color_bucket: "neutral",
+        attempt_share: attempts / total,
+      };
+    }),
+    error: null,
+  };
 }
 
 function conferenceHref(conference: string, season: number) {

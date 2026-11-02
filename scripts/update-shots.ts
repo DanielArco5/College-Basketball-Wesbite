@@ -22,8 +22,9 @@ import { spawnSync } from "node:child_process";
 import { createClient } from "@supabase/supabase-js";
 
 const SEASON = 2027;
-/** First day of the 2026-27 regular season. */
-const SEASON_START = "2026-11-02";
+/** First day of the 2026-27 regular season (Notre Dame at Villanova
+ *  tipped a day before the rest, on November 1). */
+const SEASON_START = "2026-11-01";
 /** Last day plays can exist: through the national championship. */
 const SEASON_END = "2027-04-12";
 
