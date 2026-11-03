@@ -1,8 +1,9 @@
-# Shot charts three times a day, Top 25 once.
+# Shot charts every hour through game time, Top 25 once a day.
 #
 #   Morning:  yesterday's games (re-checked for late finishes), then the
-#             NCAA stats and the Top 25 re-rank.
-#   Evening:  today's games finished so far, shots only, twice.
+#             NCAA stats, player stats and the Top 25 re-rank.
+#   Hourly:   12:30 p.m. to 1:30 a.m. Eastern, today's games finished so far,
+#             shots only. One API call each, about 15 a day.
 #   By hand:  everything, including today's games so far.
 #
 # Needs three repository secrets (Settings -> Secrets and variables ->
@@ -19,9 +20,10 @@ on:
     # 11:15 UTC: 7:15 a.m. Eastern in fall, 6:15 in winter. West Coast
     # games are long over. GitHub may start it a few minutes late.
     - cron: "15 11 * * *"
-    # 01:30 and 04:30 UTC: about 8:30 and 11:30 p.m. Eastern.
-    - cron: "30 1 * * *"
-    - cron: "30 4 * * *"
+    # Hourly at :30, 17:30 to 06:30 UTC: 12:30 p.m. to 1:30 a.m. Eastern
+    # (an hour later in March and April, on daylight time). No games
+    # finish overnight.
+    - cron: "30 0-6,17-23 * * *"
   workflow_dispatch:
 
 concurrency: daily-update
@@ -62,24 +64,23 @@ jobs:
             scripts/.cache/player-stats-2026.json
           key: cbbd-preseason-2027-v1
 
-      # About one API call per run: today's games in the evening, yesterday
-      # in the morning.
+      # One API call per run: today's games hourly, yesterday in the morning.
       - name: Shot charts
         run: npm run update-shots ${{ github.event.schedule == '15 11 * * *' && ' ' || '-- --today' }}
 
       # Morning and by-hand runs only. The ranking runs even if the shot
       # import failed.
       - name: NCAA.com team stats
-        if: ${{ !cancelled() && github.event.schedule != '30 1 * * *' && github.event.schedule != '30 4 * * *' }}
+        if: ${{ !cancelled() && github.event.schedule != '30 0-6,17-23 * * *' }}
         run: npm run ncaa-stats
 
       # Box-score stats for the player pages: one API call.
       - name: Player season stats
-        if: ${{ !cancelled() && github.event.schedule != '30 1 * * *' && github.event.schedule != '30 4 * * *' }}
+        if: ${{ !cancelled() && github.event.schedule != '30 0-6,17-23 * * *' }}
         run: npm run player-stats -- --season 2027 --refresh
 
       - name: Re-rank and publish today's snapshot
-        if: ${{ !cancelled() && github.event.schedule != '30 1 * * *' && github.event.schedule != '30 4 * * *' }}
+        if: ${{ !cancelled() && github.event.schedule != '30 0-6,17-23 * * *' }}
         run: npm run rank
 
       - name: Keep CBBD preseason payloads

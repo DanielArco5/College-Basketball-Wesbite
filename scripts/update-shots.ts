@@ -6,7 +6,7 @@
  *
  * Imports every game day since the last run, then refreshes the
  * shot-chart summaries. The day the last run ended on is always fetched
- * again: if that run was an evening --today pass, the day's late games
+ * again: if that run was an hourly --today pass, the day's late games
  * (West Coast, Hawai'i) weren't over yet. Safe to
  * run as often as you like: days already imported are skipped by the
  * checkpoint, and re-imported plays are de-duplicated.
@@ -58,6 +58,7 @@ async function main() {
     checkpoint?.cursor && checkpoint.cursor >= to
       ? ["--from", to, "--to", to]
       : ["--resume", "--from", SEASON_START, "--to", to];
+  const before = await seasonShots();
   const run = spawnSync(
     "npx",
     ["tsx", "--env-file=.env.local", "scripts/ingest-shots.ts", "--season", String(SEASON), ...range],
@@ -66,6 +67,15 @@ async function main() {
   if (run.status !== 0) {
     console.error("Import stopped early; fix the error above and run again. Nothing was refreshed.");
     process.exit(run.status ?? 1);
+  }
+
+  // Hourly runs mostly find nothing new; the refresh is the slow part
+  // (a couple of minutes), so it's skipped when no shot was added. The
+  // morning run always refreshes, in case an earlier one was cut short.
+  const after = await seasonShots();
+  if (process.argv.includes("--today") && before !== null && after === before) {
+    console.log("\nNo new shots since the last run; charts are already current.");
+    return;
   }
 
   console.log("\nRefreshing shot-chart summaries...");
@@ -85,6 +95,15 @@ async function main() {
     process.exit(1);
   }
   console.log(data);
+}
+
+/** Shots stored for the live season, or null if the count failed. */
+async function seasonShots() {
+  const { count, error } = await db
+    .from("shot_events")
+    .select("id", { count: "exact", head: true })
+    .eq("season", SEASON);
+  return error ? null : count;
 }
 
 /** YYYY-MM-DD in US Eastern time, offset by `days`. */
