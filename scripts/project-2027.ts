@@ -651,6 +651,16 @@ async function main() {
     })),
   };
 
+  // One bad input turns scores into NaN, which sorts unpredictably and
+  // would put a random team at No. 1. Keep the last good snapshot instead.
+  const broken = out.rows.filter((r) => !Number.isFinite(r.score));
+  if (broken.length) {
+    throw new Error(
+      `${broken.length} teams scored NaN (e.g. ${broken.slice(0, 3).map((r) => r.school).join(", ")}). ` +
+        "Nothing was written or published.",
+    );
+  }
+
   writeFileSync("lib/formula-2027.json", JSON.stringify(out, null, 2) + "\n");
   if (!process.argv.includes("--no-publish")) await publish(out);
   console.log(`Rated ${rows.length} teams (calibration ${JSON.stringify(calib)}). Top 10:`);
@@ -709,6 +719,11 @@ type NcaaTotals = Record<
   number
 >;
 
+const NCAA_FIELDS = [
+  "games", "pts", "opp_pts", "fgm", "fga", "opp_fgm", "opp_fga", "fta",
+  "oreb", "dreb", "tpm", "tpa", "opp_tpm", "opp_tpa", "tov", "opp_tov",
+] as const satisfies readonly (keyof NcaaTotals)[];
+
 type Shown = { offense: number; oreb: number; turnovers: number; three: number; defense: number };
 
 /**
@@ -736,6 +751,14 @@ function inSeason(teamIds: number[], d1: Map<number, { conference: string | null
   for (const id of teamIds) {
     const t = file.teams[id];
     if (!t || !t.games) continue;
+    // A team missing from any one NCAA.com table (it happens early in the
+    // season) keeps its preseason numbers until the table catches up; a
+    // single gap would otherwise turn the league averages into NaN.
+    const gap = NCAA_FIELDS.find((k) => !Number.isFinite(t[k]));
+    if (gap) {
+      console.warn(`  ${(t as { ncaa_name?: string }).ncaa_name ?? id}: no ${gap} on NCAA.com yet; using preseason numbers.`);
+      continue;
+    }
     const poss = t.fga - t.oreb + t.tov + 0.475 * t.fta;
     const misses = t.fga - t.fgm;
     const oppMisses = t.opp_fga - t.opp_fgm;

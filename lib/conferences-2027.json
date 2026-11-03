@@ -1455,9 +1455,57 @@
   "school": "Lindenwood",
   "conference": "OVC"
  },
+ "832": {
+  "school": "North American",
+  "conference": null
+ },
+ "844": {
+  "school": "Coast Guard",
+  "conference": null
+ },
+ "884": {
+  "school": "Berry",
+  "conference": null
+ },
+ "894": {
+  "school": "Rhode Island College",
+  "conference": null
+ },
+ "941": {
+  "school": "Bridgewater College (VA)",
+  "conference": null
+ },
+ "944": {
+  "school": "Saint Vincent",
+  "conference": null
+ },
  "1073": {
   "school": "West Florida",
   "conference": "ASUN"
+ },
+ "1081": {
+  "school": "Southeastern Baptist College",
+  "conference": null
+ },
+ "1113": {
+  "school": "Indiana-Kokomo",
+  "conference": null
+ },
+ "1121": {
+  "school": "Maryville University (MO)",
+  "conference": null
+ },
+ "1252": {
+  "school": "CSU San Marcos",
+  "conference": null
+ },
+ "1258": {
+  "school": "Carnegie Mellon",
+  "conference": null
+ },
+ "1309": {
+  "school": "Ottawa (KS)",
+  "conference": null
  },
  "1507": {
   "school": "New Haven",

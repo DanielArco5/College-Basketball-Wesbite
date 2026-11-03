@@ -2,23 +2,18 @@
 
 Most of it updates itself. This is what you do by hand, and where.
 
-## Runs on its own (GitHub Actions, started by Supabase)
-
-Supabase's cron (`supabase/github-cron.sql`) starts each job on the
-minute; GitHub's own scheduler ran hours late or skipped runs. The
-GitHub token it uses is in Supabase → Vault as `github_actions_token`.
-If the jobs stop starting, the token has probably expired: make a new
-one and run that file again.
+## Runs on its own (GitHub Actions)
 
 | What | When | Where to check |
 |---|---|---|
 | Live Wire news (ESPN, CBS Sports) | Every 3 hours | GitHub → Actions → **Live Wire news** |
-| Shot charts: today's finished games | Hourly, ~12:30 p.m. to 1:30 a.m. ET | GitHub → Actions → **Daily update** |
+| Shot charts and Top 25: today's finished games | Hourly, ~12:30 p.m. to 1:30 a.m. ET | GitHub → Actions → **Daily update** |
 | Shot charts (late games), NCAA stats, Top 25 re-rank | Every morning, ~6–7 a.m. ET | GitHub → Actions → **Daily update** |
 | Scores and top scorers in the ticker | Live, every 2 minutes | Nothing to do |
 
 To run either job now: Actions → pick the job → **Run workflow**. Running
 Daily update by hand also pulls in today's games that have finished.
+GitHub's scheduled runs often start late, sometimes by hours.
 A red ✗ there means a run failed; click it to see why. The site keeps
 showing the last good data in the meantime.
 

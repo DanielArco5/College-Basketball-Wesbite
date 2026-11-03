@@ -1,9 +1,10 @@
-# Shot charts every hour through game time, Top 25 once a day.
+# Shot charts and the Top 25 every hour through game time.
 #
 #   Morning:  yesterday's games (re-checked for late finishes), then the
 #             NCAA stats, player stats and the Top 25 re-rank.
-#   Hourly:   12:30 p.m. to 1:30 a.m. Eastern, today's games finished so far,
-#             shots only. One API call each, about 15 a day.
+#   Hourly:   12:30 p.m. to 1:30 a.m. Eastern, today's games finished so
+#             far, then NCAA stats and the re-rank. One API call each
+#             (the NCAA.com stats are free), about 15 a day.
 #   By hand:  everything, including today's games so far.
 #
 # Needs three repository secrets (Settings -> Secrets and variables ->
@@ -15,11 +16,15 @@
 
 name: Daily update
 
-# Started by Supabase (supabase/github-cron.sql), not GitHub's own cron,
-# which ran hours late or not at all:
-#   morning  11:15 UTC (7:15 a.m. Eastern in fall, 6:15 in winter)
-#   hourly   :30 past, 17:30 to 06:30 UTC (12:30 p.m. to 1:30 a.m. Eastern)
 on:
+  schedule:
+    # 11:15 UTC: 7:15 a.m. Eastern in fall, 6:15 in winter. West Coast
+    # games are long over. GitHub may start it late.
+    - cron: "15 11 * * *"
+    # Hourly at :30, 17:30 to 06:30 UTC: 12:30 p.m. to 1:30 a.m. Eastern
+    # (an hour later in March and April, on daylight time). No games
+    # finish overnight.
+    - cron: "30 0-6,17-23 * * *"
   workflow_dispatch:
     inputs:
       mode:
@@ -34,6 +39,8 @@ jobs:
   update:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    env:
+      MODE: ${{ inputs.mode || (github.event.schedule == '15 11 * * *' && 'morning' || 'hourly') }}
     steps:
       - uses: actions/checkout@v4
 
@@ -68,21 +75,20 @@ jobs:
 
       # One API call per run: today's games hourly, yesterday in the morning.
       - name: Shot charts
-        run: npm run update-shots ${{ inputs.mode == 'morning' && ' ' || '-- --today' }}
+        run: npm run update-shots ${{ env.MODE == 'morning' && ' ' || '-- --today' }}
 
-      # Morning and by-hand runs only. The ranking runs even if the shot
-      # import failed.
+      # Every run; free. The ranking runs even if the shot import failed.
       - name: NCAA.com team stats
-        if: ${{ !cancelled() && inputs.mode != 'hourly' }}
+        if: ${{ !cancelled() }}
         run: npm run ncaa-stats
 
-      # Box-score stats for the player pages: one API call.
+      # Box-score stats for the player pages: one API call, mornings only.
       - name: Player season stats
-        if: ${{ !cancelled() && inputs.mode != 'hourly' }}
+        if: ${{ !cancelled() && env.MODE != 'hourly' }}
         run: npm run player-stats -- --season 2027 --refresh
 
       - name: Re-rank and publish today's snapshot
-        if: ${{ !cancelled() && inputs.mode != 'hourly' }}
+        if: ${{ !cancelled() }}
         run: npm run rank
 
       - name: Keep CBBD preseason payloads
