@@ -15,16 +15,18 @@
 
 name: Daily update
 
+# Started by Supabase (supabase/github-cron.sql), not GitHub's own cron,
+# which ran hours late or not at all:
+#   morning  11:15 UTC (7:15 a.m. Eastern in fall, 6:15 in winter)
+#   hourly   :30 past, 17:30 to 06:30 UTC (12:30 p.m. to 1:30 a.m. Eastern)
 on:
-  schedule:
-    # 11:15 UTC: 7:15 a.m. Eastern in fall, 6:15 in winter. West Coast
-    # games are long over. GitHub may start it a few minutes late.
-    - cron: "15 11 * * *"
-    # Hourly at :30, 17:30 to 06:30 UTC: 12:30 p.m. to 1:30 a.m. Eastern
-    # (an hour later in March and April, on daylight time). No games
-    # finish overnight.
-    - cron: "30 0-6,17-23 * * *"
   workflow_dispatch:
+    inputs:
+      mode:
+        description: "all = everything, including today's games so far"
+        type: choice
+        options: [all, morning, hourly]
+        default: all
 
 concurrency: daily-update
 
@@ -66,21 +68,21 @@ jobs:
 
       # One API call per run: today's games hourly, yesterday in the morning.
       - name: Shot charts
-        run: npm run update-shots ${{ github.event.schedule == '15 11 * * *' && ' ' || '-- --today' }}
+        run: npm run update-shots ${{ inputs.mode == 'morning' && ' ' || '-- --today' }}
 
       # Morning and by-hand runs only. The ranking runs even if the shot
       # import failed.
       - name: NCAA.com team stats
-        if: ${{ !cancelled() && github.event.schedule != '30 0-6,17-23 * * *' }}
+        if: ${{ !cancelled() && inputs.mode != 'hourly' }}
         run: npm run ncaa-stats
 
       # Box-score stats for the player pages: one API call.
       - name: Player season stats
-        if: ${{ !cancelled() && github.event.schedule != '30 0-6,17-23 * * *' }}
+        if: ${{ !cancelled() && inputs.mode != 'hourly' }}
         run: npm run player-stats -- --season 2027 --refresh
 
       - name: Re-rank and publish today's snapshot
-        if: ${{ !cancelled() && github.event.schedule != '30 0-6,17-23 * * *' }}
+        if: ${{ !cancelled() && inputs.mode != 'hourly' }}
         run: npm run rank
 
       - name: Keep CBBD preseason payloads

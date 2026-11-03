@@ -2,7 +2,13 @@
 
 Most of it updates itself. This is what you do by hand, and where.
 
-## Runs on its own (GitHub Actions)
+## Runs on its own (GitHub Actions, started by Supabase)
+
+Supabase's cron (`supabase/github-cron.sql`) starts each job on the
+minute; GitHub's own scheduler ran hours late or skipped runs. The
+GitHub token it uses is in Supabase → Vault as `github_actions_token`.
+If the jobs stop starting, the token has probably expired: make a new
+one and run that file again.
 
 | What | When | Where to check |
 |---|---|---|
@@ -13,7 +19,6 @@ Most of it updates itself. This is what you do by hand, and where.
 
 To run either job now: Actions → pick the job → **Run workflow**. Running
 Daily update by hand also pulls in today's games that have finished.
-GitHub's scheduled runs often start late, sometimes by hours.
 A red ✗ there means a run failed; click it to see why. The site keeps
 showing the last good data in the meantime.
 
