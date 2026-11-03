@@ -28,12 +28,13 @@
  *   4. Competition counts twice: once inside every stat (step 2), and
  *      again as its own component, the strength of the team's conference.
  *   5. Each component becomes a z-score across D1, weighted, summed.
- *   6. Once 2026-27 games are played, real 2026-27 numbers take over.
- *      scripts/ncaa-stats.ts reads NCAA.com's official team totals; each
- *      component's z-score is blended as games / (games + BLEND_GAMES)
- *      actual, the rest projection. NCAA.com publishes no schedule, so
- *      in-season stats are adjusted by conference peers instead of
- *      exact opponents.
+ *   6. Once 2026-27 games are played, NCAA.com's official totals
+ *      (scripts/ncaa-stats.ts) fill the stat columns. Display only.
+ *   7. Blended with KenPom, Torvik and ESPN's preseason ranks.
+ *   8. Final scores move it from there (scripts/game-results.ts, from
+ *      ESPN): every finished game shifts both teams by how far the result
+ *      beat the expected margin. Wins never cost a team, losses never
+ *      help, blowouts are capped. Games in progress don't count.
  *
  * Payloads are cached in scripts/.cache (gitignored). Writes
  * player_seasons rows for 2027, lib/formula-2027.json, lib/conferences-2027.json
@@ -124,10 +125,27 @@ const HONORABLE = 10;
  * hand (top25_overrides) from outside it still has its numbers.
  */
 const OUTPUT_ROWS = 100;
-/** Games at which a team's real 2026-27 numbers count half. */
-const BLEND_GAMES = 10;
 /** NCAA.com's 2026-27 totals, written by scripts/ncaa-stats.ts. */
 const IN_SEASON_FILE = process.env.IN_SEASON_FILE ?? `${CACHE}/ncaa-team-${SEASON_TO}.json`;
+/** ESPN's 2026-27 final scores, written by scripts/game-results.ts. */
+const RESULTS_FILE = process.env.RESULTS_FILE ?? `${CACHE}/results-${SEASON_TO}.json`;
+
+/**
+ * Results rating (step 8). The preseason score becomes a rating in
+ * points, then every final game moves both teams by RESULT_K times how
+ * far the result beat the expected margin. A win always counts for
+ * WIN_BONUS more than a loss by the same margin, and blowouts are capped
+ * so running up the score earns nothing past MARGIN_CAP.
+ */
+/** Spread of D1 team ratings, in points per game. */
+const POINTS_SD = 11;
+/** Points a true home game is worth. */
+const HOME_EDGE = 3;
+const MARGIN_CAP = 20;
+const WIN_BONUS = 4;
+const RESULT_K = 0.2;
+/** A non-D1 opponent rates this many points below the 10th-worst D1 team. */
+const NON_D1_GAP = 8;
 
 /**
  * CBBD's 2027 rosters drop departed players but, for most teams, don't
@@ -519,22 +537,10 @@ async function main() {
   const keys = Object.keys(WEIGHTS) as WeightKey[];
   const z = Object.fromEntries(keys.map((k) => [k, zscores(parts[k])])) as Record<WeightKey, number[]>;
 
-  // ── 6. Blend in real 2026-27 numbers ──────────────────────────────
+  // ── 6. Real 2026-27 numbers, for show ─────────────────────────────
+  // NCAA.com's totals fill the stat columns once a team has played. They
+  // don't move the score: final results do (step 8).
   const live = inSeason(rows.map((r) => r.team_id), d1);
-  const weightOf = rows.map((r) => {
-    const g = live.byTeam.get(r.team_id)?.games ?? 0;
-    return g / (g + BLEND_GAMES);
-  });
-  if (live.byTeam.size) {
-    for (const k of keys) {
-      // Same input either way; in-season wins come through net efficiency.
-      if (k === "competition" || k === "continuity" || k === "winning") continue;
-      rows.forEach((r, i) => {
-        const az = live.z[k].get(r.team_id);
-        if (az !== undefined) z[k][i] = weightOf[i] * az + (1 - weightOf[i]) * z[k][i];
-      });
-    }
-  }
 
   // Shown stats and their ranks: real numbers once a team has played.
   const shown = rows.map((r) => live.byTeam.get(r.team_id)?.stats ?? {
@@ -582,12 +588,11 @@ async function main() {
     // Off both lists: no better than the team just below their depth.
     return rk === null ? Math.min(own[i], ladder[EXTERNAL_DEPTH]) : ladder[rk - 1];
   });
-  // Outside rankings are preseason opinions; they give way at the same
-  // rate the team's own real numbers arrive, so nothing jumps overnight.
-  const externalWeights = weightOf.map((w) => EXTERNAL_WEIGHT * (1 - w));
-  const scores = own.map(
-    (o, i) => (1 - externalWeights[i]) * o + externalWeights[i] * externalScore[i],
-  );
+  const preseason = own.map((o, i) => (1 - EXTERNAL_WEIGHT) * o + EXTERNAL_WEIGHT * externalScore[i]);
+
+  // ── 8. Move on final results ──────────────────────────────────────
+  const results = rateResults(rows.map((r) => r.team_id), preseason);
+  const scores = results.score;
 
   const ownRank = rankDesc(own);
   const ordered = rows
@@ -595,13 +600,19 @@ async function main() {
     .sort((x, y) => scores[y.i] - scores[x.i])
     .slice(0, OUTPUT_ROWS);
 
-  const maxGames = Math.max(0, ...[...live.byTeam.values()].map((t) => t.games));
+  const maxGames = Math.max(0, ...results.games);
   const out = {
     season: SEASON_TO,
     generated_at: new Date().toISOString(),
     stage: maxGames > 0 ? "in-season" : "preseason",
-    in_season: live.byTeam.size
-      ? { source: live.source, fetched: live.fetched, max_games: maxGames, blend_games: BLEND_GAMES }
+    in_season: maxGames > 0
+      ? {
+          source: live.source,
+          fetched: live.fetched,
+          results_fetched: results.fetched,
+          final_games: results.final,
+          max_games: maxGames,
+        }
       : null,
     weights: WEIGHTS,
     identity: { threshold: IDENTITY_THRESHOLD, bonus: IDENTITY_BONUS },
@@ -611,7 +622,7 @@ async function main() {
     },
     params: {
       SHRINK_MINUTES, SHRINK_THREES, PROGRAM_CARRYOVER, PRIOR_WEIGHT, TRANSFER_CREDIT, CONTINUITY_BASE,
-      CONTINUITY_RETURN, RANKED, HONORABLE, BLEND_GAMES,
+      CONTINUITY_RETURN, RANKED, HONORABLE, POINTS_SD, HOME_EDGE, MARGIN_CAP, WIN_BONUS, RESULT_K,
     },
     sources: {
       stats: "CollegeBasketballData season box-score totals, 2025-26",
@@ -634,8 +645,10 @@ async function main() {
       own_score: round(own[i], 3),
       own_rank: ownRank[i],
       external_rank: external[i],
-      games: live.byTeam.get(r.team_id)?.games ?? 0,
-      actual_weight: round(weightOf[i], 2),
+      preseason_score: round(preseason[i], 3),
+      games: results.games[i],
+      wins: results.wins[i],
+      losses: results.losses[i],
       off_eff: round(shown[i].offense, 1),
       oreb_pct: round(shown[i].oreb * 100, 1),
       to_margin: round(shown[i].turnovers, 1),
@@ -709,6 +722,72 @@ function externalRanks(schools: string[]) {
   const place = new Array<number | null>(schools.length).fill(null);
   order.forEach(([, i], n) => (place[i] = n + 1));
   return place;
+}
+
+// ── Results (ESPN final scores) ───────────────────────────────────────
+
+type Result = {
+  date: string;
+  neutral: boolean;
+  home: number | null;
+  away: number | null;
+  home_pts: number;
+  away_pts: number;
+};
+
+/**
+ * Preseason scores moved by every final game, in date order. Scores stay
+ * on the preseason scale (0 is a typical D1 team), so a team that hasn't
+ * played keeps exactly its preseason score.
+ */
+function rateResults(teamIds: number[], preseason: number[]) {
+  const n = teamIds.length;
+  const out = {
+    score: [...preseason],
+    games: Array<number>(n).fill(0),
+    wins: Array<number>(n).fill(0),
+    losses: Array<number>(n).fill(0),
+    final: 0,
+    fetched: "",
+  };
+  if (!existsSync(RESULTS_FILE)) return out;
+  const file = JSON.parse(readFileSync(RESULTS_FILE, "utf8")) as { fetched: string; games: Result[] };
+
+  const avg = mean(preseason);
+  const scale = POINTS_SD / Math.sqrt(mean(preseason.map((s) => (s - avg) ** 2)));
+  const rating = preseason.map((s) => (s - avg) * scale);
+  const index = new Map(teamIds.map((id, i) => [id, i]));
+  const nonD1 = [...rating].sort((a, b) => a - b)[9] - NON_D1_GAP;
+  const of = (id: number | null) => (id === null ? undefined : index.get(id));
+
+  for (const g of [...file.games].sort((a, b) => a.date.localeCompare(b.date))) {
+    const h = of(g.home);
+    const a = of(g.away);
+    if (h === undefined && a === undefined) continue;
+    const margin = g.home_pts - g.away_pts;
+    if (!Number.isFinite(margin) || margin === 0) continue;
+    const cap = MARGIN_CAP + WIN_BONUS;
+    const expected = Math.max(-cap, Math.min(cap,
+      (h === undefined ? nonD1 : rating[h]) - (a === undefined ? nonD1 : rating[a]) + (g.neutral ? 0 : HOME_EDGE),
+    ));
+    const result = Math.sign(margin) * (Math.min(Math.abs(margin), MARGIN_CAP) + WIN_BONUS);
+    // Winning never costs a team and losing never helps one: a favorite
+    // that wins by less than expected just stays put.
+    const raw = RESULT_K * (result - expected);
+    const move = margin > 0 ? Math.max(raw, 0) : Math.min(raw, 0);
+    for (const [i, sign] of [[h, 1], [a, -1]] as const) {
+      if (i === undefined) continue;
+      rating[i] += sign * move;
+      out.games[i]++;
+      if (sign * margin > 0) out.wins[i]++;
+      else out.losses[i]++;
+    }
+    out.final++;
+  }
+
+  out.score = rating.map((r) => r / scale + avg);
+  out.fetched = file.fetched;
+  return out;
 }
 
 // ── In-season (NCAA.com) ──────────────────────────────────────────────

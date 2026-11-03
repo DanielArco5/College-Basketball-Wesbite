@@ -7,7 +7,8 @@ import type { Formula, RankedRow, Ranking } from "@/lib/rankings";
  * below describes that script; keep the two in step.
  */
 
-type InSeason = { source: string; fetched: string; max_games: number; blend_games: number };
+// final_games is missing from snapshots made before results moved the score.
+type InSeason = { source: string; fetched: string; results_fetched?: string; final_games?: number; max_games: number };
 
 function pctOf(w: number) {
   return `${Math.round(w * 100)}%`;
@@ -40,10 +41,9 @@ export function FormulaRanking({ ranking, limit }: { ranking: Ranking; limit?: n
       <p className="rank-stage">
         {live && formula.stage === "in-season" ? (
           <>
-            Live: up to {live.max_games} games of 2026&ndash;27 results from
-            NCAA.com, updated {live.fetched}. A team&rsquo;s real numbers count
-            half once it has played {live.blend_games} games. Re-ranked every
-            morning.
+            Live: moved by {(live.final_games ?? 0).toLocaleString()} final
+            scores so far, up to {live.max_games} per team. Only finished
+            games count. Re-ranked every hour on game days.
           </>
         ) : (
           <>
@@ -87,6 +87,7 @@ export function FormulaRanking({ ranking, limit }: { ranking: Ranking; limit?: n
                 <td>
                   <TeamLink row={r} />
                   <span className="ratings-team-conf">
+                    {!r.stub && r.games > 0 && r.wins !== undefined && `${r.wins}-${r.losses} · `}
                     {r.conference}
                     {r.identity && <IdentityBadge label={r.identity} />}
                     {r.pinned && <PickBadge row={r} />}
@@ -349,13 +350,18 @@ export function FormulaMethod({ formula }: { formula: Formula }) {
           return.
         </li>
         <li>
-          <strong>Switch to real numbers as games are played.</strong> Once
-          the season starts, each team&rsquo;s official 2026&ndash;27 totals
-          from NCAA.com are put through the same formula and blended with the
-          projection, and the outside rankings fade out at the same pace: after {p.BLEND_GAMES} games they count half, and more
-          after that. NCAA.com doesn&rsquo;t publish schedules, so these
-          in-season numbers are adjusted for the strength of a team&rsquo;s
-          conference rather than its exact opponents.
+          <strong>Then let the results talk.</strong> Once the season
+          starts, only final scores move a team. Every finished game is
+          compared with what the ratings expected: beat a better team, or a
+          worse one by more than expected, and you climb; lose, and you
+          drop, more for losing to a weaker team. A win is worth{" "}
+          {p.WIN_BONUS} points more than a loss by the same margin, a true
+          home game is worth {p.HOME_EDGE}, and margins stop counting past{" "}
+          {p.MARGIN_CAP}, so running up the score earns nothing. Winning
+          never costs a team and losing never helps one. Games still in
+          progress don&rsquo;t count. The stat columns switch to real
+          2026&ndash;27 numbers from NCAA.com once a team has played, but
+          they&rsquo;re for show: the score moves on results alone.
         </li>
         <li>
           <strong>Score and rank.</strong> Each component becomes a standard
@@ -363,7 +369,7 @@ export function FormulaMethod({ formula }: { formula: Formula }) {
           above or below average), multiplied by its weight and added up. A
           score of 0 is a typical team. The top {RANKED} are ranked and the
           next {p.HONORABLE} are honorable mentions. All of this reruns every
-          morning.
+          hour on game days.
         </li>
         <li>
           <strong>Our picks.</strong> We can place a team by hand when we

@@ -87,6 +87,12 @@ jobs:
         if: ${{ !cancelled() && env.MODE != 'hourly' }}
         run: npm run player-stats -- --season 2027 --refresh
 
+      # Final scores from ESPN for the ranking; free. Games still going
+      # are left out.
+      - name: Final scores
+        if: ${{ !cancelled() }}
+        run: npm run results
+
       - name: Re-rank and publish today's snapshot
         if: ${{ !cancelled() }}
         run: npm run rank
