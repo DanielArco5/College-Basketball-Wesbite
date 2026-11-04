@@ -42,8 +42,8 @@ type Mode = "player" | "team";
 
 // Lines are drawn in a near-black a shade under the surface, so they read
 // as gaps between zones and hold up on every fill.
-const LINE = "#16110D";
-const SURFACE = "#241C16";
+export const LINE = "#16110D";
+export const SURFACE = "#241C16";
 
 // Zone boundaries in SVG pixels, from the same constants zoneOf() uses.
 const ARC_R = THREE_POINT_RADIUS_FT * PX_PER_FT;
@@ -162,37 +162,7 @@ export default function ShotChart({
         )}
 
         {/* Court markings, drawn over the fills so the geometry stays legible. */}
-        <g fill="none" stroke={LINE} strokeWidth={2} strokeLinecap="square" pointerEvents="none">
-          {/* Boundary and baseline */}
-          <rect x={1} y={1} width={VIEW_W - 2} height={VIEW_H - 2} />
-
-          {/* Lane */}
-          <rect x={190} y={130} width={120} height={190} />
-
-          {/* Free throw circle */}
-          <circle cx={250} cy={130} r={60} />
-
-          {/* Restricted area */}
-          <path d={`M 210 ${HOOP.sy} A 40 40 0 0 1 290 ${HOOP.sy}`} />
-
-          {/* Three-point line: two corner segments and the arc between them */}
-          <path d="M 33.4 320 L 33.4 221" />
-          <path d="M 466.6 320 L 466.6 221" />
-          <path d="M 33.4 221 A 221.458 221.458 0 0 1 466.6 221" />
-
-          {/* Corner / above-the-break dividers, where the corner line meets
-              the arc. A touch heavier than the other lines: the two zones
-              meet along a short edge and read as one strip otherwise. */}
-          <path
-            d={`M 0 ${CORNER_TOP} H ${CORNER_W} M ${VIEW_W - CORNER_W} ${CORNER_TOP} H ${VIEW_W}`}
-            strokeWidth={3}
-            strokeLinecap="butt"
-          />
-
-          {/* Backboard and rim */}
-          <path d="M 220 280 L 280 280" strokeWidth={3} />
-          <circle cx={250} cy={HOOP.sy} r={7.5} strokeWidth={2} />
-        </g>
+        <CourtLines />
       </svg>
 
       {hover && (
@@ -215,6 +185,43 @@ export default function ShotChart({
         />
       )}
     </div>
+  );
+}
+
+/** Lines, arcs, rim and backboard: the court both charts are drawn on. */
+export function CourtLines({ stroke = LINE }: { stroke?: string }) {
+  return (
+    <g fill="none" stroke={stroke} strokeWidth={2} strokeLinecap="square" pointerEvents="none">
+      {/* Boundary and baseline */}
+      <rect x={1} y={1} width={VIEW_W - 2} height={VIEW_H - 2} />
+
+      {/* Lane */}
+      <rect x={190} y={130} width={120} height={190} />
+
+      {/* Free throw circle */}
+      <circle cx={250} cy={130} r={60} />
+
+      {/* Restricted area */}
+      <path d={`M 210 ${HOOP.sy} A 40 40 0 0 1 290 ${HOOP.sy}`} />
+
+      {/* Three-point line: two corner segments and the arc between them */}
+      <path d="M 33.4 320 L 33.4 221" />
+      <path d="M 466.6 320 L 466.6 221" />
+      <path d="M 33.4 221 A 221.458 221.458 0 0 1 466.6 221" />
+
+      {/* Corner / above-the-break dividers, where the corner line meets
+          the arc. A touch heavier than the other lines: the two zones
+          meet along a short edge and read as one strip otherwise. */}
+      <path
+        d={`M 0 ${CORNER_TOP} H ${CORNER_W} M ${VIEW_W - CORNER_W} ${CORNER_TOP} H ${VIEW_W}`}
+        strokeWidth={3}
+        strokeLinecap="butt"
+      />
+
+      {/* Backboard and rim */}
+      <path d="M 220 280 L 280 280" strokeWidth={3} />
+      <circle cx={250} cy={HOOP.sy} r={7.5} strokeWidth={2} />
+    </g>
   );
 }
 

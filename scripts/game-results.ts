@@ -52,9 +52,7 @@ export type Result = {
 };
 
 async function main() {
-  const db = createClient(env("SUPABASE_URL"), env("SUPABASE_SERVICE_ROLE_KEY"), {
-    auth: { persistSession: false },
-  });
+  const db = connect();
   const { data: teams, error } = await db.from("teams").select("id, source_id").not("source_id", "is", null);
   if (error) throw new Error(error.message);
   const byEspn = new Map((teams ?? []).map((t) => [String(t.source_id), t.id as number]));
@@ -97,6 +95,56 @@ async function main() {
   const path = `scripts/.cache/results-${SEASON}.json`;
   writeFileSync(path, JSON.stringify({ season: SEASON, fetched: new Date().toISOString(), source: SCOREBOARD, games: unique }));
   console.log(`Wrote ${unique.length} final scores to ${path} (${pending} games not final yet, left out).`);
+
+  await saveScores(db, unique);
+}
+
+/**
+ * Final scores onto the games rows the shot import created (games.source_id
+ * is ESPN's event id), for the per-game shot charts. Only games not yet
+ * marked final are touched, so a run writes a few dozen rows at most.
+ */
+function connect() {
+  return createClient(env("SUPABASE_URL"), env("SUPABASE_SERVICE_ROLE_KEY"), {
+    auth: { persistSession: false },
+  });
+}
+
+async function saveScores(db: ReturnType<typeof connect>, results: Result[]) {
+  const byEvent = new Map(results.map((r) => [r.espn_id, r]));
+  const open: { id: number; source_id: string; home_team_id: number | null }[] = [];
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await db
+      .from("games")
+      .select("id, source_id, home_team_id")
+      .eq("season", SEASON)
+      .neq("status", "final")
+      .not("source_id", "is", null)
+      .order("id")
+      .range(from, from + 999);
+    if (error) throw new Error(`games: ${error.message}`);
+    open.push(...((data ?? []) as typeof open));
+    if (!data || data.length < 1000) break;
+  }
+
+  const rows = open.flatMap((g) => {
+    const r = byEvent.get(g.source_id);
+    if (!r) return [];
+    // CBBD and ESPN agree on home and away; swap if they ever don't.
+    const flip = r.away !== null && r.away === g.home_team_id;
+    return [{
+      id: g.id,
+      season: SEASON,
+      home_points: flip ? r.away_pts : r.home_pts,
+      away_points: flip ? r.home_pts : r.away_pts,
+      status: "final",
+    }];
+  });
+  for (let i = 0; i < rows.length; i += 500) {
+    const { error } = await db.from("games").upsert(rows.slice(i, i + 500), { onConflict: "id" });
+    if (error) throw new Error(`saving scores: ${error.message}`);
+  }
+  console.log(`Saved ${rows.length} final scores to games.`);
 }
 
 /**

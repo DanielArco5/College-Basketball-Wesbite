@@ -15,6 +15,8 @@ import ShotMix, { type LeagueTotals, type SeasonTotals } from "./ShotMix";
 import EntityPicker, { type PickerItem } from "./EntityPicker";
 import Roster, { type RosterPlayer, type RosterSeason } from "./Roster";
 import PlayerStats, { type BoxRow } from "./PlayerStats";
+import GameChart, { GameLegend, type GameShot } from "./GameChart";
+import GamePicker from "./GamePicker";
 import { conferenceOf, membersOf } from "@/lib/conferences";
 import { apRankOf } from "@/lib/ap";
 import "./shot-chart.css";
@@ -80,6 +82,7 @@ export default async function ShotChartPage({
     side?: string;
     season?: string;
     conference?: string;
+    game?: string;
   }>;
 }) {
   const params = await searchParams;
@@ -198,6 +201,31 @@ export default async function ShotChartPage({
       if (data) playerTeam = data;
     }
   }
+
+  // The entity's games this season, for the picker; and one game's
+  // shots when a game is picked.
+  const games = await loadGames(
+    db,
+    mode,
+    selectedId,
+    season,
+    mode === "team" ? selectedId : playerTeam?.team_id,
+    teamById,
+  );
+  const game = games.find((g) => g.id === Number(params.game)) ?? null;
+  const gameShots = game
+    ? await fetchAll<GameShot>((from, to) =>
+        db
+          .from("shot_events")
+          .select("id, x, y, made, score_value, play_type, player_name, period, clock, assisted, dist_ft, zone")
+          .eq("game_id", game.id)
+          .eq(mode === "player" ? "player_id" : side === "defense" ? "opponent_id" : "team_id", selectedId)
+          .order("period")
+          .order("seconds_remaining", { ascending: false })
+          .range(from, to),
+      )
+    : { data: [] as GameShot[], error: null };
+  if (gameShots.error) return <Failure message={gameShots.error} />;
 
   const { data: statRows, error: statErr } = young
     ? await shotZoneStats(
@@ -328,10 +356,18 @@ export default async function ShotChartPage({
               {" · "}
             </>
           )}
-          {seasonLabel(season)}
-          {season === LIVE_SEASON ? " so far" : ""} ·{" "}
-          {attempts.toLocaleString()} field goal attempts ·{" "}
-          {attempts ? ((100 * makes) / attempts).toFixed(1) : "0"}%
+          {game ? (
+            <>
+              {game.label} · {gameShots.data.length} field goal attempts
+            </>
+          ) : (
+            <>
+              {seasonLabel(season)}
+              {season === LIVE_SEASON ? " so far" : ""} ·{" "}
+              {attempts.toLocaleString()} field goal attempts ·{" "}
+              {attempts ? ((100 * makes) / attempts).toFixed(1) : "0"}%
+            </>
+          )}
         </p>
         <nav className="season-toggle" aria-label="Season">
           {SEASONS.map((s) => {
@@ -364,14 +400,14 @@ export default async function ShotChartPage({
         {mode === "team" && (
           <nav className="side-toggle">
             <Link
-              href={`/shot-chart?team=${selectedId}&side=offense&season=${season}`}
+              href={`/shot-chart?team=${selectedId}&side=offense&season=${season}${game ? `&game=${game.id}` : ""}`}
               className={side === "offense" ? "on" : ""}
               scroll={false}
             >
               Shots taken
             </Link>
             <Link
-              href={`/shot-chart?team=${selectedId}&side=defense&season=${season}`}
+              href={`/shot-chart?team=${selectedId}&side=defense&season=${season}${game ? `&game=${game.id}` : ""}`}
               className={side === "defense" ? "on" : ""}
               scroll={false}
             >
@@ -379,11 +415,20 @@ export default async function ShotChartPage({
             </Link>
           </nav>
         )}
+        <GamePicker
+          games={games.map((g) => ({ id: g.id, label: g.label }))}
+          selected={game?.id ?? null}
+          base={`/shot-chart?${mode === "team" ? `team=${selectedId}` : `player=${selectedId}`}&season=${season}${
+            side === "defense" ? "&side=defense" : ""
+          }`}
+        />
       </header>
 
-      {mode === "player" && <PlayerStats rows={box} seasonLabel={seasonLabel(season)} />}
+      {mode === "player" && !game && <PlayerStats rows={box} seasonLabel={seasonLabel(season)} />}
 
-      {stats.length === 0 ? (
+      {game ? (
+        <GameView shots={gameShots.data} mode={mode} side={side} />
+      ) : stats.length === 0 ? (
         <p className="empty-state">
           No tracked shots for this {mode} in {seasonLabel(season)}
           {season === LIVE_SEASON ? " yet" : ""}. Some games have no shot tracking at all,
@@ -731,6 +776,205 @@ function ConferenceView({
         </p>
       )}
     </main>
+  );
+}
+
+type GameRow = { id: number; label: string };
+
+/**
+ * Games this season for the picker, oldest first: date, opponent and the
+ * final score from `teamId`'s side. A team's come from the games table; a
+ * player's are the games he took a shot in.
+ */
+async function loadGames(
+  db: ReturnType<typeof createServerClient>,
+  mode: "player" | "team",
+  id: number,
+  season: number,
+  teamId: number | undefined,
+  teamById: Map<number, TeamRow>,
+): Promise<GameRow[]> {
+  if (!id || !teamId) return [];
+  type G = {
+    id: number;
+    start_date: string | null;
+    home_team_id: number | null;
+    away_team_id: number | null;
+    home_points: number | null;
+    away_points: number | null;
+  };
+  const cols = "id, start_date, home_team_id, away_team_id, home_points, away_points";
+  let rows: G[] = [];
+  if (mode === "team") {
+    const { data } = await db
+      .from("games")
+      .select(cols)
+      .eq("season", season)
+      .or(`home_team_id.eq.${id},away_team_id.eq.${id}`)
+      .order("start_date");
+    rows = (data ?? []) as G[];
+  } else {
+    const { data: shots } = await fetchAll<{ game_id: number }>((from, to) =>
+      db
+        .from("shot_events")
+        .select("game_id")
+        .eq("season", season)
+        .eq("player_id", id)
+        .order("id")
+        .range(from, to),
+    );
+    const ids = [...new Set(shots.map((r) => r.game_id))];
+    if (ids.length) {
+      const { data } = await db.from("games").select(cols).in("id", ids).order("start_date");
+      rows = (data ?? []) as G[];
+    }
+  }
+
+  // Non-D1 opponents aren't in teamById; look their names up.
+  const oppOf = (g: G) => (g.home_team_id === teamId ? g.away_team_id : g.home_team_id);
+  const missing = [...new Set(rows.map(oppOf).filter((o): o is number => o !== null && !teamById.has(o)))];
+  const names = new Map<number, string>();
+  if (missing.length) {
+    const { data } = await db.from("teams").select("id, school").in("id", missing);
+    for (const t of data ?? []) names.set(t.id, t.school);
+  }
+
+  return rows.map((g) => {
+    const home = g.home_team_id === teamId;
+    const opp = oppOf(g);
+    const oppName = (opp !== null && (teamById.get(opp)?.school ?? names.get(opp))) || "Opponent";
+    const date = g.start_date
+      ? new Date(g.start_date).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          timeZone: "America/New_York",
+        })
+      : "";
+    const ours = home ? g.home_points : g.away_points;
+    const theirs = home ? g.away_points : g.home_points;
+    const score = ours !== null && theirs !== null ? ` · ${ours > theirs ? "W" : "L"} ${ours}-${theirs}` : "";
+    return { id: g.id, label: `${date} · ${home ? "vs" : "at"} ${oppName}${score}` };
+  });
+}
+
+/** One game: every shot on the court, a box line, and who took them. */
+function GameView({
+  shots,
+  mode,
+  side,
+}: {
+  shots: GameShot[];
+  mode: "player" | "team";
+  side: "offense" | "defense";
+}) {
+  if (shots.length === 0) {
+    return (
+      <p className="empty-state">
+        No shots recorded for this {mode} in this game. Some games have no shot tracking at all.
+      </p>
+    );
+  }
+
+  // Shots without a location count in the table but can't be drawn.
+  const plotted = shots.filter((s) => s.x !== null && s.y !== null);
+  const unplotted = shots.length - plotted.length;
+  const line = (pick: (s: GameShot) => boolean) => {
+    const set = shots.filter(pick);
+    const made = set.filter((s) => s.made).length;
+    return { made, att: set.length, pct: set.length ? (100 * made) / set.length : null };
+  };
+  const rows = [
+    { label: "Field goals", ...line(() => true) },
+    { label: "Threes", ...line((s) => s.score_value === 3) },
+    { label: "Twos", ...line((s) => s.score_value !== 3) },
+    { label: "At the rim", ...line((s) => s.zone === "restricted_area") },
+  ];
+  const byShooter = new Map<string, GameShot[]>();
+  for (const s of shots) {
+    const name = s.player_name ?? "Unknown";
+    byShooter.set(name, [...(byShooter.get(name) ?? []), s]);
+  }
+  const shooters = [...byShooter]
+    .map(([name, set]) => ({
+      name,
+      att: set.length,
+      made: set.filter((s) => s.made).length,
+      threes: set.filter((s) => s.score_value === 3).length,
+      threesMade: set.filter((s) => s.score_value === 3 && s.made).length,
+    }))
+    .sort((a, b) => b.made - a.made || b.att - a.att);
+
+  return (
+    <div className="layout">
+      <div className="chart-col">
+        <figure className="chart">
+          <GameChart shots={plotted} showShooter={mode === "team"} />
+          <GameLegend />
+          <figcaption>
+            {side === "defense"
+              ? "Every shot opponents took against this team in this game."
+              : "Every shot from this game, where it was taken."}
+            {unplotted > 0 &&
+              ` ${unplotted} shot${unplotted === 1 ? " has" : "s have"} no location and ${
+                unplotted === 1 ? "isn't" : "aren't"
+              } drawn, but count in the table.`}
+          </figcaption>
+        </figure>
+      </div>
+
+      <section className="breakdown">
+        <table>
+          <thead>
+            <tr>
+              <th>Shots</th>
+              <th>Made</th>
+              <th>FG%</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr key={r.label}>
+                <td>{r.label}</td>
+                <td className="num">
+                  {r.made}/{r.att}
+                </td>
+                <td className="num">{r.pct === null ? "–" : r.pct.toFixed(1)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {mode === "team" && (
+          <table className="game-shooters">
+            <thead>
+              <tr>
+                <th>{side === "defense" ? "Opponent" : "Player"}</th>
+                <th>FG</th>
+                <th>3PT</th>
+              </tr>
+            </thead>
+            <tbody>
+              {shooters.map((p) => (
+                <tr key={p.name}>
+                  <td>{p.name}</td>
+                  <td className="num">
+                    {p.made}/{p.att}
+                  </td>
+                  <td className="num">
+                    {p.threesMade}/{p.threes}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+
+        <p className="accuracy-note">
+          Field goals only: free throws aren&rsquo;t charted. Locations are recorded courtside,
+          accurate to roughly a foot.
+        </p>
+      </section>
+    </div>
   );
 }
 

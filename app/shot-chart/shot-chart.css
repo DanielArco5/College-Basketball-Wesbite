@@ -738,3 +738,54 @@ body:has(.wrap) {
   font-size: 0.75rem;
   color: var(--ink-dim);
 }
+
+/* --- One game ------------------------------------------------------- */
+
+.game-picker {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.9rem 0 0;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+}
+.game-picker select {
+  min-width: 0;
+  max-width: 100%;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #3A3028;
+  border-radius: 4px;
+  background: var(--panel);
+  color: var(--ink);
+  font: inherit;
+  font-family: Barlow, system-ui, sans-serif;
+  font-size: 0.95rem;
+  letter-spacing: 0;
+}
+.game-picker select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.game-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.25rem;
+  margin: 0.75rem 0 0;
+  font-size: 0.85rem;
+  color: var(--ink-dim);
+}
+.game-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.game-legend-note {
+  margin-left: auto;
+  color: var(--ink-faint);
+}
+
+.game-shooters { margin-top: 1.5rem; }
