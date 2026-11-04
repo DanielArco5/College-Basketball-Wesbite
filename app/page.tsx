@@ -85,10 +85,10 @@ export default async function Home({
           <p>
             {formula.stage === "in-season" ? (
               <>
-                The season is underway. Real 2026&ndash;27 numbers from the
-                NCAA&rsquo;s official stats now count alongside the preseason
-                projection, and take over more each week as teams play more
-                games.
+                The season is underway, and every final score now moves the
+                Top 25: beat a better team and you climb, lose and you drop,
+                more for losing to a weaker one. Games still in progress
+                don&rsquo;t count.
               </>
             ) : (
               <>
@@ -160,12 +160,13 @@ export default async function Home({
 
 function Overview({ ranking }: { ranking: Ranking }) {
   const top = ranking.rows.slice(0, 10);
+  const live = ranking.formula.stage === "in-season";
 
   return (
     <>
       <section className="home-top">
         <h2 className="home-h2">
-          Top ten, 2026-27 preseason
+          {live ? "Top ten, 2026-27" : "Top ten, 2026-27 preseason"}
           <Link href="/?tab=top25" className="home-h2-link" scroll={false}>
             Full Top 25
           </Link>
@@ -177,7 +178,10 @@ function Overview({ ranking }: { ranking: Ranking }) {
               <span className="home-top-team">
                 <Link href={`/shot-chart?team=${t.team_id}`}>{t.school}</Link>
               </span>
-              <span className="home-top-conf">{t.conference}</span>
+              <span className="home-top-conf">
+                {live && !t.stub && t.games > 0 && t.wins !== undefined && `${t.wins}-${t.losses} · `}
+                {t.conference}
+              </span>
               {t.pinned ? (
                 <span className="home-top-net" title={t.note ?? "Placed by hand"}>
                   Our pick
@@ -199,17 +203,18 @@ function Overview({ ranking }: { ranking: Ranking }) {
 // ── Top 25 ────────────────────────────────────────────────────────────
 
 function Top25({ ranking }: { ranking: Ranking }) {
+  const live = ranking.formula.stage === "in-season";
   return (
     <section>
       <h2 className="home-h2">
-        Top 25, 2026-27 preseason
+        {live ? "Top 25, 2026-27" : "Top 25, 2026-27 preseason"}
         <Link href="/rankings" className="home-h2-link">
           Full page
         </Link>
       </h2>
       <p className="home-intro">
         Our box-score formula blended with the KenPom, Torvik and ESPN
-        preseason rankings.{" "}
+        preseason rankings{live ? ", then moved by every final score" : ""}.{" "}
         <Link href="/?tab=method" scroll={false}>
           How it works
         </Link>{" "}

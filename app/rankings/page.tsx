@@ -28,7 +28,8 @@ export default async function RankingsPage() {
         <p className="rank-lede">
           Our box-score formula, built on efficiency, defense, rebounding and
           competition, blended with the KenPom, Torvik and ESPN preseason
-          rankings.
+          rankings
+          {formula.stage === "in-season" ? ", then moved by every final score this season." : "."}
         </p>
       </header>
 
