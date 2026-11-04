@@ -101,8 +101,8 @@ export default async function Home({
             )}
           </p>
           <p>
-            Alongside it are a shot chart for every team and player from
-            2025&ndash;26, and Live Wire, the day&rsquo;s college basketball
+            Alongside it are a shot chart for every team and player, this
+            season and last, and Live Wire, the day&rsquo;s college basketball
             news from ESPN and CBS Sports, running across the top of every
             page.
           </p>
@@ -251,7 +251,7 @@ async function ShotCharts({ db }: { db: Db }) {
   return (
     <section>
       <h2 className="home-h2">
-        Shot charts, 2025-26
+        Shot charts
         <Link href="/shot-chart" className="home-h2-link">
           Search players
         </Link>

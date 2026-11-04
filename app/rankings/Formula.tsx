@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Formula, RankedRow, Ranking } from "@/lib/rankings";
+import { IdentityBadge, signed, Stat } from "./bits";
 
 /**
  * Our 2026-27 ranking, built daily by scripts/project-2027.ts, with hand
@@ -14,19 +15,7 @@ function pctOf(w: number) {
   return `${Math.round(w * 100)}%`;
 }
 
-function signed(n: number, places = 1) {
-  return `${n > 0 ? "+" : ""}${n.toFixed(places)}`;
-}
 
-/** Value plus its D1 rank underneath, the way the shot chart shows vs D1. */
-function Stat({ value, rank }: { value: string; rank: number }) {
-  return (
-    <>
-      {value}
-      <span className="ratings-sub">{rank}</span>
-    </>
-  );
-}
 
 export function FormulaRanking({ ranking, limit }: { ranking: Ranking; limit?: number }) {
   const { formula } = ranking;
@@ -151,18 +140,6 @@ export function FormulaRanking({ ranking, limit }: { ranking: Ranking; limit?: n
   );
 }
 
-/** Why an outlier is here: it's elite at one thing. */
-function IdentityBadge({ label }: { label: string }) {
-  return (
-    <span
-      className={`rank-badge ${
-        label === "Elite offense" ? "is-offense" : label === "Elite defense" ? "is-defense" : "is-margins"
-      }`}
-    >
-      {label}
-    </span>
-  );
-}
 
 /** Placed by hand. The formula's own spot stays visible next to it. */
 function PickBadge({ row }: { row: RankedRow }) {

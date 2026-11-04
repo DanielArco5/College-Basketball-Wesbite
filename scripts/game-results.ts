@@ -30,6 +30,8 @@ type EspnEvent = {
   date: string;
   competitions?: {
     neutralSite?: boolean;
+    conferenceCompetition?: boolean;
+    type?: { abbreviation?: string };
     status?: { type?: { name?: string; completed?: boolean } };
     competitors?: { homeAway: string; score?: string; team?: { id?: string; location?: string } }[];
   }[];
@@ -39,6 +41,8 @@ export type Result = {
   espn_id: string;
   date: string;
   neutral: boolean;
+  /** A regular-season conference game; conference tournaments don't count. */
+  conference: boolean;
   home: number | null;
   away: number | null;
   home_name: string;
@@ -75,6 +79,7 @@ async function main() {
         espn_id: e.id,
         date: e.date,
         neutral: c?.neutralSite ?? false,
+        conference: (c?.conferenceCompetition ?? false) && c?.type?.abbreviation === "STD",
         home: byEspn.get(home.team.id) ?? null,
         away: byEspn.get(away.team.id) ?? null,
         home_name: home.team.location ?? "",

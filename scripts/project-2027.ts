@@ -120,11 +120,6 @@ const EXTERNAL_WEIGHT = 0.6;
 const ADJUST_ROUNDS = 12;
 const RANKED = 25;
 const HONORABLE = 10;
-/**
- * Rows kept in the output. More than the list shows, so a team pinned by
- * hand (top25_overrides) from outside it still has its numbers.
- */
-const OUTPUT_ROWS = 100;
 /** NCAA.com's 2026-27 totals, written by scripts/ncaa-stats.ts. */
 const IN_SEASON_FILE = process.env.IN_SEASON_FILE ?? `${CACHE}/ncaa-team-${SEASON_TO}.json`;
 /** ESPN's 2026-27 final scores, written by scripts/game-results.ts. */
@@ -597,8 +592,7 @@ async function main() {
   const ownRank = rankDesc(own);
   const ordered = rows
     .map((r, i) => ({ r, i }))
-    .sort((x, y) => scores[y.i] - scores[x.i])
-    .slice(0, OUTPUT_ROWS);
+    .sort((x, y) => scores[y.i] - scores[x.i]);
 
   const maxGames = Math.max(0, ...results.games);
   const out = {
@@ -649,6 +643,8 @@ async function main() {
       games: results.games[i],
       wins: results.wins[i],
       losses: results.losses[i],
+      conf_wins: results.confWins[i],
+      conf_losses: results.confLosses[i],
       off_eff: round(shown[i].offense, 1),
       oreb_pct: round(shown[i].oreb * 100, 1),
       to_margin: round(shown[i].turnovers, 1),
@@ -729,6 +725,8 @@ function externalRanks(schools: string[]) {
 type Result = {
   date: string;
   neutral: boolean;
+  /** Missing from results files written before conference records. */
+  conference?: boolean;
   home: number | null;
   away: number | null;
   home_pts: number;
@@ -747,6 +745,8 @@ function rateResults(teamIds: number[], preseason: number[]) {
     games: Array<number>(n).fill(0),
     wins: Array<number>(n).fill(0),
     losses: Array<number>(n).fill(0),
+    confWins: Array<number>(n).fill(0),
+    confLosses: Array<number>(n).fill(0),
     final: 0,
     fetched: "",
   };
@@ -779,8 +779,10 @@ function rateResults(teamIds: number[], preseason: number[]) {
       if (i === undefined) continue;
       rating[i] += sign * move;
       out.games[i]++;
-      if (sign * margin > 0) out.wins[i]++;
+      const won = sign * margin > 0;
+      if (won) out.wins[i]++;
       else out.losses[i]++;
+      if (g.conference) (won ? out.confWins : out.confLosses)[i]++;
     }
     out.final++;
   }

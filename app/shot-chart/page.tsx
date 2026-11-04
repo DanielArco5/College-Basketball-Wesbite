@@ -24,7 +24,7 @@ import "./shot-chart.css";
  * (2027 is 2026-27). The live season fills in as scripts/update-shots.ts
  * imports games; a finished season never changes.
  */
-const SEASONS = [2027, 2026, 2025];
+const SEASONS = [2027, 2026];
 const LIVE_SEASON = 2027;
 const LIVE_SEASON_START = "November 1";
 const LIVE_SEASON_NOTE_EARLY = "charts open once every zone has enough shots";

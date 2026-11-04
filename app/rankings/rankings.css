@@ -483,3 +483,130 @@ body:has(.rank) .sitenav { max-width: 72rem; }
   font-size: 0.78rem;
   color: var(--ink-faint);
 }
+
+/* --- Rankings tabs: All teams, Conferences, AP ---------------------- */
+
+.rank-ap-tag {
+  display: inline-block;
+  margin-left: 0.45rem;
+  padding: 0 0.35rem;
+  border: 1px solid #3A3028;
+  border-radius: 3px;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-dim);
+  vertical-align: 1px;
+}
+
+.rank-disclaimer {
+  max-width: 64ch;
+  margin: 1.5rem 0 0;
+  padding: 0.75rem 1rem;
+  border-left: 2px solid var(--accent-warm);
+  background: var(--panel);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--ink-dim);
+}
+.rank-disclaimer strong { color: var(--ink); font-weight: 500; }
+
+/* Filter row above the all-teams table. */
+.rank-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem 1.25rem;
+  margin: 1.75rem 0 0;
+}
+.rank-tools label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+}
+.rank-tools select,
+.rank-tools input {
+  min-width: 13rem;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid #3A3028;
+  border-radius: 4px;
+  background: var(--panel);
+  color: var(--ink);
+  font: inherit;
+  font-family: Barlow, system-ui, sans-serif;
+  font-size: 0.95rem;
+}
+.rank-tools select:focus-visible,
+.rank-tools input:focus-visible {
+  outline: 2px solid var(--accent-warm);
+  outline-offset: 1px;
+}
+.rank-tools-count {
+  margin-left: auto;
+  padding-bottom: 0.5rem;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 0.9rem;
+  color: var(--ink-faint);
+}
+@media (max-width: 36rem) {
+  .rank-tools label,
+  .rank-tools select,
+  .rank-tools input { width: 100%; min-width: 0; }
+  .rank-tools-count { margin-left: 0; padding-bottom: 0; }
+}
+
+/* Conference index and tables. */
+.rank-conf-jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 1.5rem 0 0;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+}
+.rank-conf-jump a {
+  padding: 0.15rem 0.65rem;
+  border: 1px solid #3A3028;
+  border-radius: 999px;
+  color: var(--ink-dim);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+.rank-conf-jump a:hover { color: var(--ink); border-color: var(--accent-warm); }
+.rank-conf-jump a:focus-visible { outline: 2px solid var(--accent-warm); outline-offset: 2px; }
+
+.rank-conf {
+  margin: 2.75rem 0 0;
+  scroll-margin-top: 5rem;
+}
+.rank-conf h2 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+  margin: 0;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+.rank-conf-meta {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--ink-faint);
+}
+.rank-conf .ratings-scroll { margin-top: 0.75rem; }
+.rank-conf-table { max-width: 44rem; }
+
+/* AP tab: the poll is the page, so no divider above it. */
+.rank-ap-page .ap { margin-top: 1.5rem; padding-top: 0; border-top: 0; }
+.rank-ap-page .ap h2 { display: none; }
+
+.ap-ours {
+  margin-left: auto;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+}

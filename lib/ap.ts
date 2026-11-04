@@ -33,6 +33,14 @@ export async function getApPolls(seasons: number[]): Promise<ApPoll[]> {
   return polls.filter((p): p is ApPoll => p !== null && p.rows.length > 0);
 }
 
+/** The live AP poll as teams.id -> rank. Empty if ESPN is unreachable. */
+export async function apRanks(): Promise<Map<number, number>> {
+  const poll = await getApPoll(LIVE_AP_SEASON);
+  return new Map(
+    (poll?.rows ?? []).flatMap((r) => (r.team_id ? [[r.team_id, r.rank] as [number, number]] : [])),
+  );
+}
+
 /** A team's AP rank in `season`, or null when unranked. */
 export async function apRankOf(teamId: number, season: number) {
   const poll = await getApPoll(season);

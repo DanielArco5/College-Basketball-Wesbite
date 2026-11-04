@@ -1,6 +1,5 @@
-import { getApPolls } from "@/lib/ap";
 import { getRanking } from "@/lib/rankings";
-import ApPolls from "./ApPoll";
+import { RankHeader } from "./bits";
 import { FormulaMethod, FormulaRanking } from "./Formula";
 import "./rankings.css";
 
@@ -8,33 +7,27 @@ export const metadata = {
   title: "2026-27 Top 25",
   description:
     "Our 2026-27 Top 25: a box-score formula blended with the KenPom, " +
-    "Torvik and ESPN preseason rankings.",
+    "Torvik and ESPN preseason rankings, then moved by every final score.",
 };
 
-// Rebuilt at most every five minutes: picks up the morning re-rank, hand
+// Rebuilt at most every five minutes: picks up the hourly re-rank, hand
 // picks from top25_overrides, and new Live Wire items in the ticker.
 export const revalidate = 300;
 
 export default async function RankingsPage() {
-  const [ranking, polls] = await Promise.all([getRanking(), getApPolls([2027, 2026, 2025])]);
+  const ranking = await getRanking();
   const { formula } = ranking;
+  const live = formula.stage === "in-season";
   return (
     <main className="rank">
-      <header>
-        <span className="rank-season">
-          {formula.stage === "in-season" ? "2026–27 season" : "2026–27 preseason"}
-        </span>
-        <h1>Top 25</h1>
-        <p className="rank-lede">
-          Our box-score formula, built on efficiency, defense, rebounding and
-          competition, blended with the KenPom, Torvik and ESPN preseason
-          rankings
-          {formula.stage === "in-season" ? ", then moved by every final score this season." : "."}
-        </p>
-      </header>
+      <RankHeader live={live} active="top25" title="Top 25">
+        Our box-score formula, built on efficiency, defense, rebounding and
+        competition, blended with the KenPom, Torvik and ESPN preseason
+        rankings
+        {live ? ", then moved by every final score this season." : "."}
+      </RankHeader>
 
       <FormulaRanking ranking={ranking} />
-      <ApPolls polls={polls} />
       <FormulaMethod formula={formula} />
     </main>
   );
