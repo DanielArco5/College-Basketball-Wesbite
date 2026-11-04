@@ -1,4 +1,4 @@
-# Shot charts and the Top 25 every hour through game time.
+# Shot charts, the Top 25 and Live Wire news every hour through game time.
 #
 #   Morning:  yesterday's games (re-checked for late finishes), then the
 #             NCAA stats, player stats and the Top 25 re-rank.
@@ -73,8 +73,15 @@ jobs:
             scripts/.cache/player-stats-2026.json
           key: cbbd-preseason-2027-v1
 
+      # Every run, first, since it's quick; free. news.yml also runs it
+      # overnight, whenever GitHub gets round to its 3-hour schedule.
+      - name: Live Wire news
+        run: npm run fetch-news
+
       # One API call per run: today's games hourly, yesterday in the morning.
+      # Runs even if the news fetch failed.
       - name: Shot charts
+        if: ${{ !cancelled() }}
         run: npm run update-shots ${{ env.MODE == 'morning' && ' ' || '-- --today' }}
 
       # Every run; free. The ranking runs even if the shot import failed.
