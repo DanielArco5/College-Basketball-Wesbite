@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Formula, RankedRow, Ranking } from "@/lib/rankings";
-import { IdentityBadge, signed, Stat } from "./bits";
+import { IdentityBadge, LastGame, Move, NextGame, signed, Stat, teamColor, Trend, where } from "./bits";
 
 /**
  * Our 2026-27 ranking, built daily by scripts/project-2027.ts, with hand
@@ -148,81 +148,6 @@ export function FormulaRanking({ ranking, limit }: { ranking: Ranking; limit?: n
   );
 }
 
-type Game = { date: string; opponent: string; site: string; won?: boolean; score?: string } | null;
-
-const where = (site: string) => (site === "home" ? "vs" : site === "away" ? "at" : "vs");
-const dayOf = (iso: string, opts: Intl.DateTimeFormatOptions) =>
-  new Date(iso).toLocaleDateString("en-US", { timeZone: "America/New_York", ...opts });
-
-function LastGame({ game }: { game: Game }) {
-  if (!game) return <span className="rank-dim">&ndash;</span>;
-  return (
-    <>
-      <span className={game.won ? "rank-w" : "rank-l"}>
-        {game.won ? "W" : "L"} {game.score}
-      </span>{" "}
-      {where(game.site)} {game.opponent}
-      {game.site === "neutral" && <span className="rank-dim"> (N)</span>}
-      <span className="rank-sub">{dayOf(game.date, { month: "short", day: "numeric" })}</span>
-    </>
-  );
-}
-
-function NextGame({ game }: { game: Game }) {
-  if (!game) return <span className="rank-dim">&ndash;</span>;
-  return (
-    <>
-      {where(game.site)} {game.opponent}
-      {game.site === "neutral" && <span className="rank-dim"> (N)</span>}
-      <span className="rank-sub">
-        {dayOf(game.date, { weekday: "short", month: "short", day: "numeric" })}
-      </span>
-    </>
-  );
-}
-
-/** Up or down since yesterday's ranking. */
-function Move({ now, before }: { now: number; before: number | null | undefined }) {
-  if (!before) return <span className="rank-move is-new" title="New since yesterday">new</span>;
-  const d = before - now;
-  if (!d) return <span className="rank-move is-flat" title="No change since yesterday">&ndash;</span>;
-  return (
-    <span className={`rank-move ${d > 0 ? "is-up" : "is-down"}`} title={`Was No. ${before} yesterday`}>
-      {d > 0 ? "▲" : "▼"}
-      {Math.abs(d)}
-    </span>
-  );
-}
-
-/** Rank day by day, No. 1 at the top. One day is just a dot. */
-function Trend({ ranks }: { ranks: number[] }) {
-  if (!ranks.length) return null;
-  const W = 76;
-  const H = 24;
-  const worst = Math.max(30, ...ranks);
-  const x = (i: number) => (ranks.length === 1 ? W - 3 : 3 + (i * (W - 6)) / (ranks.length - 1));
-  const y = (rk: number) => 3 + ((rk - 1) / (worst - 1)) * (H - 6);
-  const points = ranks.map((rk, i) => `${x(i).toFixed(1)},${y(rk).toFixed(1)}`).join(" ");
-  const first = ranks[0];
-  const last = ranks.at(-1)!;
-  return (
-    <svg
-      className="rank-trend"
-      width={W}
-      height={H}
-      viewBox={`0 0 ${W} ${H}`}
-      role="img"
-      aria-label={
-        ranks.length > 1 ? `From No. ${first} to No. ${last} over ${ranks.length} days` : `No. ${last}`
-      }
-    >
-      <line x1={0} x2={W} y1={y(25)} y2={y(25)} className="rank-trend-cut" />
-      {ranks.length > 1 && <polyline points={points} />}
-      <circle cx={x(ranks.length - 1)} cy={y(last)} r={2.5} />
-    </svg>
-  );
-}
-
 /** Biggest risers and fallers among the top 50 since yesterday. */
 function Movers({ rows }: { rows: RankedRow[] }) {
   const moved = rows
@@ -261,11 +186,6 @@ function Movers({ rows }: { rows: RankedRow[] }) {
       )}
     </section>
   );
-}
-
-/** The team's color as a CSS variable, for its row stripe. */
-function teamColor(color: string | null | undefined) {
-  return color ? ({ ["--team" as string]: color } as React.CSSProperties) : undefined;
 }
 
 /** Our call on the preseason rating; the reason is in the tooltip. */

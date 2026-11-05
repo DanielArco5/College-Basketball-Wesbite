@@ -31,14 +31,21 @@ export default async function AllTeamsPage() {
     ranks: r.ranks,
     identity: r.identity,
     ap: ap.get(r.team_id),
+    prev_rk: r.prev_rk,
+    trend: r.trend ?? [],
+    last_game: r.last_game,
+    next_game: r.next_game,
+    color: r.color,
+    sos: typeof r.sos === "number" ? r.sos : null,
   }));
 
   return (
     <main className="rank">
       <RankHeader live={formula.stage === "in-season"} active="all" title="All teams">
-        All {formula.teams_rated} Division I teams, scored by the same formula
-        as the Top 25. The small number under each stat is that team&rsquo;s
-        rank in the country. Hand picks in the Top 25 aren&rsquo;t applied
+        All {formula.teams_rated} Division I teams, rated by the same formula
+        as the Top 25 and re-ranked every hour on game days as games go final.
+        Arrows show the change since yesterday; the small number under each
+        stat is that team&rsquo;s rank in the country. Hand picks in the Top 25 aren&rsquo;t applied
         here; this is the formula&rsquo;s own order.
       </RankHeader>
       <AllTeams rows={rows} />
