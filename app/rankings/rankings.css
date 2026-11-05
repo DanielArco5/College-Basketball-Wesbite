@@ -610,3 +610,108 @@ body:has(.rank) .sitenav { max-width: 72rem; }
   font-size: 0.82rem;
   color: var(--ink-faint);
 }
+
+/* --- Top 25: movement, trend, games, team color --------------------- */
+
+.rank-top td { vertical-align: middle; }
+
+/* The team's color as a stripe down the team cell. */
+.rank-top .rank-team {
+  border-left: 3px solid var(--team, transparent);
+  padding-left: 0.65rem;
+}
+
+.rank-rk {
+  display: block;
+  font-size: 1.15rem;
+  color: var(--ink);
+}
+
+.rank-move {
+  display: inline-block;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.rank-move.is-up { color: #4DCF6E; }
+.rank-move.is-down { color: #EF5A50; }
+.rank-move.is-flat { color: var(--ink-faint); }
+.rank-move.is-new { color: var(--accent-warm); text-transform: uppercase; font-size: 0.68rem; }
+.rank-honorable .rank-move { margin: 0 0.35rem; }
+
+.rank-rating {
+  font-size: 1.15rem !important;
+  color: var(--ink);
+}
+
+.rank-trend { display: block; overflow: visible; }
+.rank-trend polyline {
+  fill: none;
+  stroke: var(--team, var(--accent-warm));
+  stroke-width: 1.75;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.rank-trend circle { fill: var(--team, var(--accent-warm)); stroke: var(--page); stroke-width: 1; }
+.rank-trend-cut { stroke: #3A3028; stroke-width: 1; stroke-dasharray: 2 3; }
+
+.rank-game {
+  font-size: 0.88rem;
+  color: var(--ink-dim);
+}
+.rank-sub {
+  display: block;
+  margin-top: 0.1rem;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  color: var(--ink-faint);
+}
+.rank-w { color: #4DCF6E; font-family: "Barlow Condensed", system-ui, sans-serif; font-size: 0.95rem; }
+.rank-l { color: #EF5A50; font-family: "Barlow Condensed", system-ui, sans-serif; font-size: 0.95rem; }
+.rank-dim { color: var(--ink-faint); }
+
+/* Biggest movers, above the table. */
+.rank-movers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1rem 2.5rem;
+  margin: 1.5rem 0 0;
+  padding: 1rem 1.25rem;
+  border: 1px solid #2E2620;
+  border-radius: 6px;
+  background: var(--panel);
+}
+.rank-movers h2 {
+  margin: 0 0 0.5rem;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.rank-movers ul { list-style: none; margin: 0; padding: 0; }
+.rank-movers li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.5rem;
+  padding: 0.3rem 0 0.3rem 0.6rem;
+  border-left: 3px solid var(--team, #3A3028);
+}
+.rank-movers li + li { margin-top: 0.25rem; }
+.rank-movers a {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+.rank-movers a:hover { border-bottom-color: var(--rule); }
+.rank-movers a:focus-visible { outline: 2px solid var(--accent-warm); outline-offset: 2px; }
+.rank-movers .rank-sub { flex-basis: 100%; margin: 0; }
+
+/* Phones: keep rank, team, rating and the last game; the rest scrolls. */
+@media (max-width: 36rem) {
+  .rank-game { white-space: normal; min-width: 8.5rem; }
+}

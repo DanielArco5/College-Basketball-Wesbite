@@ -7,7 +7,7 @@ export const metadata = {
   title: "2026-27 Top 25",
   description:
     "Our 2026-27 Top 25: a box-score formula blended with the KenPom, " +
-    "Torvik and ESPN preseason rankings, then moved by every final score.",
+    "Torvik and ESPN preseason rankings, then rated on every game's box score.",
 };
 
 // Rebuilt at most every five minutes: picks up the hourly re-rank, hand
@@ -21,10 +21,13 @@ export default async function RankingsPage() {
   return (
     <main className="rank">
       <RankHeader live={live} active="top25" title="Top 25">
-        Our box-score formula, built on efficiency, defense, rebounding and
-        competition, blended with the KenPom, Torvik and ESPN preseason
-        rankings
-        {live ? ", then moved by every final score this season." : "."}
+        A power rating built the way KenPom and Torvik build theirs: points per
+        100 possessions, adjusted for who a team played. It starts from our
+        preseason projection (rosters, recruits, competition, blended with
+        KenPom, Torvik and ESPN)
+        {live
+          ? " and moves with every game's box score, a little at a time, so one night can't swing it."
+          : ", and moves with every game's box score once the season starts."}
       </RankHeader>
 
       <FormulaRanking ranking={ranking} />

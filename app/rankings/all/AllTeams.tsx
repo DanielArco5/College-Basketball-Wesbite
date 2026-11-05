@@ -11,7 +11,8 @@ export type TeamRow = {
   conference: string | null;
   wins?: number;
   losses?: number;
-  score: number;
+  /** Points per 100 possessions better than an average D1 team. */
+  rating: number;
   off_eff: number;
   oreb_pct: number;
   to_margin: number;
@@ -70,8 +71,12 @@ export default function AllTeams({ rows }: { rows: TeamRow[] }) {
             <tr>
               <th scope="col" className="num">#</th>
               <th scope="col">Team</th>
-              <th scope="col" className="num is-sorted" title="Weighted score; 0 is a typical D1 team">
-                Score
+              <th
+                scope="col"
+                className="num is-sorted"
+                title="Points per 100 possessions better than an average D1 team, on a neutral floor"
+              >
+                Rating
               </th>
               <th scope="col" className="num" title="Points per 100 possessions">Off</th>
               <th scope="col" className="num" title="Offensive rebound percentage">OREB%</th>
@@ -97,7 +102,7 @@ export default function AllTeams({ rows }: { rows: TeamRow[] }) {
                       {r.identity && <IdentityBadge label={r.identity} />}
                     </span>
                   </td>
-                  <td className="num">{signed(r.score, 2)}</td>
+                  <td className="num">{signed(r.rating, 1)}</td>
                   <td className="num"><Stat value={r.off_eff.toFixed(1)} rank={r.ranks.offense} /></td>
                   <td className="num"><Stat value={r.oreb_pct.toFixed(1)} rank={r.ranks.oreb} /></td>
                   <td className="num"><Stat value={signed(r.to_margin)} rank={r.ranks.turnovers} /></td>

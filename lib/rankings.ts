@@ -7,8 +7,26 @@ import { createServerClient } from "./supabase-server";
  * spots. Server-only; it uses the secret key.
  */
 
-export type Formula = typeof bundled;
-type FormulaRow = Formula["rows"][number];
+/** A last or next game on a row; the last one has its result. */
+export type GameRef = { date: string; opponent: string; site: string; won?: boolean; score?: string };
+
+/**
+ * Fields the bundled file happens to fill for every team today but that
+ * can be empty: a team new to the ranking, or with no game this week, or
+ * an older snapshot from before they existed.
+ */
+type Optional = {
+  prev_rk: number | null;
+  trend?: number[];
+  rating?: number;
+  last_game: GameRef | null;
+  next_game: GameRef | null;
+  color: string | null;
+};
+
+type BundledRow = (typeof bundled)["rows"][number];
+type FormulaRow = Omit<BundledRow, keyof Optional> & Optional;
+export type Formula = Omit<typeof bundled, "rows"> & { rows: FormulaRow[] };
 
 export type RankedRow = FormulaRow & {
   /** Where the formula alone put the team, before hand edits. */
@@ -128,6 +146,11 @@ async function stubRows(db: ReturnType<typeof createServerClient>, schools: stri
       identity: null,
       incomplete: false,
       transfers_in: [],
+      prev_rk: null,
+      trend: [],
+      last_game: null,
+      next_game: null,
+      color: null,
       formula_rk: null,
       pinned: true,
       note: null,

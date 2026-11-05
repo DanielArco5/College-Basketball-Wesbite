@@ -1499,6 +1499,10 @@
   "school": "Cornell College (IA)",
   "conference": null
  },
+ "1212": {
+  "school": "Concordia-Chicago",
+  "conference": null
+ },
  "1252": {
   "school": "CSU San Marcos",
   "conference": null
@@ -1518,5 +1522,17 @@
  "1507": {
   "school": "New Haven",
   "conference": "NEC"
+ },
+ "1553": {
+  "school": "Grace University",
+  "conference": null
+ },
+ "1571": {
+  "school": "Central College",
+  "conference": null
+ },
+ "1572": {
+  "school": "Regent",
+  "conference": null
  }
 }

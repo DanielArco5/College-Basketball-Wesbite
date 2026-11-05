@@ -85,10 +85,11 @@ export default async function Home({
           <p>
             {formula.stage === "in-season" ? (
               <>
-                The season is underway, and every final score now moves the
-                Top 25: beat a better team and you climb, lose and you drop,
-                more for losing to a weaker one. Games still in progress
-                don&rsquo;t count.
+                The season is underway. Every game&rsquo;s box score now
+                feeds the Top 25, adjusted for who a team played and where,
+                a little at a time: beating a weak team by a lot earns
+                little, beating a good one earns a lot, and one night
+                can&rsquo;t swing it.
               </>
             ) : (
               <>
@@ -187,9 +188,12 @@ function Overview({ ranking }: { ranking: Ranking }) {
                   Our pick
                 </span>
               ) : (
-                <span className="home-top-net" title="Formula score; 0 is a typical D1 team">
-                  {t.score > 0 ? "+" : ""}
-                  {t.score.toFixed(2)}
+                <span
+                  className="home-top-net"
+                  title="Points per 100 possessions better than an average D1 team"
+                >
+                  {(t.rating ?? 0) > 0 ? "+" : ""}
+                  {(t.rating ?? 0).toFixed(1)}
                 </span>
               )}
             </li>
@@ -214,7 +218,7 @@ function Top25({ ranking }: { ranking: Ranking }) {
       </h2>
       <p className="home-intro">
         Our box-score formula blended with the KenPom, Torvik and ESPN
-        preseason rankings{live ? ", then moved by every final score" : ""}.{" "}
+        preseason rankings{live ? ", then rated on every game's box score" : ""}.{" "}
         <Link href="/?tab=method" scroll={false}>
           How it works
         </Link>{" "}

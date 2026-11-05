@@ -30,9 +30,9 @@ export function FormulaRanking({ ranking, limit }: { ranking: Ranking; limit?: n
       <p className="rank-stage">
         {live && formula.stage === "in-season" ? (
           <>
-            Live: moved by {(live.final_games ?? 0).toLocaleString()} final
-            scores so far, up to {live.max_games} per team. Only finished
-            games count. Re-ranked every hour on game days.
+            Live: {(live.final_games ?? 0).toLocaleString()} games played so far, up to{" "}
+            {live.max_games} per team. Only finished games count, and each one moves a team
+            about a tenth of the way toward how it played. Re-ranked every hour on game days.
           </>
         ) : (
           <>
@@ -41,39 +41,37 @@ export function FormulaRanking({ ranking, limit }: { ranking: Ranking; limit?: n
           </>
         )}
       </p>
+
+      {!limit && <Movers rows={ranking.rows.slice(0, 50)} />}
+
       <div className="ratings-scroll">
-        <table className="ratings">
+        <table className="ratings rank-top">
           <thead>
             <tr>
               <th scope="col" className="num">#</th>
               <th scope="col">Team</th>
-              <th scope="col" className="num is-sorted" title="Weighted score; 0 is a typical D1 team">
-                Score
-              </th>
-              <th scope="col" className="num" title="Points per 100 possessions">Off</th>
               <th
                 scope="col"
-                className="num"
-                title={
-                  formula.stage === "in-season"
-                    ? "Offensive rebounds per missed shot"
-                    : "Offensive rebound percentage"
-                }
+                className="num is-sorted"
+                title="Points per 100 possessions better than an average D1 team, on a neutral floor"
               >
-                OREB%
+                Rating
               </th>
-              <th scope="col" className="num" title="Turnovers forced minus committed, per 100 possessions">
-                TO +/-
-              </th>
-              <th scope="col" className="num" title="Three-point percentage">3P%</th>
+              <th scope="col" title="Rank over the season">Trend</th>
+              <th scope="col">Last game</th>
+              <th scope="col">Next</th>
+              <th scope="col" className="num" title="Points per 100 possessions">Off</th>
               <th scope="col" className="num" title="Points allowed per 100 possessions">Def</th>
             </tr>
           </thead>
           <tbody>
             {top.map((r) => (
-              <tr key={r.team_id}>
-                <td className="num ratings-rk">{r.rk}</td>
-                <td>
+              <tr key={r.team_id} style={teamColor(r.color)}>
+                <td className="num ratings-rk">
+                  <span className="rank-rk">{r.rk}</span>
+                  {!r.stub && <Move now={r.rk} before={r.prev_rk} />}
+                </td>
+                <td className="rank-team">
                   <TeamLink row={r} />
                   <span className="ratings-team-conf">
                     {!r.stub && r.games > 0 && r.wins !== undefined && `${r.wins}-${r.losses} · `}
@@ -88,17 +86,23 @@ export function FormulaRanking({ ranking, limit }: { ranking: Ranking; limit?: n
                   )}
                 </td>
                 {r.stub ? (
-                  // Pinned from outside the formula's top 100: nothing to show.
+                  // Pinned from outside the formula's ratings: nothing to show.
                   <td className="num ratings-src" colSpan={6}>
-                    Outside the formula&rsquo;s top 100
+                    Not rated by the formula
                   </td>
                 ) : (
                   <>
-                    <td className="num">{signed(r.score, 2)}</td>
+                    <td className="num rank-rating">{signed(r.rating ?? 0, 1)}</td>
+                    <td>
+                      <Trend ranks={r.trend ?? []} />
+                    </td>
+                    <td className="rank-game">
+                      <LastGame game={r.last_game} />
+                    </td>
+                    <td className="rank-game">
+                      <NextGame game={r.next_game} />
+                    </td>
                     <td className="num"><Stat value={r.off_eff.toFixed(1)} rank={r.ranks.offense} /></td>
-                    <td className="num"><Stat value={r.oreb_pct.toFixed(1)} rank={r.ranks.oreb} /></td>
-                    <td className="num"><Stat value={signed(r.to_margin)} rank={r.ranks.turnovers} /></td>
-                    <td className="num"><Stat value={r.three_pct.toFixed(1)} rank={r.ranks.three} /></td>
                     <td className="num"><Stat value={r.def_eff.toFixed(1)} rank={r.ranks.defense} /></td>
                   </>
                 )}
@@ -115,7 +119,8 @@ export function FormulaRanking({ ranking, limit }: { ranking: Ranking; limit?: n
             {honorable.map((r) => (
               <li key={r.team_id}>
                 <TeamLink row={r} />{" "}
-                {!r.stub && <span className="rank-asof">{signed(r.score, 2)}</span>}
+                {!r.stub && <span className="rank-asof">{signed(r.rating ?? 0, 1)}</span>}
+                {!r.stub && <Move now={r.rk} before={r.prev_rk} />}
                 {r.identity && <IdentityBadge label={r.identity} />}
                 {r.pinned && <PickBadge row={r} />}
               </li>
@@ -125,8 +130,10 @@ export function FormulaRanking({ ranking, limit }: { ranking: Ranking; limit?: n
       )}
 
       <p className="rank-note">
-        Projected 2026-27 numbers. The small figure under each stat is that
-        team&rsquo;s rank among all {formula.teams_rated} Division I teams.
+        Rating is how many points per 100 possessions better than an average Division I team
+        a team is, on a neutral floor: +20 would beat an average team by about 14 in a
+        70-possession game. Arrows show the change since yesterday. Off and Def are
+        2026&ndash;27 numbers once a team has played, with its national rank underneath.
         {ranking.rows.some((r) => r.incomplete) && (
           <>
             {" "}
@@ -140,6 +147,125 @@ export function FormulaRanking({ ranking, limit }: { ranking: Ranking; limit?: n
   );
 }
 
+type Game = { date: string; opponent: string; site: string; won?: boolean; score?: string } | null;
+
+const where = (site: string) => (site === "home" ? "vs" : site === "away" ? "at" : "vs");
+const dayOf = (iso: string, opts: Intl.DateTimeFormatOptions) =>
+  new Date(iso).toLocaleDateString("en-US", { timeZone: "America/New_York", ...opts });
+
+function LastGame({ game }: { game: Game }) {
+  if (!game) return <span className="rank-dim">&ndash;</span>;
+  return (
+    <>
+      <span className={game.won ? "rank-w" : "rank-l"}>
+        {game.won ? "W" : "L"} {game.score}
+      </span>{" "}
+      {where(game.site)} {game.opponent}
+      {game.site === "neutral" && <span className="rank-dim"> (N)</span>}
+      <span className="rank-sub">{dayOf(game.date, { month: "short", day: "numeric" })}</span>
+    </>
+  );
+}
+
+function NextGame({ game }: { game: Game }) {
+  if (!game) return <span className="rank-dim">&ndash;</span>;
+  return (
+    <>
+      {where(game.site)} {game.opponent}
+      {game.site === "neutral" && <span className="rank-dim"> (N)</span>}
+      <span className="rank-sub">
+        {dayOf(game.date, { weekday: "short", month: "short", day: "numeric" })}
+      </span>
+    </>
+  );
+}
+
+/** Up or down since yesterday's ranking. */
+function Move({ now, before }: { now: number; before: number | null | undefined }) {
+  if (!before) return <span className="rank-move is-new" title="New since yesterday">new</span>;
+  const d = before - now;
+  if (!d) return <span className="rank-move is-flat" title="No change since yesterday">&ndash;</span>;
+  return (
+    <span className={`rank-move ${d > 0 ? "is-up" : "is-down"}`} title={`Was No. ${before} yesterday`}>
+      {d > 0 ? "▲" : "▼"}
+      {Math.abs(d)}
+    </span>
+  );
+}
+
+/** Rank day by day, No. 1 at the top. One day is just a dot. */
+function Trend({ ranks }: { ranks: number[] }) {
+  if (!ranks.length) return null;
+  const W = 76;
+  const H = 24;
+  const worst = Math.max(30, ...ranks);
+  const x = (i: number) => (ranks.length === 1 ? W - 3 : 3 + (i * (W - 6)) / (ranks.length - 1));
+  const y = (rk: number) => 3 + ((rk - 1) / (worst - 1)) * (H - 6);
+  const points = ranks.map((rk, i) => `${x(i).toFixed(1)},${y(rk).toFixed(1)}`).join(" ");
+  const first = ranks[0];
+  const last = ranks.at(-1)!;
+  return (
+    <svg
+      className="rank-trend"
+      width={W}
+      height={H}
+      viewBox={`0 0 ${W} ${H}`}
+      role="img"
+      aria-label={
+        ranks.length > 1 ? `From No. ${first} to No. ${last} over ${ranks.length} days` : `No. ${last}`
+      }
+    >
+      <line x1={0} x2={W} y1={y(25)} y2={y(25)} className="rank-trend-cut" />
+      {ranks.length > 1 && <polyline points={points} />}
+      <circle cx={x(ranks.length - 1)} cy={y(last)} r={2.5} />
+    </svg>
+  );
+}
+
+/** Biggest risers and fallers among the top 50 since yesterday. */
+function Movers({ rows }: { rows: RankedRow[] }) {
+  const moved = rows
+    .filter((r) => !r.stub && r.prev_rk)
+    .map((r) => ({ r, d: r.prev_rk! - r.rk }))
+    .filter((m) => m.d !== 0);
+  if (!moved.length) return null;
+  const up = [...moved].sort((a, b) => b.d - a.d).filter((m) => m.d > 0).slice(0, 3);
+  const down = [...moved].sort((a, b) => a.d - b.d).filter((m) => m.d < 0).slice(0, 3);
+  const item = ({ r, d }: { r: RankedRow; d: number }) => (
+    <li key={r.team_id} style={teamColor(r.color)}>
+      <Link href={`/shot-chart?team=${r.team_id}`}>{r.school}</Link>
+      <span className={`rank-move ${d > 0 ? "is-up" : "is-down"}`}>
+        {d > 0 ? "▲" : "▼"}
+        {Math.abs(d)}
+      </span>
+      <span className="rank-sub">
+        No. {r.prev_rk} &rarr; {r.rk}
+        {r.last_game && ` · ${r.last_game.won ? "W" : "L"} ${r.last_game.score} ${where(r.last_game.site)} ${r.last_game.opponent}`}
+      </span>
+    </li>
+  );
+  return (
+    <section className="rank-movers" aria-label="Biggest movers since yesterday">
+      {up.length > 0 && (
+        <div>
+          <h2>Rising</h2>
+          <ul>{up.map(item)}</ul>
+        </div>
+      )}
+      {down.length > 0 && (
+        <div>
+          <h2>Falling</h2>
+          <ul>{down.map(item)}</ul>
+        </div>
+      )}
+    </section>
+  );
+}
+
+/** The team's color as a CSS variable, for its row stripe. */
+function teamColor(color: string | null | undefined) {
+  return color ? ({ ["--team" as string]: color } as React.CSSProperties) : undefined;
+}
 
 /** Placed by hand. The formula's own spot stays visible next to it. */
 function PickBadge({ row }: { row: RankedRow }) {
@@ -264,6 +390,15 @@ export function FormulaMethod({ formula }: { formula: Formula }) {
             <td>Three-point percentage</td>
             <td className="num">{pctOf(W.three)}</td>
           </tr>
+          <tr>
+            <td>Recruiting</td>
+            <td>
+              The incoming freshman class, by national ranking: a top-5
+              recruit counts most, a top-100 one a little, capped at{" "}
+              {p.RECRUIT_CAP} so one class can&rsquo;t outweigh a roster
+            </td>
+            <td className="num">{pctOf(W.recruits)}</td>
+          </tr>
         </tbody>
       </table>
 
@@ -327,26 +462,39 @@ export function FormulaMethod({ formula }: { formula: Formula }) {
           return.
         </li>
         <li>
-          <strong>Then let the results talk.</strong> Once the season
-          starts, only final scores move a team. Every finished game is
-          compared with what the ratings expected: beat a better team, or a
-          worse one by more than expected, and you climb; lose, and you
-          drop, more for losing to a weaker team. A win is worth{" "}
-          {p.WIN_BONUS} points more than a loss by the same margin, a true
-          home game is worth {p.HOME_EDGE}, and margins stop counting past{" "}
-          {p.MARGIN_CAP}, so running up the score earns nothing. Winning
-          never costs a team and losing never helps one. Games still in
-          progress don&rsquo;t count. The stat columns switch to real
-          2026&ndash;27 numbers from NCAA.com once a team has played, but
-          they&rsquo;re for show: the score moves on results alone.
+          <strong>Score the preseason.</strong> Each component becomes a
+          standard score across all Division I teams (how many standard
+          deviations above or below average), multiplied by its weight and
+          added up, then blended with the outside rankings above. That gives
+          every team a preseason rating, put in the same units as the
+          in-season one: points per 100 possessions better than an average
+          team.
         </li>
         <li>
-          <strong>Score and rank.</strong> Each component becomes a standard
-          score across all Division I teams (how many standard deviations
-          above or below average), multiplied by its weight and added up. A
-          score of 0 is a typical team. The top {RANKED} are ranked and the
-          next {p.HONORABLE} are honorable mentions. All of this reruns every
-          hour on game days.
+          <strong>Then play the games, slowly.</strong> Once the season
+          starts, the box score of every finished game is a piece of
+          evidence. A team&rsquo;s scoring margin per 100 possessions is
+          credited for who it came against and where (a true home game is
+          worth {p.EM_HOME_EDGE}), the way KenPom and Torvik build their
+          ratings: beating a weak team by what a strong team should earns
+          nothing, and doing it to a strong team earns a lot. Blowouts count
+          no bigger than {p.EM_GAME_CAP} points per 100 possessions. The
+          preseason rating counts as {p.PRIOR_GAMES} games of evidence, so a
+          single game moves a team about a tenth of the way toward how it
+          played, and by midseason the games have taken over. That is{" "}
+          {pctOf(p.POWER_SHARE)} of the score.
+        </li>
+        <li>
+          <strong>And a little for winning.</strong> The other{" "}
+          {pctOf(1 - p.POWER_SHARE)} is results: each final is compared with
+          what the ratings expected, a win worth {p.WIN_BONUS} points more
+          than a loss by the same margin. Winning never costs a team and
+          losing never helps one. Games still in progress don&rsquo;t count.
+        </li>
+        <li>
+          <strong>Rank.</strong> The top {RANKED} are ranked and the next{" "}
+          {p.HONORABLE} are honorable mentions. All of this reruns every hour
+          on game days, as box scores and final scores come in.
         </li>
         <li>
           <strong>Our picks.</strong> We can place a team by hand when we

@@ -61,8 +61,8 @@ jobs:
             "$SUPABASE_URL" "$SUPABASE_SERVICE_ROLE_KEY" "$CBBD_API_KEY" > .env.local
 
       # The formula's preseason inputs (2025-26 stats, 2026-27 rosters)
-      # never change. Kept between runs so they cost 3 API calls once,
-      # not 3 every day.
+      # never change. Kept between runs so they cost 4 API calls once,
+      # not 4 every day.
       - name: Restore CBBD preseason payloads
         id: cbbd
         uses: actions/cache/restore@v4
@@ -71,7 +71,8 @@ jobs:
             scripts/.cache/rosters-2027.json
             scripts/.cache/team-stats-2026.json
             scripts/.cache/player-stats-2026.json
-          key: cbbd-preseason-2027-v1
+            scripts/.cache/recruits-2026.json
+          key: cbbd-preseason-2027-v2
 
       # Every run, first, since it's quick; free. news.yml also runs it
       # overnight, whenever GitHub gets round to its 3-hour schedule.
@@ -110,11 +111,12 @@ jobs:
         run: npm run rank
 
       - name: Keep CBBD preseason payloads
-        if: ${{ !cancelled() && steps.cbbd.outputs.cache-hit != 'true' && hashFiles('scripts/.cache/player-stats-2026.json') != '' }}
+        if: ${{ !cancelled() && steps.cbbd.outputs.cache-hit != 'true' && hashFiles('scripts/.cache/recruits-2026.json') != '' }}
         uses: actions/cache/save@v4
         with:
           path: |
             scripts/.cache/rosters-2027.json
             scripts/.cache/team-stats-2026.json
             scripts/.cache/player-stats-2026.json
-          key: cbbd-preseason-2027-v1
+            scripts/.cache/recruits-2026.json
+          key: cbbd-preseason-2027-v2

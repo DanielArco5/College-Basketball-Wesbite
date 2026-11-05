@@ -31,10 +31,15 @@
  *   6. Once 2026-27 games are played, NCAA.com's official totals
  *      (scripts/ncaa-stats.ts) fill the stat columns. Display only.
  *   7. Blended with KenPom, Torvik and ESPN's preseason ranks.
- *   8. Final scores move it from there (scripts/game-results.ts, from
- *      ESPN): every finished game shifts both teams by how far the result
- *      beat the expected margin. Wins never cost a team, losses never
- *      help, blowouts are capped. Games in progress don't count.
+ *   8. In-season power rating (ratePower): every game's margin per 100
+ *      possessions from the box scores (player_game_stats), credited for
+ *      opponent and site, the way KenPom and Torvik do it. The preseason
+ *      rating counts as PRIOR_GAMES games, so one game moves a team about
+ *      a tenth of the way. POWER_SHARE of the score.
+ *   9. The rest is results (rateResults, ESPN final scores): wins never
+ *      cost a team, losses never help, blowouts are capped.
+ *   Each row also carries yesterday's rank, a rank trend, and its last
+ *   and next game, for the page.
  *
  * Payloads are cached in scripts/.cache (gitignored). Writes
  * player_seasons rows for 2027, lib/formula-2027.json, lib/conferences-2027.json
@@ -63,15 +68,32 @@ const CACHE = "scripts/.cache";
  */
 const WEIGHTS = {
   net: 0.32,
-  competition: 0.23,
-  winning: 0.1,
+  competition: 0.25,
+  winning: 0.07,
   defense: 0.1,
   offense: 0.09,
-  oreb: 0.07,
-  continuity: 0.04,
-  turnovers: 0.03,
-  three: 0.02,
+  recruits: 0.07,
+  oreb: 0.05,
+  continuity: 0.03,
+  turnovers: 0.01,
+  three: 0.01,
 } as const;
+
+/**
+ * Value of one incoming 2026 recruit by national ranking (CBBD
+ * /recruiting/players). A team's class is the sum, capped at
+ * RECRUIT_CAP, so a loaded class helps without a lottery pick outweighing
+ * a whole returning roster.
+ */
+function recruitValue(ranking: number | null, stars: number | null) {
+  if (ranking && ranking <= 5) return 1;
+  if (ranking && ranking <= 10) return 0.8;
+  if (ranking && ranking <= 25) return 0.55;
+  if (ranking && ranking <= 50) return 0.35;
+  if (ranking && ranking <= 100) return 0.2;
+  return (stars ?? 0) >= 4 ? 0.1 : 0.03;
+}
+const RECRUIT_CAP = 2.5;
 
 /**
  * Identity bonus: a team far above the field at one thing gets lifted
@@ -138,7 +160,27 @@ const POINTS_SD = 11;
 const HOME_EDGE = 3;
 const MARGIN_CAP = 20;
 const WIN_BONUS = 4;
-const RESULT_K = 0.2;
+const RESULT_K = 0.12;
+
+/**
+ * Power rating (step 8), the core of the in-season ranking. Each game's
+ * scoring margin per 100 possessions, from the box scores, is credited
+ * for who it came against and where, the way KenPom and Torvik build
+ * theirs. The preseason rating counts as PRIOR_GAMES games of evidence,
+ * so one game moves a team about a tenth of the way toward what it
+ * showed, and a whole season's worth overrides the preseason.
+ */
+const PRIOR_GAMES = 10;
+/** Spread of D1 power ratings, in points per 100 possessions. */
+const EM_SD = 12;
+/** Points per 100 possessions a true home game is worth. */
+const EM_HOME_EDGE = 3.5;
+/** A blowout counts no bigger than this, per 100 possessions. */
+const EM_GAME_CAP = 30;
+/** Share of the final score from the power rating; the rest is results. */
+const POWER_SHARE = 0.8;
+/** Days of rank history kept for the trend line. */
+const TREND_DAYS = 30;
 /** A non-D1 opponent rates this many points below the 10th-worst D1 team. */
 const NON_D1_GAP = 8;
 
@@ -203,6 +245,13 @@ type BoxSide = {
   turnovers: { total: number };
 };
 
+type Recruit = {
+  name: string;
+  stars: number | null;
+  ranking: number | null;
+  committedTo: { id: number; name: string } | null;
+};
+
 type TeamSeason = {
   teamId: number;
   games: number;
@@ -258,15 +307,32 @@ type WeightKey = keyof typeof WEIGHTS;
 
 async function main() {
   const refresh = process.argv.includes("--refresh");
-  const [rosters, teamSeasons, playerSeasons] = await Promise.all([
-    cached<RosterTeam[]>("rosters-2027.json", "/teams/roster", SEASON_TO, refresh),
-    cached<TeamSeason[]>("team-stats-2026.json", "/stats/team/season", SEASON_FROM, refresh),
-    cached<PlayerSeason[]>("player-stats-2026.json", "/stats/player/season", SEASON_FROM, refresh),
+  const [rosters, teamSeasons, playerSeasons, recruits] = await Promise.all([
+    cached<RosterTeam[]>("rosters-2027.json", "/teams/roster", { season: SEASON_TO }, refresh),
+    cached<TeamSeason[]>("team-stats-2026.json", "/stats/team/season", { season: SEASON_FROM }, refresh),
+    cached<PlayerSeason[]>("player-stats-2026.json", "/stats/player/season", { season: SEASON_FROM }, refresh),
+    // The 2026 class, the freshmen of 2026-27.
+    cached<Recruit[]>("recruits-2026.json", "/recruiting/players", { year: 2026 }, refresh),
   ]);
 
-  const teams = await selectAll<{ id: number; school: string; conference: string | null }>(
-    "teams", "id, school, conference", "id", { is_d1: true },
-  );
+  const teams = await selectAll<{
+    id: number;
+    school: string;
+    conference: string | null;
+    primary_color: string | null;
+    color_override: string | null;
+  }>("teams", "id, school, conference, primary_color, color_override", "id", { is_d1: true });
+  const colorOf = new Map(teams.map((t) => [t.id, t.color_override ?? t.primary_color]));
+
+  // Each team's incoming class, best recruits first.
+  const classOf = new Map<number, Recruit[]>();
+  for (const r of recruits) {
+    const id = r.committedTo?.id;
+    if (id) classOf.set(id, [...(classOf.get(id) ?? []), r]);
+  }
+  for (const list of classOf.values()) list.sort((a, b) => (a.ranking ?? 999) - (b.ranking ?? 999));
+  const recruitScore = (id: number) =>
+    Math.min(RECRUIT_CAP, (classOf.get(id) ?? []).reduce((t, r) => t + recruitValue(r.ranking, r.stars), 0));
   const games = await selectAll<{ home_team_id: number; away_team_id: number }>(
     "games", "id, home_team_id, away_team_id", "id", { season: SEASON_FROM },
   );
@@ -528,6 +594,8 @@ async function main() {
     continuity: rows.map((r) => r.experience),
     // Last season's win percentage: programs that win keep winning.
     winning: rows.map((r) => r.proj.winPct),
+    // The incoming freshman class, by national recruiting ranking.
+    recruits: rows.map((r) => recruitScore(r.team_id)),
   };
   const keys = Object.keys(WEIGHTS) as WeightKey[];
   const z = Object.fromEntries(keys.map((k) => [k, zscores(parts[k])])) as Record<WeightKey, number[]>;
@@ -555,6 +623,7 @@ async function main() {
     competition: parts.competition,
     continuity: parts.continuity,
     winning: parts.winning,
+    recruits: parts.recruits,
   };
   const ranks = Object.fromEntries(keys.map((k) => [k, rankDesc(shownParts[k])])) as Record<WeightKey, number[]>;
   // Identity: margins is its own z-score of the two hustle stats combined,
@@ -585,14 +654,25 @@ async function main() {
   });
   const preseason = own.map((o, i) => (1 - EXTERNAL_WEIGHT) * o + EXTERNAL_WEIGHT * externalScore[i]);
 
-  // ── 8. Move on final results ──────────────────────────────────────
-  const results = rateResults(rows.map((r) => r.team_id), preseason);
-  const scores = results.score;
+  // ── 8. Power rating from this season's box scores ─────────────────
+  const teamIds = rows.map((r) => r.team_id);
+  const power = await ratePower(teamIds, preseason);
+
+  // ── 9. Results: wins and losses, lightly ──────────────────────────
+  const results = rateResults(teamIds, preseason);
+  const scores = power.score.map((p, i) => POWER_SHARE * p + (1 - POWER_SHARE) * results.score[i]);
+  // Shown as a KenPom-style margin: points per 100 possessions better
+  // than an average D1 team, on a neutral floor.
+  const rating = scores.map((x) => (x - power.avg) * power.scale);
 
   const ownRank = rankDesc(own);
   const ordered = rows
     .map((r, i) => ({ r, i }))
     .sort((x, y) => scores[y.i] - scores[x.i]);
+
+  // Context for each row: yesterday's rank, the trend, last and next game.
+  const before = await previousRanks();
+  const games2027 = resultsFile();
 
   const maxGames = Math.max(0, ...results.games);
   const out = {
@@ -617,6 +697,7 @@ async function main() {
     params: {
       SHRINK_MINUTES, SHRINK_THREES, PROGRAM_CARRYOVER, PRIOR_WEIGHT, TRANSFER_CREDIT, CONTINUITY_BASE,
       CONTINUITY_RETURN, RANKED, HONORABLE, POINTS_SD, HOME_EDGE, MARGIN_CAP, WIN_BONUS, RESULT_K,
+      PRIOR_GAMES, EM_SD, EM_HOME_EDGE, EM_GAME_CAP, POWER_SHARE, RECRUIT_CAP,
     },
     sources: {
       stats: "CollegeBasketballData season box-score totals, 2025-26",
@@ -636,6 +717,14 @@ async function main() {
       school: r.school,
       conference: r.conference,
       score: round(scores[i], 3),
+      rating: round(rating[i], 1),
+      power_games: power.games[i],
+      sos: power.games[i] ? round(power.sos[i], 1) : null,
+      prev_rk: before.get(r.team_id)?.rk ?? null,
+      trend: [...(before.get(r.team_id)?.trend ?? []), n + 1].slice(-TREND_DAYS),
+      last_game: lastGame(r.team_id, games2027, d1),
+      next_game: nextGame(r.team_id, games2027, d1),
+      color: colorOf.get(r.team_id) ?? null,
       own_score: round(own[i], 3),
       own_rank: ownRank[i],
       external_rank: external[i],
@@ -724,6 +813,8 @@ function externalRanks(schools: string[]) {
 
 type Result = {
   date: string;
+  home_name?: string;
+  away_name?: string;
   neutral: boolean;
   /** Missing from results files written before conference records. */
   conference?: boolean;
@@ -790,6 +881,206 @@ function rateResults(teamIds: number[], preseason: number[]) {
   out.score = rating.map((r) => r / scale + avg);
   out.fetched = file.fetched;
   return out;
+}
+
+// ── Power rating (box scores) ─────────────────────────────────────────
+
+type GameLine = {
+  game_id: number;
+  team_id: number;
+  opponent_id: number | null;
+  is_home: boolean | null;
+  start_date: string | null;
+  points: number | null;
+  fga: number | null;
+  oreb: number | null;
+  turnovers: number | null;
+  fta: number | null;
+};
+
+/**
+ * Opponent-adjusted scoring margin per 100 possessions, blended with the
+ * preseason rating. Every game is a piece of evidence: "A beat B by m per
+ * 100 possessions at home" says A is m + B's rating - home edge. A team's
+ * rating is the average of that evidence and its preseason rating, which
+ * counts as PRIOR_GAMES games; repeated until the ratings settle, since
+ * each depends on the opponents'. Beating a weak team by the margin a
+ * strong team should doesn't move it; doing it to a strong team does.
+ * Before supabase/game-logs.sql (no box scores) everyone keeps their
+ * preseason rating.
+ */
+async function ratePower(teamIds: number[], preseason: number[]) {
+  const n = teamIds.length;
+  const avg = mean(preseason);
+  const scale = EM_SD / Math.sqrt(mean(preseason.map((s) => (s - avg) ** 2)));
+  const prior = preseason.map((s) => (s - avg) * scale);
+  const out = {
+    score: [...preseason],
+    games: Array<number>(n).fill(0),
+    sos: Array<number>(n).fill(0),
+    avg,
+    scale,
+  };
+
+  let lines: GameLine[];
+  try {
+    lines = await selectAll<GameLine>(
+      "player_game_stats",
+      "game_id, team_id, opponent_id, is_home, start_date, points, fga, oreb, turnovers, fta",
+      "game_id",
+      { season: SEASON_TO },
+    );
+  } catch (e) {
+    console.warn(`  No box scores (${e instanceof Error ? e.message : e}); power rating = preseason.`);
+    return out;
+  }
+
+  // Player lines up to one line per team per game.
+  const team = new Map<string, { game: number; team: number; home: boolean | null; date: string; pts: number; poss: number }>();
+  for (const l of lines) {
+    const key = `${l.game_id}:${l.team_id}`;
+    const t = team.get(key) ?? { game: l.game_id, team: l.team_id, home: l.is_home, date: l.start_date ?? "", pts: 0, poss: 0 };
+    t.pts += l.points ?? 0;
+    t.poss += (l.fga ?? 0) - (l.oreb ?? 0) + (l.turnovers ?? 0) + 0.475 * (l.fta ?? 0);
+    team.set(key, t);
+  }
+  const byGame = new Map<number, (typeof team extends Map<string, infer V> ? V : never)[]>();
+  for (const t of team.values()) byGame.set(t.game, [...(byGame.get(t.game) ?? []), t]);
+
+  // ESPN knows which games were on a neutral floor; the box scores don't.
+  const neutral = new Set(
+    resultsFile()
+      .games.filter((g) => g.neutral && g.home !== null && g.away !== null)
+      .map((g) => pairKey(g.date, g.home!, g.away!)),
+  );
+
+  const index = new Map(teamIds.map((id, i) => [id, i]));
+  const nonD1 = [...prior].sort((a, b) => a - b)[9] - EM_SD;
+  const games: { a: number; b: number; margin: number; edge: number }[] = [];
+  for (const sides of byGame.values()) {
+    if (sides.length !== 2) continue;
+    const [a, b] = sides;
+    const poss = (a.poss + b.poss) / 2;
+    if (poss < 40) continue; // a box score this short is missing players
+    const margin = Math.max(-EM_GAME_CAP, Math.min(EM_GAME_CAP, (100 * (a.pts - b.pts)) / poss));
+    const edge = neutral.has(pairKey(a.date, a.team, b.team)) ? 0 : a.home ? EM_HOME_EDGE : -EM_HOME_EDGE;
+    games.push({ a: a.team, b: b.team, margin, edge });
+  }
+
+  let rating = [...prior];
+  const of = (id: number) => {
+    const i = index.get(id);
+    return i === undefined ? nonD1 : rating[i];
+  };
+  for (let round = 0; round < 50; round++) {
+    const total = prior.map((p) => PRIOR_GAMES * p);
+    const count = Array<number>(n).fill(PRIOR_GAMES);
+    for (const g of games) {
+      const ia = index.get(g.a);
+      const ib = index.get(g.b);
+      if (ia !== undefined) {
+        total[ia] += g.margin + of(g.b) - g.edge;
+        count[ia]++;
+      }
+      if (ib !== undefined) {
+        total[ib] += -g.margin + of(g.a) + g.edge;
+        count[ib]++;
+      }
+    }
+    rating = total.map((t, i) => t / count[i]);
+  }
+
+  for (const g of games) {
+    for (const [me, them] of [[g.a, g.b], [g.b, g.a]]) {
+      const i = index.get(me);
+      if (i === undefined) continue;
+      out.games[i]++;
+      out.sos[i] += of(them);
+    }
+  }
+  out.sos = out.sos.map((t, i) => (out.games[i] ? t / out.games[i] : 0));
+  out.score = rating.map((r) => r / scale + avg);
+  console.log(`  Power rating: ${games.length} games from box scores.`);
+  return out;
+}
+
+/** Same game, either way round, by its Eastern date. */
+function pairKey(date: string, x: number, y: number) {
+  const day = new Date(date).toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+  return `${day}:${Math.min(x, y)}:${Math.max(x, y)}`;
+}
+
+// ── Row context: movement, trend, last and next game ─────────────────
+
+type Upcoming = {
+  date: string;
+  neutral: boolean;
+  home: number | null;
+  away: number | null;
+  home_name: string;
+  away_name: string;
+};
+
+function resultsFile(): { games: Result[]; upcoming: Upcoming[] } {
+  if (!existsSync(RESULTS_FILE)) return { games: [], upcoming: [] };
+  const file = JSON.parse(readFileSync(RESULTS_FILE, "utf8"));
+  return { games: file.games ?? [], upcoming: file.upcoming ?? [] };
+}
+
+/**
+ * Each team's rank and trend in the last snapshot from an earlier day, so
+ * the arrows show the change since yesterday however many times today's
+ * ranking reruns.
+ */
+async function previousRanks() {
+  const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+  const { data } = await db
+    .from("formula_snapshots")
+    .select("data")
+    .eq("season", SEASON_TO)
+    .lt("day", today)
+    .order("day", { ascending: false })
+    .limit(1)
+    .maybeSingle<{ data: { rows: { team_id: number; rk: number; trend?: number[] }[] } }>();
+  return new Map(
+    (data?.data.rows ?? []).map((r) => [r.team_id, { rk: r.rk, trend: r.trend ?? [r.rk] }]),
+  );
+}
+
+type Named = Map<number, { school: string }>;
+
+function opponentOf(teamId: number, g: { home: number | null; away: number | null; home_name?: string; away_name?: string }, d1: Named) {
+  const home = g.home === teamId;
+  const id = home ? g.away : g.home;
+  return (id !== null && d1.get(id)?.school) || (home ? g.away_name : g.home_name) || "Opponent";
+}
+
+/** The team's most recent final: opponent, site, result and score. */
+function lastGame(teamId: number, file: ReturnType<typeof resultsFile>, d1: Named) {
+  const g = file.games.findLast((x) => x.home === teamId || x.away === teamId);
+  if (!g) return null;
+  const home = g.home === teamId;
+  const us = home ? g.home_pts : g.away_pts;
+  const them = home ? g.away_pts : g.home_pts;
+  return {
+    date: g.date,
+    opponent: opponentOf(teamId, g, d1),
+    site: g.neutral ? "neutral" : home ? "home" : "away",
+    won: us > them,
+    score: `${us}-${them}`,
+  };
+}
+
+/** The team's next game this week, if any. */
+function nextGame(teamId: number, file: ReturnType<typeof resultsFile>, d1: Named) {
+  const now = new Date().toISOString();
+  const g = file.upcoming.find((x) => x.date > now && (x.home === teamId || x.away === teamId));
+  if (!g) return null;
+  return {
+    date: g.date,
+    opponent: opponentOf(teamId, g, d1),
+    site: g.neutral ? "neutral" : g.home === teamId ? "home" : "away",
+  };
 }
 
 // ── In-season (NCAA.com) ──────────────────────────────────────────────
@@ -995,17 +1286,23 @@ function round(n: number, places: number) {
 }
 
 /** Read a cached CBBD payload, or fetch it (one call, logged to api_calls). */
-async function cached<T>(file: string, path: string, season: number, refresh: boolean): Promise<T> {
+async function cached<T>(
+  file: string,
+  path: string,
+  query: Record<string, string | number>,
+  refresh: boolean,
+): Promise<T> {
   const at = `${CACHE}/${file}`;
   if (!refresh && existsSync(at)) return JSON.parse(readFileSync(at, "utf8"));
 
+  const params = Object.fromEntries(Object.entries(query).map(([k, v]) => [k, String(v)]));
   const started = Date.now();
-  const res = await fetch(`https://api.collegebasketballdata.com${path}?season=${season}`, {
+  const res = await fetch(`https://api.collegebasketballdata.com${path}?${new URLSearchParams(params)}`, {
     headers: { Authorization: `Bearer ${env("CBBD_API_KEY")}` },
   });
   await db.from("api_calls").insert({
     endpoint: path,
-    params: { season: String(season) },
+    params,
     status: res.status,
     ms: Date.now() - started,
   });

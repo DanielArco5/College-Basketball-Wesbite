@@ -32,7 +32,7 @@ type EspnEvent = {
     neutralSite?: boolean;
     conferenceCompetition?: boolean;
     type?: { abbreviation?: string };
-    status?: { type?: { name?: string; completed?: boolean } };
+    status?: { type?: { name?: string; state?: string; completed?: boolean } };
     competitors?: { homeAway: string; score?: string; team?: { id?: string; location?: string } }[];
   }[];
 };
@@ -50,6 +50,20 @@ export type Result = {
   home_pts: number;
   away_pts: number;
 };
+
+/** A game not played yet, for each team's "next game". */
+export type Upcoming = {
+  espn_id: string;
+  date: string;
+  neutral: boolean;
+  home: number | null;
+  away: number | null;
+  home_name: string;
+  away_name: string;
+};
+
+/** Days of schedule read ahead for the next game. */
+const LOOKAHEAD_DAYS = 8;
 
 async function main() {
   const db = connect();
@@ -92,11 +106,47 @@ async function main() {
   const unique = [...new Map(results.map((r) => [r.espn_id, r])).values()].sort((a, b) =>
     a.date.localeCompare(b.date),
   );
+
+  // The week ahead, for each team's next game. Never cached: a day isn't
+  // saved until every game on it is over.
+  const upcoming: Upcoming[] = [];
+  for (let i = 0, day = today; i < LOOKAHEAD_DAYS && day <= SEASON_END; i++, day = nextDay(day)) {
+    for (const e of await eventsOn(day, true)) {
+      const c = e.competitions?.[0];
+      if (c?.status?.type?.state !== "pre") continue;
+      const home = c.competitors?.find((t) => t.homeAway === "home");
+      const away = c.competitors?.find((t) => t.homeAway === "away");
+      if (!home?.team?.id || !away?.team?.id) continue;
+      upcoming.push({
+        espn_id: e.id,
+        date: e.date,
+        neutral: c.neutralSite ?? false,
+        home: byEspn.get(home.team.id) ?? null,
+        away: byEspn.get(away.team.id) ?? null,
+        home_name: home.team.location ?? "",
+        away_name: away.team.location ?? "",
+      });
+    }
+  }
+  upcoming.sort((a, b) => a.date.localeCompare(b.date));
+
   const path = `scripts/.cache/results-${SEASON}.json`;
-  writeFileSync(path, JSON.stringify({ season: SEASON, fetched: new Date().toISOString(), source: SCOREBOARD, games: unique }));
-  console.log(`Wrote ${unique.length} final scores to ${path} (${pending} games not final yet, left out).`);
+  writeFileSync(
+    path,
+    JSON.stringify({ season: SEASON, fetched: new Date().toISOString(), source: SCOREBOARD, games: unique, upcoming }),
+  );
+  console.log(
+    `Wrote ${unique.length} final scores and ${upcoming.length} upcoming games to ${path} ` +
+      `(${pending} games in progress or not started, left out of the scores).`,
+  );
 
   await saveScores(db, unique);
+}
+
+function connect() {
+  return createClient(env("SUPABASE_URL"), env("SUPABASE_SERVICE_ROLE_KEY"), {
+    auth: { persistSession: false },
+  });
 }
 
 /**
@@ -104,11 +154,6 @@ async function main() {
  * is ESPN's event id), for the per-game shot charts. Only games not yet
  * marked final are touched, so a run writes a few dozen rows at most.
  */
-function connect() {
-  return createClient(env("SUPABASE_URL"), env("SUPABASE_SERVICE_ROLE_KEY"), {
-    auth: { persistSession: false },
-  });
-}
 
 async function saveScores(db: ReturnType<typeof connect>, results: Result[]) {
   const byEvent = new Map(results.map((r) => [r.espn_id, r]));

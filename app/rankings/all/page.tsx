@@ -22,7 +22,7 @@ export default async function AllTeamsPage() {
     conference: r.conference,
     wins: r.wins,
     losses: r.losses,
-    score: r.score,
+    rating: r.rating ?? 0,
     off_eff: r.off_eff,
     oreb_pct: r.oreb_pct,
     to_margin: r.to_margin,

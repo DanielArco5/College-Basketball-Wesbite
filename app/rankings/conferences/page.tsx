@@ -13,13 +13,13 @@ export const revalidate = 300;
 
 type Row = Formula["rows"][number];
 
-/** Conference win share; ties broken by more wins, then our score. */
+/** Conference win share; ties broken by more wins, then our rating. */
 function standing(a: Row, b: Row) {
   const pct = (r: Row) => {
     const g = (r.conf_wins ?? 0) + (r.conf_losses ?? 0);
     return g ? (r.conf_wins ?? 0) / g : 0;
   };
-  return pct(b) - pct(a) || (b.conf_wins ?? 0) - (a.conf_wins ?? 0) || b.score - a.score;
+  return pct(b) - pct(a) || (b.conf_wins ?? 0) - (a.conf_wins ?? 0) || (b.rating ?? 0) - (a.rating ?? 0);
 }
 
 const slug = (conf: string) => conf.toLowerCase().replace(/[^a-z0-9]+/g, "-");
@@ -32,14 +32,14 @@ export default async function ConferencesPage() {
     const conf = r.conference ?? "Independent";
     byConf.set(conf, [...(byConf.get(conf) ?? []), r]);
   }
-  // Strongest league first, by its teams' average score.
+  // Strongest league first, by its teams' average rating.
   const conferences = [...byConf.entries()]
     .map(([name, teams]) => {
       const started = teams.some((t) => (t.conf_wins ?? 0) + (t.conf_losses ?? 0) > 0);
       return {
         name,
         started,
-        avg: teams.reduce((s, t) => s + t.score, 0) / teams.length,
+        avg: teams.reduce((s, t) => s + (t.rating ?? 0), 0) / teams.length,
         teams: started ? [...teams].sort(standing) : teams,
       };
     })
@@ -50,9 +50,9 @@ export default async function ConferencesPage() {
     <main className="rank">
       <RankHeader live={formula.stage === "in-season"} active="conferences" title="Conferences">
         {anyStarted
-          ? "Each league's standings by conference record, with our national rank and score alongside. Leagues that haven't started conference play are ordered by our rating."
+          ? "Each league's standings by conference record, with our national rank and rating alongside. Leagues that haven't started conference play are ordered by our rating."
           : "Conference play hasn't started yet. Until it does, each league is ordered by our rating; once teams play league games, it switches to standings by conference record."}{" "}
-        Leagues are listed strongest first, by their teams&rsquo; average score.
+        Leagues are listed strongest first, by their teams&rsquo; average rating.
       </RankHeader>
 
       <nav className="rank-conf-jump" aria-label="Jump to a conference">
@@ -70,7 +70,7 @@ export default async function ConferencesPage() {
           <h2>
             {c.name}
             <span className="rank-conf-meta">
-              {c.teams.length} teams · average score {signed(c.avg, 2)}
+              {c.teams.length} teams · average rating {signed(c.avg, 1)}
               {!c.started && " · by our rating until league play starts"}
             </span>
           </h2>
@@ -90,9 +90,9 @@ export default async function ConferencesPage() {
                   <th
                     scope="col"
                     className={`num${c.started ? "" : " is-sorted"}`}
-                    title="Our score; 0 is a typical D1 team"
+                    title="Points per 100 possessions better than an average D1 team"
                   >
-                    Score
+                    Rating
                   </th>
                 </tr>
               </thead>
@@ -107,7 +107,7 @@ export default async function ConferencesPage() {
                     <td className="num">{record(t.conf_wins, t.conf_losses) || "0-0"}</td>
                     <td className="num ratings-overall">{record(t.wins, t.losses) || "0-0"}</td>
                     <td className="num ratings-rk">#{t.rk}</td>
-                    <td className="num">{signed(t.score, 2)}</td>
+                    <td className="num">{signed(t.rating ?? 0, 1)}</td>
                   </tr>
                 ))}
               </tbody>
