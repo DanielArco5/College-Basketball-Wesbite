@@ -14,7 +14,8 @@
     "update-shots": "tsx --env-file=.env.local scripts/update-shots.ts",
     "fetch-news": "tsx --env-file=.env.local scripts/fetch-news.ts",
     "player-stats": "tsx --env-file=.env.local scripts/player-stats.ts",
-    "results": "tsx --env-file=.env.local scripts/game-results.ts"
+    "results": "tsx --env-file=.env.local scripts/game-results.ts",
+    "game-logs": "tsx --env-file=.env.local scripts/game-logs.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.0",

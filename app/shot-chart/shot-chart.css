@@ -789,3 +789,73 @@ body:has(.wrap) {
 }
 
 .game-shooters { margin-top: 1.5rem; }
+
+/* --- Game log and box scores ---------------------------------------- */
+
+.game-log {
+  margin: 2.5rem 0 0;
+}
+.game-log h2 {
+  margin: 0 0 0.75rem;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+/* Narrow screens scroll the table, not the page. */
+.game-log-scroll {
+  overflow-x: auto;
+}
+.game-log table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+.game-log th {
+  padding: 0 0.6rem 0.5rem;
+  text-align: right;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+.game-log th:nth-child(-n + 3) { text-align: left; }
+.game-log td {
+  padding: 0.45rem 0.6rem;
+  border-top: 1px solid #2E2620;
+  white-space: nowrap;
+}
+.game-log td.num {
+  text-align: right;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-size: 1rem;
+}
+.game-log tbody tr:hover { background: var(--panel); }
+.game-log a {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--rule);
+}
+.game-log a:hover { border-bottom-color: var(--accent); }
+.game-log a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.game-log-opp { color: var(--ink-dim); }
+.game-log-w { color: #4DCF6E; }
+.game-log-l { color: #EF5A50; }
+.game-log-starter {
+  margin-left: 0.4rem;
+  font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+}
+.game-log-total td {
+  border-top: 1px solid #3A3028;
+  color: var(--ink);
+  font-weight: 500;
+}
+/* Box scores list players, so the first column is the only left one. */
+.game-log table:has(.game-log-total) th:nth-child(-n + 3) { text-align: right; }
+.game-log table:has(.game-log-total) th:first-child { text-align: left; }

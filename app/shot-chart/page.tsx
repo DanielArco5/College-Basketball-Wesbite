@@ -17,6 +17,7 @@ import Roster, { type RosterPlayer, type RosterSeason } from "./Roster";
 import PlayerStats, { type BoxRow } from "./PlayerStats";
 import GameChart, { GameLegend, type GameShot } from "./GameChart";
 import GamePicker from "./GamePicker";
+import { BoxScore, GameLog, type GameMeta, type LogRow } from "./GameLog";
 import { conferenceOf, membersOf } from "@/lib/conferences";
 import { apRankOf } from "@/lib/ap";
 import "./shot-chart.css";
@@ -30,6 +31,8 @@ const SEASONS = [2027, 2026];
 const LIVE_SEASON = 2027;
 const LIVE_SEASON_START = "November 1";
 const LIVE_SEASON_NOTE_EARLY = "charts open once every zone has enough shots";
+const LOG_COLUMNS =
+  "game_id, player_id, team_id, player_name, start_date, starter, minutes, points, oreb, rebounds, assists, steals, blocks, turnovers, fouls, fgm, fga, three_m, three_a, ftm, fta";
 const TOTALS_COLUMNS =
   "attempts, makes, three_attempts, three_makes, untracked_attempts, jumper_attempts, jumper_makes";
 /** Shots a player needs to be listed. A full season clears 20 easily;
@@ -202,8 +205,25 @@ export default async function ShotChartPage({
     }
   }
 
-  // The entity's games this season, for the picker; and one game's
-  // shots when a game is picked.
+  // Box scores game by game. Before supabase/game-logs.sql the table is
+  // missing; the read fails quietly and the game log just doesn't show.
+  const logRows = selectedId
+    ? (
+        await fetchAll<LogRow>((from, to) =>
+          db
+            .from("player_game_stats")
+            .select(LOG_COLUMNS)
+            .eq("season", season)
+            .eq(mode === "player" ? "player_id" : "team_id", selectedId)
+            .order("game_id")
+            .order("player_id")
+            .range(from, to),
+        )
+      ).data
+    : [];
+
+  // The entity's games this season, for the picker and the game log; and
+  // one game's shots and box score when a game is picked.
   const games = await loadGames(
     db,
     mode,
@@ -211,8 +231,21 @@ export default async function ShotChartPage({
     season,
     mode === "team" ? selectedId : playerTeam?.team_id,
     teamById,
+    logRows.map((r) => r.game_id),
   );
   const game = games.find((g) => g.id === Number(params.game)) ?? null;
+  const gameBox = game
+    ? (
+        await fetchAll<LogRow>((from, to) =>
+          db
+            .from("player_game_stats")
+            .select(LOG_COLUMNS)
+            .eq("game_id", game.id)
+            .order("player_id")
+            .range(from, to),
+        )
+      ).data
+    : [];
   const gameShots = game
     ? await fetchAll<GameShot>((from, to) =>
         db
@@ -327,6 +360,16 @@ export default async function ShotChartPage({
 
   const { attempts, makes } = totals;
 
+  // A picked game's box scores: the page's own team first, then the
+  // opponent (shots-allowed pages too, so both are always there).
+  const ownTeam = mode === "team" ? selectedId : playerTeam?.team_id;
+  const boxTeams = [...new Set(gameBox.map((r) => r.team_id))]
+    .sort((a, b) => Number(b === ownTeam) - Number(a === ownTeam))
+    .map((id) => ({
+      id,
+      name: teamById.get(id)?.school ?? (id === ownTeam ? heading : (game?.opponent ?? "Opponent")),
+    }));
+
   return (
     <main
       className="wrap"
@@ -427,7 +470,7 @@ export default async function ShotChartPage({
       {mode === "player" && !game && <PlayerStats rows={box} seasonLabel={seasonLabel(season)} />}
 
       {game ? (
-        <GameView shots={gameShots.data} mode={mode} side={side} />
+        <GameView shots={gameShots.data} mode={mode} side={side} hasBox={gameBox.length > 0} />
       ) : stats.length === 0 ? (
         <p className="empty-state">
           No tracked shots for this {mode} in {seasonLabel(season)}
@@ -535,6 +578,26 @@ export default async function ShotChartPage({
             </p>
           </section>
         </div>
+      )}
+
+      {game &&
+        boxTeams.map((t) => (
+          <BoxScore
+            key={t.id}
+            rows={gameBox.filter((r) => r.team_id === t.id)}
+            title={`${t.name} box score`}
+            season={season}
+          />
+        ))}
+      {!game && (
+        <GameLog
+          rows={logRows}
+          games={new Map(games.map((g) => [g.id, g]))}
+          mode={mode}
+          base={`/shot-chart?${mode === "team" ? `team=${selectedId}` : `player=${selectedId}`}&season=${season}${
+            side === "defense" ? "&side=defense" : ""
+          }`}
+        />
       )}
 
       {mode === "team" && <Roster seasons={rosters} initial={season} />}
@@ -779,12 +842,13 @@ function ConferenceView({
   );
 }
 
-type GameRow = { id: number; label: string };
+type GameRow = GameMeta & { label: string };
 
 /**
- * Games this season for the picker, oldest first: date, opponent and the
- * final score from `teamId`'s side. A team's come from the games table; a
- * player's are the games he took a shot in.
+ * Games this season for the picker and the game log, oldest first: date,
+ * opponent and the final score from `teamId`'s side. A team's come from
+ * the games table; a player's are the games he took a shot in or has a
+ * box score for (`extraIds`).
  */
 async function loadGames(
   db: ReturnType<typeof createServerClient>,
@@ -793,6 +857,7 @@ async function loadGames(
   season: number,
   teamId: number | undefined,
   teamById: Map<number, TeamRow>,
+  extraIds: number[] = [],
 ): Promise<GameRow[]> {
   if (!id || !teamId) return [];
   type G = {
@@ -823,7 +888,7 @@ async function loadGames(
         .order("id")
         .range(from, to),
     );
-    const ids = [...new Set(shots.map((r) => r.game_id))];
+    const ids = [...new Set([...shots.map((r) => r.game_id), ...extraIds])];
     if (ids.length) {
       const { data } = await db.from("games").select(cols).in("id", ids).order("start_date");
       rows = (data ?? []) as G[];
@@ -852,8 +917,15 @@ async function loadGames(
       : "";
     const ours = home ? g.home_points : g.away_points;
     const theirs = home ? g.away_points : g.home_points;
-    const score = ours !== null && theirs !== null ? ` · ${ours > theirs ? "W" : "L"} ${ours}-${theirs}` : "";
-    return { id: g.id, label: `${date} · ${home ? "vs" : "at"} ${oppName}${score}` };
+    const result = ours !== null && theirs !== null ? `${ours > theirs ? "W" : "L"} ${ours}-${theirs}` : "";
+    return {
+      id: g.id,
+      date,
+      opponent: oppName,
+      home,
+      result,
+      label: `${date} · ${home ? "vs" : "at"} ${oppName}${result ? ` · ${result}` : ""}`,
+    };
   });
 }
 
@@ -862,10 +934,13 @@ function GameView({
   shots,
   mode,
   side,
+  hasBox,
 }: {
   shots: GameShot[];
   mode: "player" | "team";
   side: "offense" | "defense";
+  /** Box scores show under the chart; the shooters table would repeat them. */
+  hasBox: boolean;
 }) {
   if (shots.length === 0) {
     return (
@@ -944,7 +1019,7 @@ function GameView({
           </tbody>
         </table>
 
-        {mode === "team" && (
+        {mode === "team" && !hasBox && (
           <table className="game-shooters">
             <thead>
               <tr>

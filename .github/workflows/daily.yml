@@ -94,6 +94,11 @@ jobs:
         if: ${{ !cancelled() && env.MODE != 'hourly' }}
         run: npm run player-stats -- --season 2027 --refresh
 
+      # Per-game box scores for the game logs: one API call, mornings only.
+      - name: Game logs
+        if: ${{ !cancelled() && env.MODE != 'hourly' }}
+        run: npm run game-logs
+
       # Final scores from ESPN for the ranking; free. Games still going
       # are left out.
       - name: Final scores
