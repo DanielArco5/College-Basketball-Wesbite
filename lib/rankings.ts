@@ -22,6 +22,8 @@ type Optional = {
   last_game: GameRef | null;
   next_game: GameRef | null;
   color: string | null;
+  /** Our call on the preseason rating, in rating points, and why. */
+  adjustment?: { points: number; why: string } | null;
 };
 
 type BundledRow = (typeof bundled)["rows"][number];
@@ -151,6 +153,7 @@ async function stubRows(db: ReturnType<typeof createServerClient>, schools: stri
       last_game: null,
       next_game: null,
       color: null,
+      adjustment: null,
       formula_rk: null,
       pinned: true,
       note: null,

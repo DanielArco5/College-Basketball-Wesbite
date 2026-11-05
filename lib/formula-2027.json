@@ -1,6 +1,6 @@
 {
   "season": 2027,
-  "generated_at": "2026-11-05T19:53:21.963Z",
+  "generated_at": "2026-11-05T20:29:01.244Z",
   "stage": "in-season",
   "in_season": {
     "source": "https://www.ncaa.com/stats/basketball-men/d1/2027/team",
@@ -89,7 +89,7 @@
       "score": 1.988,
       "rating": 29.7,
       "power_games": 1,
-      "sos": -15.4,
+      "sos": -15.5,
       "prev_rk": 1,
       "trend": [
         1,
@@ -108,6 +108,7 @@
         "site": "home"
       },
       "color": "#013088",
+      "adjustment": null,
       "own_score": 2.085,
       "own_rank": 1,
       "external_rank": 1,
@@ -159,10 +160,10 @@
       "team_id": 87,
       "school": "Florida",
       "conference": "SEC",
-      "score": 1.944,
-      "rating": 29,
+      "score": 1.943,
+      "rating": 29.1,
       "power_games": 1,
-      "sos": 18.5,
+      "sos": 18.6,
       "prev_rk": 2,
       "trend": [
         2,
@@ -181,6 +182,7 @@
         "site": "home"
       },
       "color": "#0021A5",
+      "adjustment": null,
       "own_score": 1.748,
       "own_rank": 5,
       "external_rank": 2,
@@ -221,90 +223,17 @@
     },
     {
       "rk": 3,
-      "team_id": 11,
-      "school": "Arizona",
-      "conference": "Big 12",
-      "score": 1.857,
-      "rating": 27.7,
-      "power_games": 1,
-      "sos": 20,
-      "prev_rk": 6,
-      "trend": [
-        6,
-        3
-      ],
-      "last_game": {
-        "date": "2026-11-03T03:00Z",
-        "opponent": "UCLA",
-        "site": "neutral",
-        "won": false,
-        "score": "75-84"
-      },
-      "next_game": {
-        "date": "2026-11-06T03:30Z",
-        "opponent": "Cal Poly",
-        "site": "home"
-      },
-      "color": "#0C234B",
-      "own_score": 2.004,
-      "own_rank": 3,
-      "external_rank": 3,
-      "preseason_score": 2.004,
-      "games": 1,
-      "wins": 0,
-      "losses": 1,
-      "conf_wins": 0,
-      "conf_losses": 0,
-      "off_eff": 117.8,
-      "oreb_pct": 40.2,
-      "to_margin": 1.2,
-      "three_pct": 23.9,
-      "def_eff": 98.5,
-      "conf_strength": 14.5,
-      "ranks": {
-        "net": 165,
-        "competition": 41,
-        "winning": 3,
-        "defense": 183,
-        "offense": 160,
-        "recruits": 9,
-        "oreb": 167,
-        "continuity": 330,
-        "turnovers": 189,
-        "three": 317
-      },
-      "identity": null,
-      "returning": 0.275,
-      "experience": 0.438,
-      "incomplete": false,
-      "transfers_in": [
-        {
-          "name": "RJ Godfrey",
-          "from": "Clemson"
-        },
-        {
-          "name": "Derek Dixon",
-          "from": "North Carolina"
-        },
-        {
-          "name": "Evan Otten",
-          "from": "Idaho State"
-        }
-      ]
-    },
-    {
-      "rk": 4,
       "team_id": 118,
       "school": "Illinois",
       "conference": "Big Ten",
       "score": 1.758,
-      "rating": 26.2,
+      "rating": 26.3,
       "power_games": 1,
-      "sos": -14.5,
+      "sos": -14.6,
       "prev_rk": 3,
       "trend": [
         3,
-        4
+        3
       ],
       "last_game": {
         "date": "2026-11-03T01:00Z",
@@ -319,6 +248,7 @@
         "site": "home"
       },
       "color": "#FF5F05",
+      "adjustment": null,
       "own_score": 1.731,
       "own_rank": 7,
       "external_rank": 4,
@@ -358,7 +288,7 @@
       ]
     },
     {
-      "rk": 5,
+      "rk": 4,
       "team_id": 113,
       "school": "Houston",
       "conference": "Big 12",
@@ -369,7 +299,7 @@
       "prev_rk": 4,
       "trend": [
         4,
-        5
+        4
       ],
       "last_game": {
         "date": "2026-11-03T02:00Z",
@@ -384,6 +314,7 @@
         "site": "neutral"
       },
       "color": "#C92A39",
+      "adjustment": null,
       "own_score": 1.608,
       "own_rank": 10,
       "external_rank": 7,
@@ -431,18 +362,18 @@
       ]
     },
     {
-      "rk": 6,
+      "rk": 5,
       "team_id": 169,
       "school": "Michigan State",
       "conference": "Big Ten",
       "score": 1.656,
-      "rating": 24.7,
+      "rating": 24.8,
       "power_games": 1,
       "sos": -10.8,
       "prev_rk": 5,
       "trend": [
         5,
-        6
+        5
       ],
       "last_game": {
         "date": "2026-11-03T00:00Z",
@@ -457,6 +388,7 @@
         "site": "home"
       },
       "color": "#18453B",
+      "adjustment": null,
       "own_score": 1.652,
       "own_rank": 9,
       "external_rank": 6,
@@ -496,12 +428,89 @@
       ]
     },
     {
+      "rk": 6,
+      "team_id": 11,
+      "school": "Arizona",
+      "conference": "Big 12",
+      "score": 1.65,
+      "rating": 24.7,
+      "power_games": 1,
+      "sos": 19.7,
+      "prev_rk": 6,
+      "trend": [
+        6,
+        6
+      ],
+      "last_game": {
+        "date": "2026-11-03T03:00Z",
+        "opponent": "UCLA",
+        "site": "neutral",
+        "won": false,
+        "score": "75-84"
+      },
+      "next_game": {
+        "date": "2026-11-06T03:30Z",
+        "opponent": "Cal Poly",
+        "site": "home"
+      },
+      "color": "#0C234B",
+      "adjustment": {
+        "points": -3.4,
+        "why": "Roster turnover: about a quarter of last season's scoring is back, and none of its top three scorers"
+      },
+      "own_score": 2.004,
+      "own_rank": 3,
+      "external_rank": 3,
+      "preseason_score": 1.777,
+      "games": 1,
+      "wins": 0,
+      "losses": 1,
+      "conf_wins": 0,
+      "conf_losses": 0,
+      "off_eff": 117.8,
+      "oreb_pct": 40.2,
+      "to_margin": 1.2,
+      "three_pct": 23.9,
+      "def_eff": 98.5,
+      "conf_strength": 14.5,
+      "ranks": {
+        "net": 165,
+        "competition": 41,
+        "winning": 3,
+        "defense": 183,
+        "offense": 160,
+        "recruits": 9,
+        "oreb": 167,
+        "continuity": 330,
+        "turnovers": 189,
+        "three": 317
+      },
+      "identity": null,
+      "returning": 0.275,
+      "experience": 0.438,
+      "incomplete": false,
+      "transfers_in": [
+        {
+          "name": "RJ Godfrey",
+          "from": "Clemson"
+        },
+        {
+          "name": "Derek Dixon",
+          "from": "North Carolina"
+        },
+        {
+          "name": "Evan Otten",
+          "from": "Idaho State"
+        }
+      ]
+    },
+    {
       "rk": 7,
       "team_id": 131,
       "school": "Kansas",
       "conference": "Big 12",
       "score": 1.63,
-      "rating": 24.3,
+      "rating": 24.4,
       "power_games": 1,
       "sos": 3,
       "prev_rk": 9,
@@ -522,6 +531,7 @@
         "site": "home"
       },
       "color": "#0051BA",
+      "adjustment": null,
       "own_score": 1.518,
       "own_rank": 12,
       "external_rank": 9,
@@ -574,7 +584,7 @@
       "school": "Iowa State",
       "conference": "Big 12",
       "score": 1.619,
-      "rating": 24.1,
+      "rating": 24.2,
       "power_games": 1,
       "sos": 4.6,
       "prev_rk": 10,
@@ -595,6 +605,7 @@
         "site": "home"
       },
       "color": "#822433",
+      "adjustment": null,
       "own_score": 1.901,
       "own_rank": 4,
       "external_rank": 5,
@@ -643,90 +654,17 @@
     },
     {
       "rk": 9,
-      "team_id": 102,
-      "school": "Gonzaga",
-      "conference": "Pac-12",
-      "score": 1.538,
-      "rating": 22.9,
-      "power_games": 1,
-      "sos": 19.1,
-      "prev_rk": 8,
-      "trend": [
-        8,
-        9
-      ],
-      "last_game": {
-        "date": "2026-11-03T00:30Z",
-        "opponent": "Purdue",
-        "site": "neutral",
-        "won": true,
-        "score": "78-72"
-      },
-      "next_game": {
-        "date": "2026-11-07T22:00Z",
-        "opponent": "New Mexico State",
-        "site": "home"
-      },
-      "color": "#041E42",
-      "own_score": 1.472,
-      "own_rank": 13,
-      "external_rank": 12,
-      "preseason_score": 1.5,
-      "games": 1,
-      "wins": 1,
-      "losses": 0,
-      "conf_wins": 0,
-      "conf_losses": 0,
-      "off_eff": 123.6,
-      "oreb_pct": 44.4,
-      "to_margin": 0.9,
-      "three_pct": 39.6,
-      "def_eff": 94.4,
-      "conf_strength": 7.3,
-      "ranks": {
-        "net": 151,
-        "competition": 87,
-        "winning": 5,
-        "defense": 166,
-        "offense": 127,
-        "recruits": 39,
-        "oreb": 127,
-        "continuity": 276,
-        "turnovers": 198,
-        "three": 95
-      },
-      "identity": null,
-      "returning": 0.442,
-      "experience": 0.644,
-      "incomplete": false,
-      "transfers_in": [
-        {
-          "name": "Massamba Diop",
-          "from": "Arizona State"
-        },
-        {
-          "name": "Xaivian Lee",
-          "from": "Florida"
-        },
-        {
-          "name": "Chauncey Wiggins",
-          "from": "Florida State"
-        }
-      ]
-    },
-    {
-      "rk": 10,
       "team_id": 170,
       "school": "Michigan",
       "conference": "Big Ten",
       "score": 1.511,
-      "rating": 22.5,
+      "rating": 22.6,
       "power_games": 1,
       "sos": -0.4,
       "prev_rk": 13,
       "trend": [
         13,
-        10
+        9
       ],
       "last_game": {
         "date": "2026-11-02T23:00Z",
@@ -741,6 +679,7 @@
         "site": "neutral"
       },
       "color": "#00274C",
+      "adjustment": null,
       "own_score": 2.027,
       "own_rank": 2,
       "external_rank": 23,
@@ -788,7 +727,7 @@
       ]
     },
     {
-      "rk": 11,
+      "rk": 10,
       "team_id": 5,
       "school": "Alabama",
       "conference": "SEC",
@@ -799,7 +738,7 @@
       "prev_rk": 11,
       "trend": [
         11,
-        11
+        10
       ],
       "last_game": {
         "date": "2026-11-04T00:30Z",
@@ -814,6 +753,7 @@
         "site": "home"
       },
       "color": "#9E1632",
+      "adjustment": null,
       "own_score": 1.576,
       "own_rank": 11,
       "external_rank": 19,
@@ -857,7 +797,7 @@
       ]
     },
     {
-      "rk": 12,
+      "rk": 11,
       "team_id": 339,
       "school": "Virginia",
       "conference": "ACC",
@@ -868,7 +808,7 @@
       "prev_rk": 14,
       "trend": [
         14,
-        12
+        11
       ],
       "last_game": {
         "date": "2026-11-04T00:30Z",
@@ -883,6 +823,7 @@
         "site": "home"
       },
       "color": "#232D4B",
+      "adjustment": null,
       "own_score": 1.31,
       "own_rank": 18,
       "external_rank": 10,
@@ -922,12 +863,89 @@
       ]
     },
     {
+      "rk": 12,
+      "team_id": 102,
+      "school": "Gonzaga",
+      "conference": "Pac-12",
+      "score": 1.441,
+      "rating": 21.5,
+      "power_games": 1,
+      "sos": 19,
+      "prev_rk": 8,
+      "trend": [
+        8,
+        12
+      ],
+      "last_game": {
+        "date": "2026-11-03T00:30Z",
+        "opponent": "Purdue",
+        "site": "neutral",
+        "won": true,
+        "score": "78-72"
+      },
+      "next_game": {
+        "date": "2026-11-07T22:00Z",
+        "opponent": "New Mexico State",
+        "site": "home"
+      },
+      "color": "#041E42",
+      "adjustment": {
+        "points": -1.6,
+        "why": "Roster turnover in its lead scorers"
+      },
+      "own_score": 1.472,
+      "own_rank": 13,
+      "external_rank": 12,
+      "preseason_score": 1.393,
+      "games": 1,
+      "wins": 1,
+      "losses": 0,
+      "conf_wins": 0,
+      "conf_losses": 0,
+      "off_eff": 123.6,
+      "oreb_pct": 44.4,
+      "to_margin": 0.9,
+      "three_pct": 39.6,
+      "def_eff": 94.4,
+      "conf_strength": 7.3,
+      "ranks": {
+        "net": 151,
+        "competition": 87,
+        "winning": 5,
+        "defense": 166,
+        "offense": 127,
+        "recruits": 39,
+        "oreb": 127,
+        "continuity": 276,
+        "turnovers": 198,
+        "three": 95
+      },
+      "identity": null,
+      "returning": 0.442,
+      "experience": 0.644,
+      "incomplete": false,
+      "transfers_in": [
+        {
+          "name": "Massamba Diop",
+          "from": "Arizona State"
+        },
+        {
+          "name": "Xaivian Lee",
+          "from": "Florida"
+        },
+        {
+          "name": "Chauncey Wiggins",
+          "from": "Florida State"
+        }
+      ]
+    },
+    {
       "rk": 13,
       "team_id": 314,
       "school": "UConn",
       "conference": "Big East",
       "score": 1.418,
-      "rating": 21.1,
+      "rating": 21.2,
       "power_games": 1,
       "sos": -17.2,
       "prev_rk": 12,
@@ -948,6 +966,7 @@
         "site": "neutral"
       },
       "color": "#0C2340",
+      "adjustment": null,
       "own_score": 1.205,
       "own_rank": 24,
       "external_rank": 8,
@@ -999,8 +1018,8 @@
       "team_id": 295,
       "school": "Texas",
       "conference": "SEC",
-      "score": 1.41,
-      "rating": 21,
+      "score": 1.409,
+      "rating": 21.1,
       "power_games": 1,
       "sos": -20.2,
       "prev_rk": 19,
@@ -1021,6 +1040,7 @@
         "site": "home"
       },
       "color": "#C15D26",
+      "adjustment": null,
       "own_score": 1.353,
       "own_rank": 16,
       "external_rank": 11,
@@ -1072,8 +1092,8 @@
       "team_id": 12,
       "school": "Arkansas",
       "conference": "SEC",
-      "score": 1.385,
-      "rating": 20.6,
+      "score": 1.384,
+      "rating": 20.7,
       "power_games": 1,
       "sos": -19,
       "prev_rk": 20,
@@ -1094,6 +1114,7 @@
         "site": "neutral"
       },
       "color": "#A41F35",
+      "adjustment": null,
       "own_score": 1.737,
       "own_rank": 6,
       "external_rank": 20,
@@ -1163,6 +1184,7 @@
         "site": "home"
       },
       "color": "#FF8200",
+      "adjustment": null,
       "own_score": 1.326,
       "own_rank": 17,
       "external_rank": 15,
@@ -1214,10 +1236,10 @@
       "team_id": 313,
       "school": "UCLA",
       "conference": "Big Ten",
-      "score": 1.355,
-      "rating": 20.2,
+      "score": 1.334,
+      "rating": 19.9,
       "power_games": 1,
-      "sos": 27.9,
+      "sos": 24.9,
       "prev_rk": 7,
       "trend": [
         7,
@@ -1236,6 +1258,7 @@
         "site": "home"
       },
       "color": "#2774AE",
+      "adjustment": null,
       "own_score": 1.21,
       "own_rank": 23,
       "external_rank": 24,
@@ -1301,6 +1324,7 @@
         "site": "home"
       },
       "color": "#003DA5",
+      "adjustment": null,
       "own_score": 1.367,
       "own_rank": 15,
       "external_rank": 25,
@@ -1374,6 +1398,7 @@
         "site": "home"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": 1.298,
       "own_rank": 19,
       "external_rank": 13,
@@ -1426,7 +1451,7 @@
       "school": "Nebraska",
       "conference": "Big Ten",
       "score": 1.312,
-      "rating": 19.5,
+      "rating": 19.6,
       "power_games": 1,
       "sos": -15.4,
       "prev_rk": 17,
@@ -1447,6 +1472,7 @@
         "site": "neutral"
       },
       "color": "#D00000",
+      "adjustment": null,
       "own_score": 1.401,
       "own_rank": 14,
       "external_rank": 17,
@@ -1499,7 +1525,7 @@
       "school": "Louisville",
       "conference": "ACC",
       "score": 1.295,
-      "rating": 19.3,
+      "rating": 19.4,
       "power_games": 1,
       "sos": -6.4,
       "prev_rk": 21,
@@ -1520,6 +1546,7 @@
         "site": "home"
       },
       "color": "#C9001F",
+      "adjustment": null,
       "own_score": 1.264,
       "own_rank": 20,
       "external_rank": 14,
@@ -1571,10 +1598,10 @@
       "team_id": 236,
       "school": "Purdue",
       "conference": "Big Ten",
-      "score": 1.273,
-      "rating": 19,
+      "score": 1.264,
+      "rating": 18.9,
       "power_games": 1,
-      "sos": 22.8,
+      "sos": 21.4,
       "prev_rk": 24,
       "trend": [
         24,
@@ -1593,6 +1620,7 @@
         "site": "home"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": 1.663,
       "own_rank": 8,
       "external_rank": 30,
@@ -1631,10 +1659,10 @@
       "team_id": 168,
       "school": "Miami",
       "conference": "ACC",
-      "score": 1.238,
-      "rating": 18.4,
+      "score": 1.239,
+      "rating": 18.5,
       "power_games": 1,
-      "sos": 28.9,
+      "sos": 29,
       "prev_rk": 26,
       "trend": [
         26,
@@ -1653,6 +1681,7 @@
         "site": "home"
       },
       "color": "#005030",
+      "adjustment": null,
       "own_score": 1.138,
       "own_rank": 26,
       "external_rank": 16,
@@ -1705,7 +1734,7 @@
       "school": "Vanderbilt",
       "conference": "SEC",
       "score": 1.23,
-      "rating": 18.3,
+      "rating": 18.4,
       "power_games": 1,
       "sos": -10.6,
       "prev_rk": 25,
@@ -1726,6 +1755,7 @@
         "site": "home"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": 1.222,
       "own_rank": 22,
       "external_rank": 21,
@@ -1778,7 +1808,7 @@
       "school": "St. John's",
       "conference": "Big East",
       "score": 1.199,
-      "rating": 17.8,
+      "rating": 17.9,
       "power_games": 1,
       "sos": -3.1,
       "prev_rk": 22,
@@ -1799,6 +1829,7 @@
         "site": "home"
       },
       "color": "#D10000",
+      "adjustment": null,
       "own_score": 1.091,
       "own_rank": 29,
       "external_rank": 18,
@@ -1847,9 +1878,9 @@
       "school": "Utah State",
       "conference": "Pac-12",
       "score": 1.137,
-      "rating": 16.9,
+      "rating": 17,
       "power_games": 1,
-      "sos": -2.3,
+      "sos": -2.2,
       "prev_rk": 29,
       "trend": [
         29,
@@ -1868,6 +1899,7 @@
         "site": "home"
       },
       "color": "#00263A",
+      "adjustment": null,
       "own_score": 1.256,
       "own_rank": 21,
       "external_rank": null,
@@ -1906,8 +1938,8 @@
       "team_id": 162,
       "school": "McNeese",
       "conference": "Southland",
-      "score": 1.112,
-      "rating": 16.5,
+      "score": 1.111,
+      "rating": 16.6,
       "power_games": 1,
       "sos": 0.7,
       "prev_rk": 23,
@@ -1928,6 +1960,7 @@
         "site": "away"
       },
       "color": "#00529C",
+      "adjustment": null,
       "own_score": 1.078,
       "own_rank": 30,
       "external_rank": null,
@@ -1988,6 +2021,7 @@
         "site": "home"
       },
       "color": "#990000",
+      "adjustment": null,
       "own_score": 1.002,
       "own_rank": 39,
       "external_rank": 26,
@@ -2039,7 +2073,7 @@
       "team_id": 124,
       "school": "Iowa",
       "conference": "Big Ten",
-      "score": 1.088,
+      "score": 1.087,
       "rating": 16.2,
       "power_games": 1,
       "sos": -3.5,
@@ -2061,6 +2095,7 @@
         "site": "home"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": 1.143,
       "own_rank": 25,
       "external_rank": null,
@@ -2108,8 +2143,8 @@
       "team_id": 253,
       "school": "Saint Mary's",
       "conference": "WCC",
-      "score": 1.077,
-      "rating": 16,
+      "score": 1.076,
+      "rating": 16.1,
       "power_games": 2,
       "sos": 5.1,
       "prev_rk": 44,
@@ -2130,6 +2165,7 @@
         "site": "neutral"
       },
       "color": "#D80024",
+      "adjustment": null,
       "own_score": 1.062,
       "own_rank": 32,
       "external_rank": null,
@@ -2168,7 +2204,7 @@
       "team_id": 323,
       "school": "USC",
       "conference": "Big Ten",
-      "score": 1.066,
+      "score": 1.065,
       "rating": 15.9,
       "power_games": 1,
       "sos": -7,
@@ -2190,6 +2226,7 @@
         "site": "neutral"
       },
       "color": "#9E2237",
+      "adjustment": null,
       "own_score": 0.975,
       "own_rank": 43,
       "external_rank": 29,
@@ -2259,6 +2296,7 @@
         "site": "home"
       },
       "color": "#CE1141",
+      "adjustment": null,
       "own_score": 1.037,
       "own_rank": 34,
       "external_rank": 22,
@@ -2310,8 +2348,8 @@
       "team_id": 257,
       "school": "San Diego State",
       "conference": "Pac-12",
-      "score": 1.058,
-      "rating": 15.7,
+      "score": 1.057,
+      "rating": 15.8,
       "power_games": 1,
       "sos": 0.2,
       "prev_rk": 36,
@@ -2332,6 +2370,7 @@
         "site": "neutral"
       },
       "color": "#C41230",
+      "adjustment": null,
       "own_score": 1.004,
       "own_rank": 38,
       "external_rank": null,
@@ -2373,7 +2412,7 @@
       "score": 1.049,
       "rating": 15.6,
       "power_games": 1,
-      "sos": -20,
+      "sos": -20.1,
       "prev_rk": 28,
       "trend": [
         28,
@@ -2392,6 +2431,7 @@
         "site": "home"
       },
       "color": "#0033A0",
+      "adjustment": null,
       "own_score": 1.037,
       "own_rank": 35,
       "external_rank": 27,
@@ -2465,6 +2505,7 @@
         "site": "home"
       },
       "color": "#154734",
+      "adjustment": null,
       "own_score": 1.136,
       "own_rank": 27,
       "external_rank": null,
@@ -2517,7 +2558,7 @@
       "school": "NC State",
       "conference": "ACC",
       "score": 1.032,
-      "rating": 15.3,
+      "rating": 15.4,
       "power_games": 1,
       "sos": -2.6,
       "prev_rk": 34,
@@ -2538,6 +2579,7 @@
         "site": "home"
       },
       "color": "#CC0000",
+      "adjustment": null,
       "own_score": 0.976,
       "own_rank": 42,
       "external_rank": 37,
@@ -2577,9 +2619,9 @@
       "school": "Missouri",
       "conference": "SEC",
       "score": 1.031,
-      "rating": 15.3,
+      "rating": 15.4,
       "power_games": 1,
-      "sos": -10,
+      "sos": -10.1,
       "prev_rk": 48,
       "trend": [
         48,
@@ -2598,6 +2640,7 @@
         "site": "neutral"
       },
       "color": "#F1B82D",
+      "adjustment": null,
       "own_score": 1.008,
       "own_rank": 37,
       "external_rank": 35,
@@ -2649,7 +2692,7 @@
       "team_id": 287,
       "school": "TCU",
       "conference": "Big 12",
-      "score": 1.007,
+      "score": 1.006,
       "rating": 15,
       "power_games": 1,
       "sos": -3,
@@ -2671,6 +2714,7 @@
         "site": "home"
       },
       "color": "#4D1979",
+      "adjustment": null,
       "own_score": 0.95,
       "own_rank": 45,
       "external_rank": null,
@@ -2709,8 +2753,8 @@
       "team_id": 16,
       "school": "Auburn",
       "conference": "SEC",
-      "score": 1.003,
-      "rating": 14.9,
+      "score": 1.002,
+      "rating": 15,
       "power_games": 1,
       "sos": -7.3,
       "prev_rk": 39,
@@ -2731,6 +2775,7 @@
         "site": "home"
       },
       "color": "#002B5C",
+      "adjustment": null,
       "own_score": 0.888,
       "own_rank": 50,
       "external_rank": 34,
@@ -2783,7 +2828,7 @@
       "school": "Cincinnati",
       "conference": "Big 12",
       "score": 0.998,
-      "rating": 14.8,
+      "rating": 14.9,
       "power_games": 1,
       "sos": -10.4,
       "prev_rk": 41,
@@ -2804,6 +2849,7 @@
         "site": "home"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": 1.014,
       "own_rank": 36,
       "external_rank": 42,
@@ -2855,8 +2901,8 @@
       "team_id": 218,
       "school": "Oklahoma State",
       "conference": "Big 12",
-      "score": 0.977,
-      "rating": 14.5,
+      "score": 0.976,
+      "rating": 14.6,
       "power_games": 1,
       "sos": -3.9,
       "prev_rk": 50,
@@ -2877,6 +2923,7 @@
         "site": "home"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": 0.924,
       "own_rank": 48,
       "external_rank": null,
@@ -2916,7 +2963,7 @@
       "school": "Saint Louis",
       "conference": "A-10",
       "score": 0.971,
-      "rating": 14.4,
+      "rating": 14.5,
       "power_games": 1,
       "sos": -14.8,
       "prev_rk": 46,
@@ -2937,6 +2984,7 @@
         "site": "neutral"
       },
       "color": "#00539C",
+      "adjustment": null,
       "own_score": 0.995,
       "own_rank": 40,
       "external_rank": null,
@@ -2976,7 +3024,7 @@
       "school": "Wisconsin",
       "conference": "Big Ten",
       "score": 0.969,
-      "rating": 14.4,
+      "rating": 14.5,
       "power_games": 1,
       "sos": 0.8,
       "prev_rk": 37,
@@ -2997,6 +3045,7 @@
         "site": "home"
       },
       "color": "#C4012F",
+      "adjustment": null,
       "own_score": 1.049,
       "own_rank": 33,
       "external_rank": null,
@@ -3035,10 +3084,10 @@
       "team_id": 261,
       "school": "Santa Clara",
       "conference": "WCC",
-      "score": 0.96,
+      "score": 0.959,
       "rating": 14.3,
       "power_games": 2,
-      "sos": -3.9,
+      "sos": -3.8,
       "prev_rk": 33,
       "trend": [
         33,
@@ -3057,6 +3106,7 @@
         "site": "home"
       },
       "color": "#690B0B",
+      "adjustment": null,
       "own_score": 0.879,
       "own_rank": 51,
       "external_rank": null,
@@ -3095,7 +3145,7 @@
       "team_id": 347,
       "school": "West Virginia",
       "conference": "Big 12",
-      "score": 0.96,
+      "score": 0.959,
       "rating": 14.3,
       "power_games": 1,
       "sos": -22.6,
@@ -3117,6 +3167,7 @@
         "site": "home"
       },
       "color": "#002855",
+      "adjustment": null,
       "own_score": 1.065,
       "own_rank": 31,
       "external_rank": null,
@@ -3156,9 +3207,9 @@
       "school": "Georgia",
       "conference": "SEC",
       "score": 0.957,
-      "rating": 14.2,
+      "rating": 14.3,
       "power_games": 1,
-      "sos": -17,
+      "sos": -17.1,
       "prev_rk": 35,
       "trend": [
         35,
@@ -3177,6 +3228,7 @@
         "site": "home"
       },
       "color": "#BA0C2F",
+      "adjustment": null,
       "own_score": 1.103,
       "own_rank": 28,
       "external_rank": 43,
@@ -3250,6 +3302,7 @@
         "site": "home"
       },
       "color": "#500000",
+      "adjustment": null,
       "own_score": 0.8,
       "own_rank": 57,
       "external_rank": 28,
@@ -3302,7 +3355,7 @@
       "school": "Clemson",
       "conference": "ACC",
       "score": 0.937,
-      "rating": 13.9,
+      "rating": 14,
       "power_games": 1,
       "sos": -11.2,
       "prev_rk": 38,
@@ -3323,6 +3376,7 @@
         "site": "home"
       },
       "color": "#F56600",
+      "adjustment": null,
       "own_score": 0.964,
       "own_rank": 44,
       "external_rank": 38,
@@ -3375,7 +3429,7 @@
       "school": "New Mexico",
       "conference": "Mountain West",
       "score": 0.904,
-      "rating": 13.4,
+      "rating": 13.5,
       "power_games": 1,
       "sos": -0.8,
       "prev_rk": 32,
@@ -3396,6 +3450,7 @@
         "site": "home"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": 0.819,
       "own_rank": 55,
       "external_rank": null,
@@ -3435,7 +3490,7 @@
       "school": "Villanova",
       "conference": "Big East",
       "score": 0.891,
-      "rating": 13.2,
+      "rating": 13.3,
       "power_games": 1,
       "sos": 6.7,
       "prev_rk": 62,
@@ -3456,6 +3511,7 @@
         "site": "home"
       },
       "color": "#00205B",
+      "adjustment": null,
       "own_score": 0.841,
       "own_rank": 53,
       "external_rank": 33,
@@ -3529,6 +3585,7 @@
         "site": "home"
       },
       "color": "#7BAFD4",
+      "adjustment": null,
       "own_score": 0.917,
       "own_rank": 49,
       "external_rank": null,
@@ -3602,6 +3659,7 @@
         "site": "home"
       },
       "color": "#354CA1",
+      "adjustment": null,
       "own_score": 0.941,
       "own_rank": 46,
       "external_rank": null,
@@ -3641,7 +3699,7 @@
       "school": "UCF",
       "conference": "Big 12",
       "score": 0.871,
-      "rating": 12.9,
+      "rating": 13,
       "power_games": 1,
       "sos": -5.5,
       "prev_rk": 55,
@@ -3662,6 +3720,7 @@
         "site": "home"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": 0.98,
       "own_rank": 41,
       "external_rank": null,
@@ -3722,6 +3781,7 @@
         "site": "home"
       },
       "color": "#007030",
+      "adjustment": null,
       "own_score": 0.509,
       "own_rank": 91,
       "external_rank": 41,
@@ -3763,7 +3823,7 @@
       "score": 0.839,
       "rating": 12.5,
       "power_games": 1,
-      "sos": 0.1,
+      "sos": 0.2,
       "prev_rk": 65,
       "trend": [
         65,
@@ -3782,6 +3842,7 @@
         "site": "home"
       },
       "color": "#8C1515",
+      "adjustment": null,
       "own_score": 0.849,
       "own_rank": 52,
       "external_rank": null,
@@ -3823,7 +3884,7 @@
       "score": 0.822,
       "rating": 12.2,
       "power_games": 1,
-      "sos": -3.6,
+      "sos": -3.5,
       "prev_rk": 88,
       "trend": [
         88,
@@ -3842,6 +3903,7 @@
         "site": "home"
       },
       "color": "#A32036",
+      "adjustment": null,
       "own_score": 0.929,
       "own_rank": 47,
       "external_rank": 31,
@@ -3894,7 +3956,7 @@
       "school": "South Florida",
       "conference": "American",
       "score": 0.81,
-      "rating": 12,
+      "rating": 12.1,
       "power_games": 1,
       "sos": -4.7,
       "prev_rk": 64,
@@ -3915,6 +3977,7 @@
         "site": "away"
       },
       "color": "#004A36",
+      "adjustment": null,
       "own_score": 0.745,
       "own_rank": 61,
       "external_rank": null,
@@ -3956,7 +4019,7 @@
       "score": 0.807,
       "rating": 12,
       "power_games": 1,
-      "sos": -28.1,
+      "sos": -28.2,
       "prev_rk": 54,
       "trend": [
         54,
@@ -3975,6 +4038,7 @@
         "site": "home"
       },
       "color": "#13294B",
+      "adjustment": null,
       "own_score": 0.693,
       "own_rank": 63,
       "external_rank": 39,
@@ -4048,6 +4112,7 @@
         "site": "home"
       },
       "color": "#003366",
+      "adjustment": null,
       "own_score": 0.454,
       "own_rank": 101,
       "external_rank": 36,
@@ -4087,7 +4152,7 @@
       "school": "Colorado",
       "conference": "Big 12",
       "score": 0.771,
-      "rating": 11.4,
+      "rating": 11.5,
       "power_games": 1,
       "sos": -1.3,
       "prev_rk": 58,
@@ -4108,6 +4173,7 @@
         "site": "neutral"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": 0.677,
       "own_rank": 67,
       "external_rank": null,
@@ -4160,7 +4226,7 @@
       "school": "Virginia Tech",
       "conference": "ACC",
       "score": 0.764,
-      "rating": 11.3,
+      "rating": 11.4,
       "power_games": 1,
       "sos": -26.8,
       "prev_rk": 57,
@@ -4181,6 +4247,7 @@
         "site": "home"
       },
       "color": "#630031",
+      "adjustment": null,
       "own_score": 0.825,
       "own_rank": 54,
       "external_rank": null,
@@ -4222,7 +4289,7 @@
       "score": 0.759,
       "rating": 11.3,
       "power_games": 1,
-      "sos": -14.3,
+      "sos": -14.4,
       "prev_rk": 56,
       "trend": [
         56,
@@ -4241,6 +4308,7 @@
         "site": "home"
       },
       "color": "#005CA9",
+      "adjustment": null,
       "own_score": 0.415,
       "own_rank": 107,
       "external_rank": 32,
@@ -4279,8 +4347,8 @@
       "team_id": 136,
       "school": "LSU",
       "conference": "SEC",
-      "score": 0.743,
-      "rating": 11,
+      "score": 0.742,
+      "rating": 11.1,
       "power_games": 1,
       "sos": -5.2,
       "prev_rk": 70,
@@ -4301,6 +4369,7 @@
         "site": "home"
       },
       "color": "#461D7C",
+      "adjustment": null,
       "own_score": 0.674,
       "own_rank": 68,
       "external_rank": null,
@@ -4361,6 +4430,7 @@
         "site": "away"
       },
       "color": "#FFAF00",
+      "adjustment": null,
       "own_score": 0.774,
       "own_rank": 59,
       "external_rank": null,
@@ -4402,7 +4472,7 @@
       "score": 0.722,
       "rating": 10.7,
       "power_games": 1,
-      "sos": 3,
+      "sos": 3.1,
       "prev_rk": 63,
       "trend": [
         63,
@@ -4421,6 +4491,7 @@
         "site": "home"
       },
       "color": "#8E0C3A",
+      "adjustment": null,
       "own_score": 0.688,
       "own_rank": 64,
       "external_rank": null,
@@ -4472,7 +4543,7 @@
       "team_id": 255,
       "school": "Sam Houston",
       "conference": "CUSA",
-      "score": 0.719,
+      "score": 0.72,
       "rating": 10.7,
       "power_games": 1,
       "sos": 22.2,
@@ -4494,6 +4565,7 @@
         "site": "home"
       },
       "color": "#FE5000",
+      "adjustment": null,
       "own_score": 0.804,
       "own_rank": 56,
       "external_rank": null,
@@ -4533,7 +4605,7 @@
       "school": "Washington",
       "conference": "Big Ten",
       "score": 0.716,
-      "rating": 10.6,
+      "rating": 10.7,
       "power_games": 1,
       "sos": -10.8,
       "prev_rk": 81,
@@ -4554,6 +4626,7 @@
         "site": "home"
       },
       "color": "#33006F",
+      "adjustment": null,
       "own_score": 0.734,
       "own_rank": 62,
       "external_rank": null,
@@ -4595,7 +4668,7 @@
       "score": 0.699,
       "rating": 10.4,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 92,
       "trend": [
         92,
@@ -4614,6 +4687,7 @@
         "site": "home"
       },
       "color": "#0033A0",
+      "adjustment": null,
       "own_score": 0.798,
       "own_rank": 58,
       "external_rank": null,
@@ -4653,7 +4727,7 @@
       "school": "Providence",
       "conference": "Big East",
       "score": 0.691,
-      "rating": 10.2,
+      "rating": 10.3,
       "power_games": 1,
       "sos": -21.8,
       "prev_rk": 79,
@@ -4674,6 +4748,7 @@
         "site": "neutral"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": 0.308,
       "own_rank": 130,
       "external_rank": 40,
@@ -4734,6 +4809,7 @@
         "site": "home"
       },
       "color": "#1E4D2B",
+      "adjustment": null,
       "own_score": 0.616,
       "own_rank": 73,
       "external_rank": null,
@@ -4772,7 +4848,7 @@
       "team_id": 342,
       "school": "Wake Forest",
       "conference": "ACC",
-      "score": 0.662,
+      "score": 0.661,
       "rating": 9.8,
       "power_games": 1,
       "sos": -20,
@@ -4794,6 +4870,7 @@
         "site": "away"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": 0.682,
       "own_rank": 66,
       "external_rank": null,
@@ -4833,7 +4910,7 @@
       "school": "Seton Hall",
       "conference": "Big East",
       "score": 0.65,
-      "rating": 9.6,
+      "rating": 9.7,
       "power_games": 1,
       "sos": -15,
       "prev_rk": 82,
@@ -4854,6 +4931,7 @@
         "site": "home"
       },
       "color": "#0857B1",
+      "adjustment": null,
       "own_score": 0.64,
       "own_rank": 69,
       "external_rank": null,
@@ -4893,7 +4971,7 @@
       "school": "Akron",
       "conference": "MAC",
       "score": 0.637,
-      "rating": 9.4,
+      "rating": 9.5,
       "power_games": 1,
       "sos": -11.7,
       "prev_rk": 61,
@@ -4914,6 +4992,7 @@
         "site": "home"
       },
       "color": "#00285E",
+      "adjustment": null,
       "own_score": 0.618,
       "own_rank": 72,
       "external_rank": null,
@@ -4965,7 +5044,7 @@
       "team_id": 109,
       "school": "High Point",
       "conference": "Big South",
-      "score": 0.629,
+      "score": 0.628,
       "rating": 9.3,
       "power_games": 2,
       "sos": -7,
@@ -4987,6 +5066,7 @@
         "site": "home"
       },
       "color": "#B0B7BC",
+      "adjustment": null,
       "own_score": 0.558,
       "own_rank": 83,
       "external_rank": null,
@@ -5041,7 +5121,7 @@
       "score": 0.626,
       "rating": 9.3,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 49,
       "trend": [
         49,
@@ -5060,6 +5140,7 @@
         "site": "away"
       },
       "color": "#004812",
+      "adjustment": null,
       "own_score": 0.75,
       "own_rank": 60,
       "external_rank": null,
@@ -5098,8 +5179,8 @@
       "team_id": 173,
       "school": "Minnesota",
       "conference": "Big Ten",
-      "score": 0.624,
-      "rating": 9.2,
+      "score": 0.623,
+      "rating": 9.3,
       "power_games": 1,
       "sos": -3.7,
       "prev_rk": 68,
@@ -5120,6 +5201,7 @@
         "site": "home"
       },
       "color": "#5E0A2F",
+      "adjustment": null,
       "own_score": 0.53,
       "own_rank": 86,
       "external_rank": null,
@@ -5171,10 +5253,10 @@
       "team_id": 90,
       "school": "Florida State",
       "conference": "ACC",
-      "score": 0.613,
+      "score": 0.612,
       "rating": 9.1,
       "power_games": 1,
-      "sos": -22.8,
+      "sos": -22.9,
       "prev_rk": 95,
       "trend": [
         95,
@@ -5193,6 +5275,7 @@
         "site": "home"
       },
       "color": "#782F40",
+      "adjustment": null,
       "own_score": 0.623,
       "own_rank": 71,
       "external_rank": null,
@@ -5244,8 +5327,8 @@
       "team_id": 22,
       "school": "Belmont",
       "conference": "MVC",
-      "score": 0.603,
-      "rating": 8.9,
+      "score": 0.602,
+      "rating": 9,
       "power_games": 1,
       "sos": -13.2,
       "prev_rk": 72,
@@ -5266,6 +5349,7 @@
         "site": "home"
       },
       "color": "#182142",
+      "adjustment": null,
       "own_score": 0.608,
       "own_rank": 76,
       "external_rank": null,
@@ -5326,6 +5410,7 @@
         "site": "home"
       },
       "color": "#004B8D",
+      "adjustment": null,
       "own_score": 0.609,
       "own_rank": 75,
       "external_rank": null,
@@ -5386,6 +5471,7 @@
         "site": "neutral"
       },
       "color": "#002D62",
+      "adjustment": null,
       "own_score": 0.495,
       "own_rank": 92,
       "external_rank": null,
@@ -5427,7 +5513,7 @@
       "score": 0.592,
       "rating": 8.8,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 101,
       "trend": [
         101,
@@ -5446,6 +5532,7 @@
         "site": "home"
       },
       "color": "#003595",
+      "adjustment": null,
       "own_score": 0.682,
       "own_rank": 65,
       "external_rank": null,
@@ -5506,6 +5593,7 @@
         "site": "home"
       },
       "color": "#582C83",
+      "adjustment": null,
       "own_score": 0.633,
       "own_rank": 70,
       "external_rank": null,
@@ -5579,6 +5667,7 @@
         "site": "neutral"
       },
       "color": "#0D0A03",
+      "adjustment": null,
       "own_score": 0.524,
       "own_rank": 87,
       "external_rank": null,
@@ -5639,6 +5728,7 @@
         "site": "home"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": 0.419,
       "own_rank": 105,
       "external_rank": null,
@@ -5677,8 +5767,8 @@
       "team_id": 160,
       "school": "Maryland",
       "conference": "Big Ten",
-      "score": 0.558,
-      "rating": 8.2,
+      "score": 0.557,
+      "rating": 8.3,
       "power_games": 1,
       "sos": -19.8,
       "prev_rk": 118,
@@ -5699,6 +5789,7 @@
         "site": "away"
       },
       "color": "#D5002B",
+      "adjustment": null,
       "own_score": 0.566,
       "own_rank": 81,
       "external_rank": null,
@@ -5772,6 +5863,7 @@
         "site": "neutral"
       },
       "color": "#031522",
+      "adjustment": null,
       "own_score": 0.615,
       "own_rank": 74,
       "external_rank": null,
@@ -5823,7 +5915,7 @@
       "team_id": 96,
       "school": "George Washington",
       "conference": "A-10",
-      "score": 0.546,
+      "score": 0.545,
       "rating": 8.1,
       "power_games": 1,
       "sos": -7.2,
@@ -5845,6 +5937,7 @@
         "site": "home"
       },
       "color": "#002843",
+      "adjustment": null,
       "own_score": 0.47,
       "own_rank": 97,
       "external_rank": null,
@@ -5883,7 +5976,7 @@
       "team_id": 104,
       "school": "Grand Canyon",
       "conference": "Mountain West",
-      "score": 0.545,
+      "score": 0.544,
       "rating": 8.1,
       "power_games": 1,
       "sos": -19.4,
@@ -5905,6 +5998,7 @@
         "site": "home"
       },
       "color": "#522398",
+      "adjustment": null,
       "own_score": 0.56,
       "own_rank": 82,
       "external_rank": null,
@@ -5943,7 +6037,7 @@
       "team_id": 34,
       "school": "Butler",
       "conference": "Big East",
-      "score": 0.541,
+      "score": 0.54,
       "rating": 8,
       "power_games": 2,
       "sos": -16.8,
@@ -5965,6 +6059,7 @@
         "site": "away"
       },
       "color": "#0D1361",
+      "adjustment": null,
       "own_score": 0.523,
       "own_rank": 88,
       "external_rank": null,
@@ -6004,7 +6099,7 @@
       "school": "Western Kentucky",
       "conference": "CUSA",
       "score": 0.536,
-      "rating": 7.9,
+      "rating": 8,
       "power_games": 1,
       "sos": -5.6,
       "prev_rk": 83,
@@ -6025,6 +6120,7 @@
         "site": "home"
       },
       "color": "#F32026",
+      "adjustment": null,
       "own_score": 0.448,
       "own_rank": 102,
       "external_rank": null,
@@ -6066,7 +6162,7 @@
       "score": 0.518,
       "rating": 7.7,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 113,
       "trend": [
         113,
@@ -6085,6 +6181,7 @@
         "site": "away"
       },
       "color": "#006DB6",
+      "adjustment": null,
       "own_score": 0.603,
       "own_rank": 77,
       "external_rank": null,
@@ -6145,6 +6242,7 @@
         "site": "home"
       },
       "color": "#FF6500",
+      "adjustment": null,
       "own_score": 0.522,
       "own_rank": 89,
       "external_rank": null,
@@ -6199,7 +6297,7 @@
       "score": 0.513,
       "rating": 7.6,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 103,
       "trend": [
         103,
@@ -6218,6 +6316,7 @@
         "site": "away"
       },
       "color": "#473282",
+      "adjustment": null,
       "own_score": 0.598,
       "own_rank": 78,
       "external_rank": null,
@@ -6259,7 +6358,7 @@
       "score": 0.512,
       "rating": 7.6,
       "power_games": 1,
-      "sos": 5.8,
+      "sos": 5.9,
       "prev_rk": 130,
       "trend": [
         130,
@@ -6278,6 +6377,7 @@
         "site": "home"
       },
       "color": "#BF2E1A",
+      "adjustment": null,
       "own_score": 0.517,
       "own_rank": 90,
       "external_rank": null,
@@ -6338,6 +6438,7 @@
         "site": "home"
       },
       "color": "#73000A",
+      "adjustment": null,
       "own_score": 0.463,
       "own_rank": 99,
       "external_rank": null,
@@ -6389,10 +6490,10 @@
       "team_id": 308,
       "school": "UC Irvine",
       "conference": "Big West",
-      "score": 0.506,
+      "score": 0.505,
       "rating": 7.5,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 90,
       "trend": [
         90,
@@ -6411,6 +6512,7 @@
         "site": "home"
       },
       "color": "#002B5C",
+      "adjustment": null,
       "own_score": 0.589,
       "own_rank": 79,
       "external_rank": null,
@@ -6449,10 +6551,10 @@
       "team_id": 133,
       "school": "Kennesaw State",
       "conference": "CUSA",
-      "score": 0.493,
+      "score": 0.492,
       "rating": 7.3,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 71,
       "trend": [
         71,
@@ -6471,6 +6573,7 @@
         "site": "home"
       },
       "color": "#FDBB30",
+      "adjustment": null,
       "own_score": 0.575,
       "own_rank": 80,
       "external_rank": null,
@@ -6531,6 +6634,7 @@
         "site": "home"
       },
       "color": "#A4000C",
+      "adjustment": null,
       "own_score": 0.46,
       "own_rank": 100,
       "external_rank": null,
@@ -6570,9 +6674,9 @@
       "school": "Stephen F. Austin",
       "conference": "Southland",
       "score": 0.476,
-      "rating": 7,
+      "rating": 7.1,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 100,
       "trend": [
         100,
@@ -6591,6 +6695,7 @@
         "site": "home"
       },
       "color": "#393996",
+      "adjustment": null,
       "own_score": 0.558,
       "own_rank": 84,
       "external_rank": null,
@@ -6651,6 +6756,7 @@
         "site": "home"
       },
       "color": "#CE1126",
+      "adjustment": null,
       "own_score": 0.444,
       "own_rank": 103,
       "external_rank": null,
@@ -6692,7 +6798,7 @@
       "score": 0.465,
       "rating": 6.9,
       "power_games": 1,
-      "sos": 13.4,
+      "sos": 13.5,
       "prev_rk": 86,
       "trend": [
         86,
@@ -6711,6 +6817,7 @@
         "site": "home"
       },
       "color": "#0C2340",
+      "adjustment": null,
       "own_score": 0.39,
       "own_rank": 114,
       "external_rank": null,
@@ -6763,7 +6870,7 @@
       "school": "Mississippi State",
       "conference": "SEC",
       "score": 0.436,
-      "rating": 6.4,
+      "rating": 6.5,
       "power_games": 1,
       "sos": -7.7,
       "prev_rk": 112,
@@ -6784,6 +6891,7 @@
         "site": "home"
       },
       "color": "#5D1725",
+      "adjustment": null,
       "own_score": 0.396,
       "own_rank": 112,
       "external_rank": null,
@@ -6838,7 +6946,7 @@
       "score": 0.424,
       "rating": 6.3,
       "power_games": 1,
-      "sos": -12.4,
+      "sos": -12.5,
       "prev_rk": 84,
       "trend": [
         84,
@@ -6857,6 +6965,7 @@
         "site": "home"
       },
       "color": "#016600",
+      "adjustment": null,
       "own_score": 0.374,
       "own_rank": 118,
       "external_rank": null,
@@ -6917,6 +7026,7 @@
         "site": "home"
       },
       "color": "#00205C",
+      "adjustment": null,
       "own_score": 0.466,
       "own_rank": 98,
       "external_rank": null,
@@ -6986,6 +7096,7 @@
         "site": "home"
       },
       "color": "#21304E",
+      "adjustment": null,
       "own_score": 0.406,
       "own_rank": 108,
       "external_rank": null,
@@ -7037,10 +7148,10 @@
       "team_id": 128,
       "school": "Jacksonville State",
       "conference": "CUSA",
-      "score": 0.413,
+      "score": 0.412,
       "rating": 6.1,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 126,
       "trend": [
         126,
@@ -7059,6 +7170,7 @@
         "site": "away"
       },
       "color": "#B50500",
+      "adjustment": null,
       "own_score": 0.489,
       "own_rank": 93,
       "external_rank": null,
@@ -7100,7 +7212,7 @@
       "score": 0.408,
       "rating": 6,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 114,
       "trend": [
         114,
@@ -7119,6 +7231,7 @@
         "site": "home"
       },
       "color": "#091731",
+      "adjustment": null,
       "own_score": 0.484,
       "own_rank": 95,
       "external_rank": null,
@@ -7158,7 +7271,7 @@
       "school": "Hawai'i",
       "conference": "Mountain West",
       "score": 0.404,
-      "rating": 5.9,
+      "rating": 6,
       "power_games": 1,
       "sos": 7.7,
       "prev_rk": 102,
@@ -7179,6 +7292,7 @@
         "site": "home"
       },
       "color": "#003420",
+      "adjustment": null,
       "own_score": 0.399,
       "own_rank": 110,
       "external_rank": null,
@@ -7220,7 +7334,7 @@
       "score": 0.402,
       "rating": 5.9,
       "power_games": 1,
-      "sos": -16,
+      "sos": -16.1,
       "prev_rk": 117,
       "trend": [
         117,
@@ -7239,6 +7353,7 @@
         "site": "home"
       },
       "color": "#110E42",
+      "adjustment": null,
       "own_score": 0.375,
       "own_rank": 116,
       "external_rank": null,
@@ -7274,77 +7389,17 @@
     },
     {
       "rk": 110,
-      "team_id": 358,
-      "school": "Wyoming",
-      "conference": "Mountain West",
-      "score": 0.401,
-      "rating": 5.9,
-      "power_games": 1,
-      "sos": -35,
-      "prev_rk": 129,
-      "trend": [
-        129,
-        110
-      ],
-      "last_game": {
-        "date": "2026-11-04T01:30Z",
-        "opponent": "Regis University",
-        "site": "home",
-        "won": true,
-        "score": "95-48"
-      },
-      "next_game": {
-        "date": "2026-11-07T01:30Z",
-        "opponent": "Idaho State",
-        "site": "home"
-      },
-      "color": "#492F24",
-      "own_score": 0.476,
-      "own_rank": 96,
-      "external_rank": null,
-      "preseason_score": 0.476,
-      "games": 1,
-      "wins": 1,
-      "losses": 0,
-      "conf_wins": 0,
-      "conf_losses": 0,
-      "off_eff": 114.1,
-      "oreb_pct": 35.3,
-      "to_margin": 0.5,
-      "three_pct": 33.8,
-      "def_eff": 107.2,
-      "conf_strength": 2.3,
-      "ranks": {
-        "net": 208,
-        "competition": 153,
-        "winning": 161,
-        "defense": 229,
-        "offense": 185,
-        "recruits": 151,
-        "oreb": 218,
-        "continuity": 38,
-        "turnovers": 207,
-        "three": 189
-      },
-      "identity": null,
-      "returning": 1,
-      "experience": 1,
-      "incomplete": true,
-      "transfers_in": []
-    },
-    {
-      "rk": 111,
       "team_id": 142,
       "school": "Liberty",
       "conference": "CUSA",
-      "score": 0.4,
+      "score": 0.401,
       "rating": 5.9,
       "power_games": 1,
       "sos": 9,
       "prev_rk": 122,
       "trend": [
         122,
-        111
+        110
       ],
       "last_game": {
         "date": "2026-11-02T04:59Z",
@@ -7359,6 +7414,7 @@
         "site": "home"
       },
       "color": "#071740",
+      "adjustment": null,
       "own_score": 0.536,
       "own_rank": 85,
       "external_rank": null,
@@ -7393,6 +7449,67 @@
       "transfers_in": []
     },
     {
+      "rk": 111,
+      "team_id": 358,
+      "school": "Wyoming",
+      "conference": "Mountain West",
+      "score": 0.401,
+      "rating": 5.9,
+      "power_games": 1,
+      "sos": -35.1,
+      "prev_rk": 129,
+      "trend": [
+        129,
+        111
+      ],
+      "last_game": {
+        "date": "2026-11-04T01:30Z",
+        "opponent": "Regis University",
+        "site": "home",
+        "won": true,
+        "score": "95-48"
+      },
+      "next_game": {
+        "date": "2026-11-07T01:30Z",
+        "opponent": "Idaho State",
+        "site": "home"
+      },
+      "color": "#492F24",
+      "adjustment": null,
+      "own_score": 0.476,
+      "own_rank": 96,
+      "external_rank": null,
+      "preseason_score": 0.476,
+      "games": 1,
+      "wins": 1,
+      "losses": 0,
+      "conf_wins": 0,
+      "conf_losses": 0,
+      "off_eff": 114.1,
+      "oreb_pct": 35.3,
+      "to_margin": 0.5,
+      "three_pct": 33.8,
+      "def_eff": 107.2,
+      "conf_strength": 2.3,
+      "ranks": {
+        "net": 208,
+        "competition": 153,
+        "winning": 161,
+        "defense": 229,
+        "offense": 185,
+        "recruits": 151,
+        "oreb": 218,
+        "continuity": 38,
+        "turnovers": 207,
+        "three": 189
+      },
+      "identity": null,
+      "returning": 1,
+      "experience": 1,
+      "incomplete": true,
+      "transfers_in": []
+    },
+    {
       "rk": 112,
       "team_id": 132,
       "school": "Kansas State",
@@ -7419,6 +7536,7 @@
         "site": "home"
       },
       "color": "#3C0969",
+      "adjustment": null,
       "own_score": 0.486,
       "own_rank": 94,
       "external_rank": null,
@@ -7479,6 +7597,7 @@
         "site": "away"
       },
       "color": "#004A81",
+      "adjustment": null,
       "own_score": 0.393,
       "own_rank": 113,
       "external_rank": null,
@@ -7539,6 +7658,7 @@
         "site": "away"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": 0.321,
       "own_rank": 129,
       "external_rank": null,
@@ -7580,7 +7700,7 @@
       "score": 0.367,
       "rating": 5.4,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 120,
       "trend": [
         120,
@@ -7599,6 +7719,7 @@
         "site": "home"
       },
       "color": "#5F0000",
+      "adjustment": null,
       "own_score": 0.44,
       "own_rank": 104,
       "external_rank": null,
@@ -7659,6 +7780,7 @@
         "site": "home"
       },
       "color": "#B10202",
+      "adjustment": null,
       "own_score": 0.33,
       "own_rank": 124,
       "external_rank": null,
@@ -7719,6 +7841,7 @@
         "site": "home"
       },
       "color": "#231F20",
+      "adjustment": null,
       "own_score": 0.195,
       "own_rank": 155,
       "external_rank": null,
@@ -7779,6 +7902,7 @@
         "site": "home"
       },
       "color": "#002D65",
+      "adjustment": null,
       "own_score": 0.275,
       "own_rank": 138,
       "external_rank": null,
@@ -7817,10 +7941,10 @@
       "team_id": 163,
       "school": "Memphis",
       "conference": "American",
-      "score": 0.333,
+      "score": 0.332,
       "rating": 4.9,
       "power_games": 1,
-      "sos": 24.4,
+      "sos": 24.5,
       "prev_rk": 73,
       "trend": [
         73,
@@ -7839,6 +7963,7 @@
         "site": "home"
       },
       "color": "#004991",
+      "adjustment": null,
       "own_score": 0.143,
       "own_rank": 163,
       "external_rank": null,
@@ -7878,9 +8003,9 @@
       "school": "UIC",
       "conference": "MVC",
       "score": 0.33,
-      "rating": 4.8,
+      "rating": 4.9,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 93,
       "trend": [
         93,
@@ -7899,6 +8024,7 @@
         "site": "home"
       },
       "color": "#001E62",
+      "adjustment": null,
       "own_score": 0.401,
       "own_rank": 109,
       "external_rank": null,
@@ -7959,6 +8085,7 @@
         "site": "away"
       },
       "color": "#00447C",
+      "adjustment": null,
       "own_score": 0.296,
       "own_rank": 133,
       "external_rank": null,
@@ -8000,7 +8127,7 @@
       "score": 0.306,
       "rating": 4.5,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 142,
       "trend": [
         142,
@@ -8019,6 +8146,7 @@
         "site": "home"
       },
       "color": "#B70002",
+      "adjustment": null,
       "own_score": 0.374,
       "own_rank": 117,
       "external_rank": null,
@@ -8057,8 +8185,8 @@
       "team_id": 229,
       "school": "Pittsburgh",
       "conference": "ACC",
-      "score": 0.304,
-      "rating": 4.4,
+      "score": 0.303,
+      "rating": 4.5,
       "power_games": 1,
       "sos": -26.2,
       "prev_rk": 149,
@@ -8079,6 +8207,7 @@
         "site": "home"
       },
       "color": "#003263",
+      "adjustment": null,
       "own_score": 0.325,
       "own_rank": 126,
       "external_rank": null,
@@ -8139,6 +8268,7 @@
         "site": "home"
       },
       "color": "#C2071B",
+      "adjustment": null,
       "own_score": 0.304,
       "own_rank": 131,
       "external_rank": null,
@@ -8180,7 +8310,7 @@
       "score": 0.292,
       "rating": 4.3,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 107,
       "trend": [
         107,
@@ -8199,6 +8329,7 @@
         "site": "home"
       },
       "color": "#FFFFFF",
+      "adjustment": null,
       "own_score": 0.359,
       "own_rank": 119,
       "external_rank": null,
@@ -8238,7 +8369,7 @@
       "school": "Rutgers",
       "conference": "Big Ten",
       "score": 0.29,
-      "rating": 4.2,
+      "rating": 4.3,
       "power_games": 0,
       "sos": null,
       "prev_rk": 139,
@@ -8253,6 +8384,7 @@
         "site": "home"
       },
       "color": "#D21034",
+      "adjustment": null,
       "own_score": 0.29,
       "own_rank": 135,
       "external_rank": null,
@@ -8291,7 +8423,7 @@
       "team_id": 335,
       "school": "Valparaiso",
       "conference": "MVC",
-      "score": 0.286,
+      "score": 0.285,
       "rating": 4.2,
       "power_games": 1,
       "sos": -17.2,
@@ -8313,6 +8445,7 @@
         "site": "away"
       },
       "color": "#794500",
+      "adjustment": null,
       "own_score": 0.254,
       "own_rank": 142,
       "external_rank": null,
@@ -8354,7 +8487,7 @@
       "score": 0.282,
       "rating": 4.1,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 140,
       "trend": [
         140,
@@ -8373,6 +8506,7 @@
         "site": "away"
       },
       "color": "#F47820",
+      "adjustment": null,
       "own_score": 0.349,
       "own_rank": 120,
       "external_rank": null,
@@ -8411,7 +8545,7 @@
       "team_id": 65,
       "school": "DePaul",
       "conference": "Big East",
-      "score": 0.282,
+      "score": 0.281,
       "rating": 4.1,
       "power_games": 1,
       "sos": -9.2,
@@ -8433,6 +8567,7 @@
         "site": "home"
       },
       "color": "#2D649C",
+      "adjustment": null,
       "own_score": 0.238,
       "own_rank": 148,
       "external_rank": null,
@@ -8474,7 +8609,7 @@
       "score": 0.279,
       "rating": 4.1,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 169,
       "trend": [
         169,
@@ -8493,6 +8628,7 @@
         "site": "neutral"
       },
       "color": "#004B7C",
+      "adjustment": null,
       "own_score": 0.345,
       "own_rank": 121,
       "external_rank": null,
@@ -8534,7 +8670,7 @@
       "score": 0.275,
       "rating": 4,
       "power_games": 1,
-      "sos": 2.2,
+      "sos": 2.3,
       "prev_rk": 128,
       "trend": [
         128,
@@ -8553,6 +8689,7 @@
         "site": "home"
       },
       "color": "#4E1719",
+      "adjustment": null,
       "own_score": 0.176,
       "own_rank": 159,
       "external_rank": null,
@@ -8591,7 +8728,7 @@
       "team_id": 259,
       "school": "San Francisco",
       "conference": "WCC",
-      "score": 0.274,
+      "score": 0.273,
       "rating": 4,
       "power_games": 1,
       "sos": -4.7,
@@ -8613,6 +8750,7 @@
         "site": "home"
       },
       "color": "#22523F",
+      "adjustment": null,
       "own_score": 0.215,
       "own_rank": 150,
       "external_rank": null,
@@ -8651,10 +8789,10 @@
       "team_id": 321,
       "school": "UNC Wilmington",
       "conference": "CAA",
-      "score": 0.272,
+      "score": 0.271,
       "rating": 4,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 110,
       "trend": [
         110,
@@ -8673,6 +8811,7 @@
         "site": "away"
       },
       "color": "#00665E",
+      "adjustment": null,
       "own_score": 0.337,
       "own_rank": 122,
       "external_rank": null,
@@ -8733,6 +8872,7 @@
         "site": "home"
       },
       "color": "#002148",
+      "adjustment": null,
       "own_score": 0.106,
       "own_rank": 171,
       "external_rank": null,
@@ -8771,10 +8911,10 @@
       "team_id": 110,
       "school": "Hofstra",
       "conference": "CAA",
-      "score": 0.269,
+      "score": 0.268,
       "rating": 3.9,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 159,
       "trend": [
         159,
@@ -8793,6 +8933,7 @@
         "site": "away"
       },
       "color": "#00337C",
+      "adjustment": null,
       "own_score": 0.334,
       "own_rank": 123,
       "external_rank": null,
@@ -8853,6 +8994,7 @@
         "site": "home"
       },
       "color": "#9E0712",
+      "adjustment": null,
       "own_score": 0.135,
       "own_rank": 165,
       "external_rank": null,
@@ -8913,6 +9055,7 @@
         "site": "away"
       },
       "color": "#0A2240",
+      "adjustment": null,
       "own_score": 0.277,
       "own_rank": 137,
       "external_rank": null,
@@ -8973,6 +9116,7 @@
         "site": "home"
       },
       "color": "#EA002A",
+      "adjustment": null,
       "own_score": 0.288,
       "own_rank": 136,
       "external_rank": null,
@@ -9014,7 +9158,7 @@
       "score": 0.258,
       "rating": 3.8,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 148,
       "trend": [
         148,
@@ -9033,6 +9177,7 @@
         "site": "away"
       },
       "color": "#85283D",
+      "adjustment": null,
       "own_score": 0.323,
       "own_rank": 127,
       "external_rank": null,
@@ -9071,7 +9216,7 @@
       "team_id": 357,
       "school": "Wright State",
       "conference": "Horizon",
-      "score": 0.255,
+      "score": 0.254,
       "rating": 3.7,
       "power_games": 1,
       "sos": -15,
@@ -9093,6 +9238,7 @@
         "site": "home"
       },
       "color": "#CBA052",
+      "adjustment": null,
       "own_score": 0.204,
       "own_rank": 153,
       "external_rank": null,
@@ -9131,8 +9277,8 @@
       "team_id": 134,
       "school": "Kent State",
       "conference": "MAC",
-      "score": 0.25,
-      "rating": 3.6,
+      "score": 0.251,
+      "rating": 3.7,
       "power_games": 1,
       "sos": 5,
       "prev_rk": 175,
@@ -9153,6 +9299,7 @@
         "site": "home"
       },
       "color": "#003976",
+      "adjustment": null,
       "own_score": 0.322,
       "own_rank": 128,
       "external_rank": null,
@@ -9194,7 +9341,7 @@
       "score": 0.246,
       "rating": 3.6,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 135,
       "trend": [
         135,
@@ -9213,6 +9360,7 @@
         "site": "away"
       },
       "color": "#891216",
+      "adjustment": null,
       "own_score": 0.416,
       "own_rank": 106,
       "external_rank": null,
@@ -9254,7 +9402,7 @@
       "score": 0.235,
       "rating": 3.4,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 115,
       "trend": [
         115,
@@ -9273,6 +9421,7 @@
         "site": "away"
       },
       "color": "#00311E",
+      "adjustment": null,
       "own_score": 0.298,
       "own_rank": 132,
       "external_rank": null,
@@ -9327,7 +9476,7 @@
       "score": 0.233,
       "rating": 3.4,
       "power_games": 1,
-      "sos": -19.5,
+      "sos": -19.6,
       "prev_rk": 161,
       "trend": [
         161,
@@ -9346,6 +9495,7 @@
         "site": "neutral"
       },
       "color": "#091F3F",
+      "adjustment": null,
       "own_score": 0.214,
       "own_rank": 151,
       "external_rank": null,
@@ -9387,7 +9537,7 @@
       "score": 0.232,
       "rating": 3.4,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 171,
       "trend": [
         171,
@@ -9406,6 +9556,7 @@
         "site": "home"
       },
       "color": "#DC6000",
+      "adjustment": null,
       "own_score": 0.295,
       "own_rank": 134,
       "external_rank": null,
@@ -9466,6 +9617,7 @@
         "site": "away"
       },
       "color": "#01402A",
+      "adjustment": null,
       "own_score": 0.382,
       "own_rank": 115,
       "external_rank": null,
@@ -9507,7 +9659,7 @@
       "score": 0.211,
       "rating": 3.1,
       "power_games": 1,
-      "sos": 24.3,
+      "sos": 24.4,
       "prev_rk": 132,
       "trend": [
         132,
@@ -9526,6 +9678,7 @@
         "site": "home"
       },
       "color": "#830032",
+      "adjustment": null,
       "own_score": 0.243,
       "own_rank": 146,
       "external_rank": null,
@@ -9565,9 +9718,9 @@
       "school": "Idaho",
       "conference": "Big Sky",
       "score": 0.209,
-      "rating": 3,
+      "rating": 3.1,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 124,
       "trend": [
         124,
@@ -9586,6 +9739,7 @@
         "site": "away"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": 0.27,
       "own_rank": 139,
       "external_rank": null,
@@ -9659,6 +9813,7 @@
         "site": "away"
       },
       "color": "#002D61",
+      "adjustment": null,
       "own_score": 0.242,
       "own_rank": 147,
       "external_rank": null,
@@ -9700,7 +9855,7 @@
       "score": 0.206,
       "rating": 3,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 145,
       "trend": [
         145,
@@ -9719,6 +9874,7 @@
         "site": "home"
       },
       "color": "#182B49",
+      "adjustment": null,
       "own_score": 0.266,
       "own_rank": 140,
       "external_rank": null,
@@ -9760,7 +9916,7 @@
       "score": 0.194,
       "rating": 2.8,
       "power_games": 1,
-      "sos": -21.5,
+      "sos": -21.6,
       "prev_rk": 170,
       "trend": [
         170,
@@ -9779,6 +9935,7 @@
         "site": "home"
       },
       "color": "#00265D",
+      "adjustment": null,
       "own_score": 0.183,
       "own_rank": 158,
       "external_rank": null,
@@ -9820,7 +9977,7 @@
       "score": 0.188,
       "rating": 2.7,
       "power_games": 1,
-      "sos": -7.9,
+      "sos": -8,
       "prev_rk": 137,
       "trend": [
         137,
@@ -9839,6 +9996,7 @@
         "site": "home"
       },
       "color": "#2B1000",
+      "adjustment": null,
       "own_score": 0.205,
       "own_rank": 152,
       "external_rank": null,
@@ -9912,6 +10070,7 @@
         "site": "away"
       },
       "color": "#000080",
+      "adjustment": null,
       "own_score": 0.398,
       "own_rank": 111,
       "external_rank": null,
@@ -9972,6 +10131,7 @@
         "site": "away"
       },
       "color": "#A7A9AC",
+      "adjustment": null,
       "own_score": 0.068,
       "own_rank": 179,
       "external_rank": null,
@@ -10013,7 +10173,7 @@
       "score": 0.186,
       "rating": 2.7,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 157,
       "trend": [
         157,
@@ -10032,6 +10192,7 @@
         "site": "away"
       },
       "color": "#FF7F29",
+      "adjustment": null,
       "own_score": 0.245,
       "own_rank": 145,
       "external_rank": null,
@@ -10092,6 +10253,7 @@
         "site": "home"
       },
       "color": "#002D62",
+      "adjustment": null,
       "own_score": 0.176,
       "own_rank": 160,
       "external_rank": null,
@@ -10133,7 +10295,7 @@
       "score": 0.174,
       "rating": 2.5,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 144,
       "trend": [
         144,
@@ -10152,6 +10314,7 @@
         "site": "away"
       },
       "color": "#C41230",
+      "adjustment": null,
       "own_score": 0.328,
       "own_rank": 125,
       "external_rank": null,
@@ -10212,6 +10375,7 @@
         "site": "home"
       },
       "color": "#003057",
+      "adjustment": null,
       "own_score": 0.087,
       "own_rank": 175,
       "external_rank": null,
@@ -10264,7 +10428,7 @@
       "school": "Boston College",
       "conference": "ACC",
       "score": 0.163,
-      "rating": 2.3,
+      "rating": 2.4,
       "power_games": 1,
       "sos": -18,
       "prev_rk": 150,
@@ -10285,6 +10449,7 @@
         "site": "neutral"
       },
       "color": "#8C2232",
+      "adjustment": null,
       "own_score": 0.125,
       "own_rank": 167,
       "external_rank": null,
@@ -10336,10 +10501,10 @@
       "team_id": 294,
       "school": "Texas A&M-Corpus Christi",
       "conference": "Southland",
-      "score": 0.15,
+      "score": 0.151,
       "rating": 2.2,
       "power_games": 1,
-      "sos": 3.9,
+      "sos": 4,
       "prev_rk": 202,
       "trend": [
         202,
@@ -10358,6 +10523,7 @@
         "site": "away"
       },
       "color": "#0067C5",
+      "adjustment": null,
       "own_score": 0.249,
       "own_rank": 144,
       "external_rank": null,
@@ -10418,6 +10584,7 @@
         "site": "away"
       },
       "color": "#FFC82E",
+      "adjustment": null,
       "own_score": 0.029,
       "own_rank": 185,
       "external_rank": null,
@@ -10478,6 +10645,7 @@
         "site": "home"
       },
       "color": "#880029",
+      "adjustment": null,
       "own_score": 0.229,
       "own_rank": 149,
       "external_rank": null,
@@ -10519,7 +10687,7 @@
       "score": 0.14,
       "rating": 2,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 134,
       "trend": [
         134,
@@ -10538,6 +10706,7 @@
         "site": "home"
       },
       "color": "#1E1840",
+      "adjustment": null,
       "own_score": 0.195,
       "own_rank": 156,
       "external_rank": null,
@@ -10576,10 +10745,10 @@
       "team_id": 344,
       "school": "Washington State",
       "conference": "Pac-12",
-      "score": 0.117,
+      "score": 0.118,
       "rating": 1.7,
       "power_games": 1,
-      "sos": 8.1,
+      "sos": 8.2,
       "prev_rk": 234,
       "trend": [
         234,
@@ -10598,6 +10767,7 @@
         "site": "away"
       },
       "color": "#981E32",
+      "adjustment": null,
       "own_score": 0.257,
       "own_rank": 141,
       "external_rank": null,
@@ -10636,10 +10806,10 @@
       "team_id": 161,
       "school": "Massachusetts",
       "conference": "MAC",
-      "score": 0.11,
-      "rating": 1.5,
+      "score": 0.109,
+      "rating": 1.6,
       "power_games": 1,
-      "sos": -0.8,
+      "sos": -0.7,
       "prev_rk": 143,
       "trend": [
         143,
@@ -10658,6 +10828,7 @@
         "site": "neutral"
       },
       "color": "#880007",
+      "adjustment": null,
       "own_score": -0.016,
       "own_rank": 194,
       "external_rank": null,
@@ -10718,6 +10889,7 @@
         "site": "home"
       },
       "color": "#9E0B0E",
+      "adjustment": null,
       "own_score": 0.201,
       "own_rank": 154,
       "external_rank": null,
@@ -10757,7 +10929,7 @@
       "school": "Youngstown State",
       "conference": "Horizon",
       "score": 0.103,
-      "rating": 1.4,
+      "rating": 1.5,
       "power_games": 1,
       "sos": 0.7,
       "prev_rk": 160,
@@ -10778,6 +10950,7 @@
         "site": "away"
       },
       "color": "#E51935",
+      "adjustment": null,
       "own_score": 0,
       "own_rank": 191,
       "external_rank": null,
@@ -10819,7 +10992,7 @@
       "score": 0.095,
       "rating": 1.3,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 146,
       "trend": [
         146,
@@ -10838,6 +11011,7 @@
         "site": "away"
       },
       "color": "#8E0B0B",
+      "adjustment": null,
       "own_score": 0.147,
       "own_rank": 161,
       "external_rank": null,
@@ -10898,6 +11072,7 @@
         "site": "home"
       },
       "color": "#18005A",
+      "adjustment": null,
       "own_score": 0.253,
       "own_rank": 143,
       "external_rank": null,
@@ -10937,9 +11112,9 @@
       "school": "Northern Colorado",
       "conference": "Big Sky",
       "score": 0.083,
-      "rating": 1.1,
+      "rating": 1.2,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 164,
       "trend": [
         164,
@@ -10958,6 +11133,7 @@
         "site": "away"
       },
       "color": "#13558D",
+      "adjustment": null,
       "own_score": 0.134,
       "own_rank": 166,
       "external_rank": null,
@@ -11031,6 +11207,7 @@
         "site": "away"
       },
       "color": "#E81018",
+      "adjustment": null,
       "own_score": 0.067,
       "own_rank": 180,
       "external_rank": null,
@@ -11091,6 +11268,7 @@
         "site": "away"
       },
       "color": "#B50000",
+      "adjustment": null,
       "own_score": 0.112,
       "own_rank": 168,
       "external_rank": null,
@@ -11151,6 +11329,7 @@
         "site": "away"
       },
       "color": "#98002E",
+      "adjustment": null,
       "own_score": 0.014,
       "own_rank": 188,
       "external_rank": null,
@@ -11189,7 +11368,7 @@
       "team_id": 305,
       "school": "UAB",
       "conference": "American",
-      "score": 0.047,
+      "score": 0.048,
       "rating": 0.6,
       "power_games": 1,
       "sos": 16.5,
@@ -11211,6 +11390,7 @@
         "site": "home"
       },
       "color": "#054338",
+      "adjustment": null,
       "own_score": 0.14,
       "own_rank": 164,
       "external_rank": null,
@@ -11271,6 +11451,7 @@
         "site": "home"
       },
       "color": "#582C83",
+      "adjustment": null,
       "own_score": 0.109,
       "own_rank": 169,
       "external_rank": null,
@@ -11331,6 +11512,7 @@
         "site": "away"
       },
       "color": "#70261D",
+      "adjustment": null,
       "own_score": 0.144,
       "own_rank": 162,
       "external_rank": null,
@@ -11385,6 +11567,7 @@
         "site": "away"
       },
       "color": "#082A74",
+      "adjustment": null,
       "own_score": 0.039,
       "own_rank": 184,
       "external_rank": null,
@@ -11426,7 +11609,7 @@
       "score": 0.034,
       "rating": 0.4,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 125,
       "trend": [
         125,
@@ -11445,6 +11628,7 @@
         "site": "home"
       },
       "color": "#005596",
+      "adjustment": null,
       "own_score": 0.081,
       "own_rank": 177,
       "external_rank": null,
@@ -11505,6 +11689,7 @@
         "site": "home"
       },
       "color": "#FF8200",
+      "adjustment": null,
       "own_score": 0.104,
       "own_rank": 172,
       "external_rank": null,
@@ -11540,66 +11725,6 @@
     },
     {
       "rk": 180,
-      "team_id": 48,
-      "school": "Charlotte",
-      "conference": "American",
-      "score": 0.028,
-      "rating": 0.3,
-      "power_games": 1,
-      "sos": -2.1,
-      "prev_rk": 167,
-      "trend": [
-        167,
-        180
-      ],
-      "last_game": {
-        "date": "2026-11-03T00:00Z",
-        "opponent": "Indiana State",
-        "site": "away",
-        "won": true,
-        "score": "78-70"
-      },
-      "next_game": {
-        "date": "2026-11-06T00:00Z",
-        "opponent": "Georgia State",
-        "site": "home"
-      },
-      "color": "#FFFFFF",
-      "own_score": -0.068,
-      "own_rank": 204,
-      "external_rank": null,
-      "preseason_score": -0.068,
-      "games": 1,
-      "wins": 1,
-      "losses": 0,
-      "conf_wins": 0,
-      "conf_losses": 0,
-      "off_eff": 129.1,
-      "oreb_pct": 54.6,
-      "to_margin": -6.4,
-      "three_pct": 48.8,
-      "def_eff": 94,
-      "conf_strength": 2,
-      "ranks": {
-        "net": 138,
-        "competition": 160,
-        "winning": 196,
-        "defense": 162,
-        "offense": 98,
-        "recruits": 120,
-        "oreb": 58,
-        "continuity": 160,
-        "turnovers": 308,
-        "three": 27
-      },
-      "identity": null,
-      "returning": 0.868,
-      "experience": 0.868,
-      "incomplete": true,
-      "transfers_in": []
-    },
-    {
-      "rk": 181,
       "team_id": 307,
       "school": "UC Davis",
       "conference": "Mountain West",
@@ -11610,7 +11735,7 @@
       "prev_rk": 215,
       "trend": [
         215,
-        181
+        180
       ],
       "last_game": {
         "date": "2026-11-03T03:00Z",
@@ -11625,6 +11750,7 @@
         "site": "home"
       },
       "color": "#002855",
+      "adjustment": null,
       "own_score": 0.185,
       "own_rank": 157,
       "external_rank": null,
@@ -11659,6 +11785,67 @@
       "transfers_in": []
     },
     {
+      "rk": 181,
+      "team_id": 48,
+      "school": "Charlotte",
+      "conference": "American",
+      "score": 0.028,
+      "rating": 0.3,
+      "power_games": 1,
+      "sos": -2.1,
+      "prev_rk": 167,
+      "trend": [
+        167,
+        181
+      ],
+      "last_game": {
+        "date": "2026-11-03T00:00Z",
+        "opponent": "Indiana State",
+        "site": "away",
+        "won": true,
+        "score": "78-70"
+      },
+      "next_game": {
+        "date": "2026-11-06T00:00Z",
+        "opponent": "Georgia State",
+        "site": "home"
+      },
+      "color": "#FFFFFF",
+      "adjustment": null,
+      "own_score": -0.068,
+      "own_rank": 204,
+      "external_rank": null,
+      "preseason_score": -0.068,
+      "games": 1,
+      "wins": 1,
+      "losses": 0,
+      "conf_wins": 0,
+      "conf_losses": 0,
+      "off_eff": 129.1,
+      "oreb_pct": 54.6,
+      "to_margin": -6.4,
+      "three_pct": 48.8,
+      "def_eff": 94,
+      "conf_strength": 2,
+      "ranks": {
+        "net": 138,
+        "competition": 160,
+        "winning": 196,
+        "defense": 162,
+        "offense": 98,
+        "recruits": 120,
+        "oreb": 58,
+        "continuity": 160,
+        "turnovers": 308,
+        "three": 27
+      },
+      "identity": null,
+      "returning": 0.868,
+      "experience": 0.868,
+      "incomplete": true,
+      "transfers_in": []
+    },
+    {
       "rk": 182,
       "team_id": 37,
       "school": "Cal State Fullerton",
@@ -11666,7 +11853,7 @@
       "score": 0.018,
       "rating": 0.2,
       "power_games": 1,
-      "sos": 15.7,
+      "sos": 15.8,
       "prev_rk": 197,
       "trend": [
         197,
@@ -11685,6 +11872,7 @@
         "site": "away"
       },
       "color": "#003767",
+      "adjustment": null,
       "own_score": 0.086,
       "own_rank": 176,
       "external_rank": null,
@@ -11724,9 +11912,9 @@
       "school": "Tarleton State",
       "conference": "UAC",
       "score": 0.016,
-      "rating": 0.1,
+      "rating": 0.2,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 168,
       "trend": [
         168,
@@ -11745,6 +11933,7 @@
         "site": "away"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": 0.061,
       "own_rank": 181,
       "external_rank": null,
@@ -11786,7 +11975,7 @@
       "score": 0.014,
       "rating": 0.1,
       "power_games": 1,
-      "sos": 12.4,
+      "sos": 12.5,
       "prev_rk": 177,
       "trend": [
         177,
@@ -11805,6 +11994,7 @@
         "site": "away"
       },
       "color": "#A10022",
+      "adjustment": null,
       "own_score": 0.003,
       "own_rank": 190,
       "external_rank": null,
@@ -11870,6 +12060,7 @@
         "site": "away"
       },
       "color": "#751D4A",
+      "adjustment": null,
       "own_score": 0.108,
       "own_rank": 170,
       "external_rank": null,
@@ -11908,7 +12099,7 @@
       "team_id": 270,
       "school": "South Dakota State",
       "conference": "Summit",
-      "score": -0.005,
+      "score": -0.006,
       "rating": -0.2,
       "power_games": 1,
       "sos": 5.9,
@@ -11930,6 +12121,7 @@
         "site": "home"
       },
       "color": "#0033A0",
+      "adjustment": null,
       "own_score": -0.103,
       "own_rank": 208,
       "external_rank": null,
@@ -11971,7 +12163,7 @@
       "score": -0.008,
       "rating": -0.2,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 178,
       "trend": [
         178,
@@ -11990,6 +12182,7 @@
         "site": "home"
       },
       "color": "#103217",
+      "adjustment": null,
       "own_score": 0.094,
       "own_rank": 173,
       "external_rank": null,
@@ -12050,6 +12243,7 @@
         "site": "away"
       },
       "color": "#FF6700",
+      "adjustment": null,
       "own_score": -0.002,
       "own_rank": 192,
       "external_rank": null,
@@ -12091,7 +12285,7 @@
       "score": -0.018,
       "rating": -0.4,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 205,
       "trend": [
         205,
@@ -12110,6 +12304,7 @@
         "site": "home"
       },
       "color": "#D1D5D8",
+      "adjustment": null,
       "own_score": 0.025,
       "own_rank": 186,
       "external_rank": null,
@@ -12151,7 +12346,7 @@
       "score": -0.019,
       "rating": -0.4,
       "power_games": 1,
-      "sos": 13,
+      "sos": 13.1,
       "prev_rk": 186,
       "trend": [
         186,
@@ -12170,6 +12365,7 @@
         "site": "away"
       },
       "color": "#492F91",
+      "adjustment": null,
       "own_score": -0.05,
       "own_rank": 200,
       "external_rank": null,
@@ -12211,7 +12407,7 @@
       "score": -0.027,
       "rating": -0.5,
       "power_games": 1,
-      "sos": 22.4,
+      "sos": 22.5,
       "prev_rk": 214,
       "trend": [
         214,
@@ -12230,6 +12426,7 @@
         "site": "away"
       },
       "color": "#04091C",
+      "adjustment": null,
       "own_score": -0.053,
       "own_rank": 202,
       "external_rank": null,
@@ -12271,7 +12468,7 @@
       "score": -0.029,
       "rating": -0.5,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 216,
       "trend": [
         216,
@@ -12290,6 +12487,7 @@
         "site": "home"
       },
       "color": "#2F99D4",
+      "adjustment": null,
       "own_score": 0.043,
       "own_rank": 183,
       "external_rank": null,
@@ -12350,6 +12548,7 @@
         "site": "home"
       },
       "color": "#295A29",
+      "adjustment": null,
       "own_score": -0.126,
       "own_rank": 210,
       "external_rank": null,
@@ -12410,6 +12609,7 @@
         "site": "away"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": 0.087,
       "own_rank": 174,
       "external_rank": null,
@@ -12464,7 +12664,7 @@
       "score": -0.042,
       "rating": -0.7,
       "power_games": 1,
-      "sos": 14.2,
+      "sos": 14.3,
       "prev_rk": 187,
       "trend": [
         187,
@@ -12483,6 +12683,7 @@
         "site": "away"
       },
       "color": "#FFC229",
+      "adjustment": null,
       "own_score": 0.011,
       "own_rank": 189,
       "external_rank": null,
@@ -12521,7 +12722,7 @@
       "team_id": 81,
       "school": "Elon",
       "conference": "CAA",
-      "score": -0.044,
+      "score": -0.045,
       "rating": -0.8,
       "power_games": 1,
       "sos": -1.5,
@@ -12543,6 +12744,7 @@
         "site": "home"
       },
       "color": "#020303",
+      "adjustment": null,
       "own_score": -0.204,
       "own_rank": 228,
       "external_rank": null,
@@ -12581,7 +12783,7 @@
       "team_id": 289,
       "school": "Temple",
       "conference": "American",
-      "score": -0.045,
+      "score": -0.046,
       "rating": -0.8,
       "power_games": 1,
       "sos": -13.9,
@@ -12603,6 +12805,7 @@
         "site": "neutral"
       },
       "color": "#A80532",
+      "adjustment": null,
       "own_score": -0.052,
       "own_rank": 201,
       "external_rank": null,
@@ -12663,6 +12866,7 @@
         "site": "away"
       },
       "color": "#D60027",
+      "adjustment": null,
       "own_score": -0.028,
       "own_rank": 198,
       "external_rank": null,
@@ -12701,7 +12905,7 @@
       "team_id": 158,
       "school": "Marshall",
       "conference": "Sun Belt",
-      "score": -0.048,
+      "score": -0.049,
       "rating": -0.8,
       "power_games": 1,
       "sos": -6.2,
@@ -12723,6 +12927,7 @@
         "site": "home"
       },
       "color": "#00AE42",
+      "adjustment": null,
       "own_score": -0.197,
       "own_rank": 226,
       "external_rank": null,
@@ -12761,10 +12966,10 @@
       "team_id": 230,
       "school": "Portland",
       "conference": "WCC",
-      "score": -0.051,
+      "score": -0.052,
       "rating": -0.9,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 191,
       "trend": [
         191,
@@ -12783,6 +12988,7 @@
         "site": "neutral"
       },
       "color": "#330072",
+      "adjustment": null,
       "own_score": -0.011,
       "own_rank": 193,
       "external_rank": null,
@@ -12843,6 +13049,7 @@
         "site": "away"
       },
       "color": "#AE0210",
+      "adjustment": null,
       "own_score": 0.071,
       "own_rank": 178,
       "external_rank": null,
@@ -12884,7 +13091,7 @@
       "score": -0.059,
       "rating": -1,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 181,
       "trend": [
         181,
@@ -12903,6 +13110,7 @@
         "site": "home"
       },
       "color": "#C72026",
+      "adjustment": null,
       "own_score": -0.019,
       "own_rank": 195,
       "external_rank": null,
@@ -12949,7 +13157,7 @@
       "score": -0.062,
       "rating": -1,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 194,
       "trend": [
         194,
@@ -12968,6 +13176,7 @@
         "site": "away"
       },
       "color": "#990000",
+      "adjustment": null,
       "own_score": -0.023,
       "own_rank": 196,
       "external_rank": null,
@@ -13028,6 +13237,7 @@
         "site": "home"
       },
       "color": "#592D82",
+      "adjustment": null,
       "own_score": 0.014,
       "own_rank": 187,
       "external_rank": null,
@@ -13088,6 +13298,7 @@
         "site": "away"
       },
       "color": "#C8102E",
+      "adjustment": null,
       "own_score": -0.091,
       "own_rank": 205,
       "external_rank": null,
@@ -13148,6 +13359,7 @@
         "site": "home"
       },
       "color": "#174785",
+      "adjustment": null,
       "own_score": 0.054,
       "own_rank": 182,
       "external_rank": null,
@@ -13186,7 +13398,7 @@
       "team_id": 9,
       "school": "App State",
       "conference": "Sun Belt",
-      "score": -0.112,
+      "score": -0.113,
       "rating": -1.8,
       "power_games": 2,
       "sos": -25.6,
@@ -13208,6 +13420,7 @@
         "site": "away"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": -0.145,
       "own_rank": 215,
       "external_rank": null,
@@ -13268,6 +13481,7 @@
         "site": "away"
       },
       "color": "#005893",
+      "adjustment": null,
       "own_score": -0.215,
       "own_rank": 229,
       "external_rank": null,
@@ -13328,6 +13542,7 @@
         "site": "home"
       },
       "color": "#006547",
+      "adjustment": null,
       "own_score": -0.139,
       "own_rank": 214,
       "external_rank": null,
@@ -13388,6 +13603,7 @@
         "site": "away"
       },
       "color": "#00669A",
+      "adjustment": null,
       "own_score": -0.046,
       "own_rank": 199,
       "external_rank": null,
@@ -13426,10 +13642,10 @@
       "team_id": 116,
       "school": "Idaho State",
       "conference": "Big Sky",
-      "score": -0.143,
+      "score": -0.142,
       "rating": -2.2,
       "power_games": 1,
-      "sos": 16.9,
+      "sos": 17,
       "prev_rk": 210,
       "trend": [
         210,
@@ -13448,6 +13664,7 @@
         "site": "away"
       },
       "color": "#EF8C00",
+      "adjustment": null,
       "own_score": -0.095,
       "own_rank": 206,
       "external_rank": null,
@@ -13513,6 +13730,7 @@
         "site": "home"
       },
       "color": "#003A72",
+      "adjustment": null,
       "own_score": -0.176,
       "own_rank": 221,
       "external_rank": null,
@@ -13552,9 +13770,9 @@
       "school": "Lamar",
       "conference": "Southland",
       "score": -0.164,
-      "rating": -2.6,
+      "rating": -2.5,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 217,
       "trend": [
         217,
@@ -13573,6 +13791,7 @@
         "site": "away"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": -0.132,
       "own_rank": 211,
       "external_rank": null,
@@ -13633,6 +13852,7 @@
         "site": "away"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": -0.194,
       "own_rank": 223,
       "external_rank": null,
@@ -13674,7 +13894,7 @@
       "score": -0.169,
       "rating": -2.6,
       "power_games": 1,
-      "sos": 15.3,
+      "sos": 15.4,
       "prev_rk": 212,
       "trend": [
         212,
@@ -13693,6 +13913,7 @@
         "site": "away"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": -0.132,
       "own_rank": 212,
       "external_rank": null,
@@ -13734,7 +13955,7 @@
       "score": -0.187,
       "rating": -2.9,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 221,
       "trend": [
         221,
@@ -13753,6 +13974,7 @@
         "site": "away"
       },
       "color": "#00573C",
+      "adjustment": null,
       "own_score": -0.1,
       "own_rank": 207,
       "external_rank": null,
@@ -13813,6 +14035,7 @@
         "site": "home"
       },
       "color": "#171796",
+      "adjustment": null,
       "own_score": -0.028,
       "own_rank": 197,
       "external_rank": null,
@@ -13851,7 +14074,7 @@
       "team_id": 366,
       "school": "Lindenwood",
       "conference": "OVC",
-      "score": -0.193,
+      "score": -0.192,
       "rating": -3,
       "power_games": 1,
       "sos": 15,
@@ -13873,6 +14096,7 @@
         "site": "home"
       },
       "color": "#101820",
+      "adjustment": null,
       "own_score": -0.137,
       "own_rank": 213,
       "external_rank": null,
@@ -13927,6 +14151,7 @@
         "site": "away"
       },
       "color": "#165B9E",
+      "adjustment": null,
       "own_score": -0.194,
       "own_rank": 224,
       "external_rank": null,
@@ -13968,7 +14193,7 @@
       "score": -0.195,
       "rating": -3,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 208,
       "trend": [
         208,
@@ -13987,6 +14212,7 @@
         "site": "away"
       },
       "color": "#005485",
+      "adjustment": null,
       "own_score": -0.166,
       "own_rank": 219,
       "external_rank": null,
@@ -14025,10 +14251,10 @@
       "team_id": 356,
       "school": "Wofford",
       "conference": "SoCon",
-      "score": -0.2,
+      "score": -0.199,
       "rating": -3.1,
       "power_games": 1,
-      "sos": 20.4,
+      "sos": 20.5,
       "prev_rk": 211,
       "trend": [
         211,
@@ -14047,6 +14273,7 @@
         "site": "away"
       },
       "color": "#533B22",
+      "adjustment": null,
       "own_score": -0.184,
       "own_rank": 222,
       "external_rank": null,
@@ -14088,7 +14315,7 @@
       "score": -0.202,
       "rating": -3.1,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 184,
       "trend": [
         184,
@@ -14107,6 +14334,7 @@
         "site": "home"
       },
       "color": "#7A2531",
+      "adjustment": null,
       "own_score": -0.174,
       "own_rank": 220,
       "external_rank": null,
@@ -14167,6 +14395,7 @@
         "site": "neutral"
       },
       "color": "#051844",
+      "adjustment": null,
       "own_score": -0.232,
       "own_rank": 232,
       "external_rank": null,
@@ -14205,7 +14434,7 @@
       "team_id": 76,
       "school": "East Texas A&M",
       "conference": "Southland",
-      "score": -0.211,
+      "score": -0.212,
       "rating": -3.3,
       "power_games": 1,
       "sos": 12.5,
@@ -14227,6 +14456,7 @@
         "site": "away"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": -0.4,
       "own_rank": 261,
       "external_rank": null,
@@ -14265,7 +14495,7 @@
       "team_id": 244,
       "school": "Robert Morris",
       "conference": "Horizon",
-      "score": -0.221,
+      "score": -0.22,
       "rating": -3.4,
       "power_games": 1,
       "sos": 8.8,
@@ -14287,6 +14517,7 @@
         "site": "away"
       },
       "color": "#00214D",
+      "adjustment": null,
       "own_score": -0.122,
       "own_rank": 209,
       "external_rank": null,
@@ -14347,6 +14578,7 @@
         "site": "home"
       },
       "color": "#003DA5",
+      "adjustment": null,
       "own_score": -0.061,
       "own_rank": 203,
       "external_rank": null,
@@ -14385,10 +14617,10 @@
       "team_id": 195,
       "school": "Nicholls",
       "conference": "Southland",
-      "score": -0.222,
+      "score": -0.223,
       "rating": -3.4,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 246,
       "trend": [
         246,
@@ -14407,6 +14639,7 @@
         "site": "away"
       },
       "color": "#C41230",
+      "adjustment": null,
       "own_score": -0.196,
       "own_rank": 225,
       "external_rank": null,
@@ -14448,7 +14681,7 @@
       "score": -0.228,
       "rating": -3.5,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 204,
       "trend": [
         204,
@@ -14467,6 +14700,7 @@
         "site": "away"
       },
       "color": "#1E4D2B",
+      "adjustment": null,
       "own_score": -0.146,
       "own_rank": 216,
       "external_rank": null,
@@ -14505,7 +14739,7 @@
       "team_id": 362,
       "school": "Queens University",
       "conference": "ASUN",
-      "score": -0.231,
+      "score": -0.232,
       "rating": -3.6,
       "power_games": 2,
       "sos": 2,
@@ -14527,6 +14761,7 @@
         "site": "away"
       },
       "color": "#192C66",
+      "adjustment": null,
       "own_score": -0.409,
       "own_rank": 263,
       "external_rank": null,
@@ -14587,6 +14822,7 @@
         "site": "home"
       },
       "color": "#20366C",
+      "adjustment": null,
       "own_score": -0.157,
       "own_rank": 218,
       "external_rank": null,
@@ -14647,6 +14883,7 @@
         "site": "away"
       },
       "color": "#00A26B",
+      "adjustment": null,
       "own_score": -0.148,
       "own_rank": 217,
       "external_rank": null,
@@ -14688,7 +14925,7 @@
       "score": -0.246,
       "rating": -3.8,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 244,
       "trend": [
         244,
@@ -14707,6 +14944,7 @@
         "site": "away"
       },
       "color": "#006633",
+      "adjustment": null,
       "own_score": -0.221,
       "own_rank": 230,
       "external_rank": null,
@@ -14742,77 +14980,17 @@
     },
     {
       "rk": 233,
-      "team_id": 99,
-      "school": "Georgia Southern",
-      "conference": "Sun Belt",
-      "score": -0.254,
-      "rating": -3.9,
-      "power_games": 1,
-      "sos": -6.5,
-      "prev_rk": 218,
-      "trend": [
-        218,
-        233
-      ],
-      "last_game": {
-        "date": "2026-11-03T00:00Z",
-        "opponent": "Ball State",
-        "site": "home",
-        "won": true,
-        "score": "67-55"
-      },
-      "next_game": {
-        "date": "2026-11-07T00:00Z",
-        "opponent": "Georgia Tech",
-        "site": "away"
-      },
-      "color": "#003775",
-      "own_score": -0.335,
-      "own_rank": 250,
-      "external_rank": null,
-      "preseason_score": -0.335,
-      "games": 1,
-      "wins": 1,
-      "losses": 0,
-      "conf_wins": 0,
-      "conf_losses": 0,
-      "off_eff": 102.7,
-      "oreb_pct": 35.7,
-      "to_margin": 9.9,
-      "three_pct": 27.4,
-      "def_eff": 78.9,
-      "conf_strength": -5,
-      "ranks": {
-        "net": 160,
-        "competition": 280,
-        "winning": 141,
-        "defense": 104,
-        "offense": 270,
-        "recruits": 332,
-        "oreb": 213,
-        "continuity": 68,
-        "turnovers": 94,
-        "three": 281
-      },
-      "identity": null,
-      "returning": 1,
-      "experience": 1,
-      "incomplete": true,
-      "transfers_in": []
-    },
-    {
-      "rk": 234,
       "team_id": 120,
       "school": "Incarnate Word",
       "conference": "Southland",
       "score": -0.254,
       "rating": -3.9,
       "power_games": 1,
-      "sos": 14.5,
+      "sos": 14.6,
       "prev_rk": 268,
       "trend": [
         268,
-        234
+        233
       ],
       "last_game": {
         "date": "2026-11-03T02:00Z",
@@ -14827,6 +15005,7 @@
         "site": "home"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": -0.202,
       "own_rank": 227,
       "external_rank": null,
@@ -14861,6 +15040,67 @@
       "transfers_in": []
     },
     {
+      "rk": 234,
+      "team_id": 99,
+      "school": "Georgia Southern",
+      "conference": "Sun Belt",
+      "score": -0.255,
+      "rating": -3.9,
+      "power_games": 1,
+      "sos": -6.5,
+      "prev_rk": 218,
+      "trend": [
+        218,
+        234
+      ],
+      "last_game": {
+        "date": "2026-11-03T00:00Z",
+        "opponent": "Ball State",
+        "site": "home",
+        "won": true,
+        "score": "67-55"
+      },
+      "next_game": {
+        "date": "2026-11-07T00:00Z",
+        "opponent": "Georgia Tech",
+        "site": "away"
+      },
+      "color": "#003775",
+      "adjustment": null,
+      "own_score": -0.335,
+      "own_rank": 250,
+      "external_rank": null,
+      "preseason_score": -0.335,
+      "games": 1,
+      "wins": 1,
+      "losses": 0,
+      "conf_wins": 0,
+      "conf_losses": 0,
+      "off_eff": 102.7,
+      "oreb_pct": 35.7,
+      "to_margin": 9.9,
+      "three_pct": 27.4,
+      "def_eff": 78.9,
+      "conf_strength": -5,
+      "ranks": {
+        "net": 160,
+        "competition": 280,
+        "winning": 141,
+        "defense": 104,
+        "offense": 270,
+        "recruits": 332,
+        "oreb": 213,
+        "continuity": 68,
+        "turnovers": 94,
+        "three": 281
+      },
+      "identity": null,
+      "returning": 1,
+      "experience": 1,
+      "incomplete": true,
+      "transfers_in": []
+    },
+    {
       "rk": 235,
       "team_id": 237,
       "school": "Purdue Fort Wayne",
@@ -14887,6 +15127,7 @@
         "site": "home"
       },
       "color": "#00378A",
+      "adjustment": null,
       "own_score": -0.252,
       "own_rank": 236,
       "external_rank": null,
@@ -14925,10 +15166,10 @@
       "team_id": 247,
       "school": "SIU Edwardsville",
       "conference": "OVC",
-      "score": -0.267,
+      "score": -0.268,
       "rating": -4.1,
       "power_games": 2,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 206,
       "trend": [
         206,
@@ -14947,6 +15188,7 @@
         "site": "away"
       },
       "color": "#EB1C23",
+      "adjustment": null,
       "own_score": -0.222,
       "own_rank": 231,
       "external_rank": null,
@@ -14988,7 +15230,7 @@
       "score": -0.278,
       "rating": -4.3,
       "power_games": 1,
-      "sos": 24.8,
+      "sos": 24.9,
       "prev_rk": 233,
       "trend": [
         233,
@@ -15007,6 +15249,7 @@
         "site": "home"
       },
       "color": "#003356",
+      "adjustment": null,
       "own_score": -0.292,
       "own_rank": 245,
       "external_rank": null,
@@ -15042,66 +15285,6 @@
     },
     {
       "rk": 238,
-      "team_id": 285,
-      "school": "Stony Brook",
-      "conference": "CAA",
-      "score": -0.285,
-      "rating": -4.4,
-      "power_games": 1,
-      "sos": -35,
-      "prev_rk": 222,
-      "trend": [
-        222,
-        238
-      ],
-      "last_game": {
-        "date": "2026-11-02T23:30Z",
-        "opponent": "SUNY Old Westbury",
-        "site": "home",
-        "won": true,
-        "score": "97-47"
-      },
-      "next_game": {
-        "date": "2026-11-07T01:00Z",
-        "opponent": "Northwestern",
-        "site": "away"
-      },
-      "color": "#990000",
-      "own_score": -0.263,
-      "own_rank": 237,
-      "external_rank": null,
-      "preseason_score": -0.263,
-      "games": 1,
-      "wins": 1,
-      "losses": 0,
-      "conf_wins": 0,
-      "conf_losses": 0,
-      "off_eff": 137.9,
-      "oreb_pct": 52.9,
-      "to_margin": 12,
-      "three_pct": 35.7,
-      "def_eff": 55.4,
-      "conf_strength": -2.7,
-      "ranks": {
-        "net": 29,
-        "competition": 234,
-        "winning": 174,
-        "defense": 20,
-        "offense": 56,
-        "recruits": 227,
-        "oreb": 68,
-        "continuity": 19,
-        "turnovers": 75,
-        "three": 151
-      },
-      "identity": null,
-      "returning": 1,
-      "experience": 1,
-      "incomplete": true,
-      "transfers_in": []
-    },
-    {
-      "rk": 239,
       "team_id": 233,
       "school": "Presbyterian",
       "conference": "Big South",
@@ -15112,7 +15295,7 @@
       "prev_rk": 235,
       "trend": [
         235,
-        239
+        238
       ],
       "last_game": {
         "date": "2026-11-03T00:00Z",
@@ -15127,6 +15310,7 @@
         "site": "away"
       },
       "color": "#194896",
+      "adjustment": null,
       "own_score": -0.233,
       "own_rank": 234,
       "external_rank": null,
@@ -15161,6 +15345,67 @@
       "transfers_in": []
     },
     {
+      "rk": 239,
+      "team_id": 285,
+      "school": "Stony Brook",
+      "conference": "CAA",
+      "score": -0.285,
+      "rating": -4.4,
+      "power_games": 1,
+      "sos": -35.1,
+      "prev_rk": 222,
+      "trend": [
+        222,
+        239
+      ],
+      "last_game": {
+        "date": "2026-11-02T23:30Z",
+        "opponent": "SUNY Old Westbury",
+        "site": "home",
+        "won": true,
+        "score": "97-47"
+      },
+      "next_game": {
+        "date": "2026-11-07T01:00Z",
+        "opponent": "Northwestern",
+        "site": "away"
+      },
+      "color": "#990000",
+      "adjustment": null,
+      "own_score": -0.263,
+      "own_rank": 237,
+      "external_rank": null,
+      "preseason_score": -0.263,
+      "games": 1,
+      "wins": 1,
+      "losses": 0,
+      "conf_wins": 0,
+      "conf_losses": 0,
+      "off_eff": 137.9,
+      "oreb_pct": 52.9,
+      "to_margin": 12,
+      "three_pct": 35.7,
+      "def_eff": 55.4,
+      "conf_strength": -2.7,
+      "ranks": {
+        "net": 29,
+        "competition": 234,
+        "winning": 174,
+        "defense": 20,
+        "offense": 56,
+        "recruits": 227,
+        "oreb": 68,
+        "continuity": 19,
+        "turnovers": 75,
+        "three": 151
+      },
+      "identity": null,
+      "returning": 1,
+      "experience": 1,
+      "incomplete": true,
+      "transfers_in": []
+    },
+    {
       "rk": 240,
       "team_id": 47,
       "school": "Charleston Southern",
@@ -15168,7 +15413,7 @@
       "score": -0.305,
       "rating": -4.7,
       "power_games": 1,
-      "sos": 12,
+      "sos": 12.1,
       "prev_rk": 249,
       "trend": [
         249,
@@ -15187,6 +15432,7 @@
         "site": "home"
       },
       "color": "#2E3192",
+      "adjustment": null,
       "own_score": -0.24,
       "own_rank": 235,
       "external_rank": null,
@@ -15241,7 +15487,7 @@
       "score": -0.31,
       "rating": -4.7,
       "power_games": 2,
-      "sos": 5.8,
+      "sos": 5.9,
       "prev_rk": 238,
       "trend": [
         238,
@@ -15260,6 +15506,7 @@
         "site": "away"
       },
       "color": "#BC1515",
+      "adjustment": null,
       "own_score": -0.233,
       "own_rank": 233,
       "external_rank": null,
@@ -15298,10 +15545,10 @@
       "team_id": 71,
       "school": "Drexel",
       "conference": "CAA",
-      "score": -0.317,
+      "score": -0.316,
       "rating": -4.8,
       "power_games": 1,
-      "sos": 22.1,
+      "sos": 22.2,
       "prev_rk": 256,
       "trend": [
         256,
@@ -15320,6 +15567,7 @@
         "site": "home"
       },
       "color": "#020260",
+      "adjustment": null,
       "own_score": -0.319,
       "own_rank": 249,
       "external_rank": null,
@@ -15380,6 +15628,7 @@
         "site": "away"
       },
       "color": "#003976",
+      "adjustment": null,
       "own_score": -0.29,
       "own_rank": 244,
       "external_rank": null,
@@ -15434,7 +15683,7 @@
       "score": -0.322,
       "rating": -4.9,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 240,
       "trend": [
         240,
@@ -15453,6 +15702,7 @@
         "site": "away"
       },
       "color": "#033594",
+      "adjustment": null,
       "own_score": -0.303,
       "own_rank": 246,
       "external_rank": null,
@@ -15494,7 +15744,7 @@
       "score": -0.328,
       "rating": -5,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 241,
       "trend": [
         241,
@@ -15513,6 +15763,7 @@
         "site": "home"
       },
       "color": "#14234F",
+      "adjustment": null,
       "own_score": -0.309,
       "own_rank": 247,
       "external_rank": null,
@@ -15573,6 +15824,7 @@
         "site": "home"
       },
       "color": "#003273",
+      "adjustment": null,
       "own_score": -0.317,
       "own_rank": 248,
       "external_rank": null,
@@ -15627,7 +15879,7 @@
       "score": -0.339,
       "rating": -5.2,
       "power_games": 1,
-      "sos": -12.1,
+      "sos": -12.2,
       "prev_rk": 232,
       "trend": [
         232,
@@ -15646,6 +15898,7 @@
         "site": "home"
       },
       "color": "#9D1244",
+      "adjustment": null,
       "own_score": -0.476,
       "own_rank": 273,
       "external_rank": null,
@@ -15706,6 +15959,7 @@
         "site": "home"
       },
       "color": "#005DA6",
+      "adjustment": null,
       "own_score": -0.272,
       "own_rank": 242,
       "external_rank": null,
@@ -15766,6 +16020,7 @@
         "site": "home"
       },
       "color": "#003E7E",
+      "adjustment": null,
       "own_score": -0.269,
       "own_rank": 240,
       "external_rank": null,
@@ -15804,10 +16059,10 @@
       "team_id": 78,
       "school": "Eastern Kentucky",
       "conference": "UAC",
-      "score": -0.365,
+      "score": -0.366,
       "rating": -5.6,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 245,
       "trend": [
         245,
@@ -15826,6 +16081,7 @@
         "site": "home"
       },
       "color": "#660819",
+      "adjustment": null,
       "own_score": -0.35,
       "own_rank": 253,
       "external_rank": null,
@@ -15865,7 +16121,7 @@
       "school": "Morehead State",
       "conference": "OVC",
       "score": -0.371,
-      "rating": -5.7,
+      "rating": -5.6,
       "power_games": 1,
       "sos": 7.9,
       "prev_rk": 262,
@@ -15886,6 +16142,7 @@
         "site": "home"
       },
       "color": "#094FA3",
+      "adjustment": null,
       "own_score": -0.282,
       "own_rank": 243,
       "external_rank": null,
@@ -15946,6 +16203,7 @@
         "site": "home"
       },
       "color": "#008545",
+      "adjustment": null,
       "own_score": -0.268,
       "own_rank": 239,
       "external_rank": null,
@@ -15987,7 +16245,7 @@
       "score": -0.382,
       "rating": -5.8,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 237,
       "trend": [
         237,
@@ -16006,6 +16264,7 @@
         "site": "away"
       },
       "color": "#E3193E",
+      "adjustment": null,
       "own_score": -0.272,
       "own_rank": 241,
       "external_rank": null,
@@ -16066,6 +16325,7 @@
         "site": "away"
       },
       "color": "#00331B",
+      "adjustment": null,
       "own_score": -0.424,
       "own_rank": 267,
       "external_rank": null,
@@ -16117,10 +16377,10 @@
       "team_id": 88,
       "school": "Florida Gulf Coast",
       "conference": "ASUN",
-      "score": -0.389,
+      "score": -0.39,
       "rating": -5.9,
       "power_games": 1,
-      "sos": 12.5,
+      "sos": 12.6,
       "prev_rk": 260,
       "trend": [
         260,
@@ -16139,6 +16399,7 @@
         "site": "home"
       },
       "color": "#00885A",
+      "adjustment": null,
       "own_score": -0.498,
       "own_rank": 278,
       "external_rank": null,
@@ -16177,7 +16438,7 @@
       "team_id": 74,
       "school": "East Carolina",
       "conference": "American",
-      "score": -0.39,
+      "score": -0.391,
       "rating": -5.9,
       "power_games": 1,
       "sos": -5.7,
@@ -16199,6 +16460,7 @@
         "site": "home"
       },
       "color": "#4B1869",
+      "adjustment": null,
       "own_score": -0.503,
       "own_rank": 279,
       "external_rank": null,
@@ -16240,7 +16502,7 @@
       "score": -0.402,
       "rating": -6.1,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 251,
       "trend": [
         251,
@@ -16259,6 +16521,7 @@
         "site": "away"
       },
       "color": "#FFAA3C",
+      "adjustment": null,
       "own_score": -0.389,
       "own_rank": 258,
       "external_rank": null,
@@ -16319,6 +16582,7 @@
         "site": "away"
       },
       "color": "#007073",
+      "adjustment": null,
       "own_score": -0.361,
       "own_rank": 255,
       "external_rank": null,
@@ -16357,7 +16621,7 @@
       "team_id": 62,
       "school": "Dartmouth",
       "conference": "Ivy",
-      "score": -0.403,
+      "score": -0.404,
       "rating": -6.1,
       "power_games": 2,
       "sos": -24.3,
@@ -16379,6 +16643,7 @@
         "site": "home"
       },
       "color": "#005730",
+      "adjustment": null,
       "own_score": -0.44,
       "own_rank": 268,
       "external_rank": null,
@@ -16439,6 +16704,7 @@
         "site": "away"
       },
       "color": "#041A9B",
+      "adjustment": null,
       "own_score": -0.267,
       "own_rank": 238,
       "external_rank": null,
@@ -16512,6 +16778,7 @@
         "site": "home"
       },
       "color": "#CD1241",
+      "adjustment": null,
       "own_score": -0.363,
       "own_rank": 256,
       "external_rank": null,
@@ -16553,7 +16820,7 @@
       "score": -0.424,
       "rating": -6.4,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 259,
       "trend": [
         259,
@@ -16572,6 +16839,7 @@
         "site": "home"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": -0.413,
       "own_rank": 266,
       "external_rank": null,
@@ -16632,6 +16900,7 @@
         "site": "away"
       },
       "color": "#450084",
+      "adjustment": null,
       "own_score": -0.405,
       "own_rank": 262,
       "external_rank": null,
@@ -16673,7 +16942,7 @@
       "score": -0.433,
       "rating": -6.6,
       "power_games": 1,
-      "sos": 19.1,
+      "sos": 19.2,
       "prev_rk": 247,
       "trend": [
         247,
@@ -16692,6 +16961,7 @@
         "site": "away"
       },
       "color": "#00386B",
+      "adjustment": null,
       "own_score": -0.484,
       "own_rank": 275,
       "external_rank": null,
@@ -16752,6 +17022,7 @@
         "site": "home"
       },
       "color": "#DA0000",
+      "adjustment": null,
       "own_score": -0.357,
       "own_rank": 254,
       "external_rank": null,
@@ -16825,6 +17096,7 @@
         "site": "home"
       },
       "color": "#AD0000",
+      "adjustment": null,
       "own_score": -0.484,
       "own_rank": 276,
       "external_rank": null,
@@ -16885,6 +17157,7 @@
         "site": "home"
       },
       "color": "#002462",
+      "adjustment": null,
       "own_score": -0.336,
       "own_rank": 251,
       "external_rank": null,
@@ -16926,7 +17199,7 @@
       "score": -0.455,
       "rating": -6.9,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 269,
       "trend": [
         269,
@@ -16945,6 +17218,7 @@
         "site": "home"
       },
       "color": "#663399",
+      "adjustment": null,
       "own_score": -0.364,
       "own_rank": 257,
       "external_rank": null,
@@ -16983,7 +17257,7 @@
       "team_id": 172,
       "school": "Milwaukee",
       "conference": "Horizon",
-      "score": -0.459,
+      "score": -0.458,
       "rating": -7,
       "power_games": 2,
       "sos": 15.1,
@@ -17005,6 +17279,7 @@
         "site": "home"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": -0.41,
       "own_rank": 265,
       "external_rank": null,
@@ -17046,7 +17321,7 @@
       "score": -0.461,
       "rating": -7,
       "power_games": 1,
-      "sos": 16.4,
+      "sos": 16.5,
       "prev_rk": 282,
       "trend": [
         282,
@@ -17065,6 +17340,7 @@
         "site": "away"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": -0.445,
       "own_rank": 269,
       "external_rank": null,
@@ -17106,7 +17382,7 @@
       "score": -0.467,
       "rating": -7.1,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 283,
       "trend": [
         283,
@@ -17125,6 +17401,7 @@
         "site": "away"
       },
       "color": "#00539C",
+      "adjustment": null,
       "own_score": -0.459,
       "own_rank": 271,
       "external_rank": null,
@@ -17163,7 +17440,7 @@
       "team_id": 187,
       "school": "Navy",
       "conference": "Patriot",
-      "score": -0.475,
+      "score": -0.474,
       "rating": -7.2,
       "power_games": 1,
       "sos": 8.1,
@@ -17185,6 +17462,7 @@
         "site": "home"
       },
       "color": "#00225B",
+      "adjustment": null,
       "own_score": -0.399,
       "own_rank": 260,
       "external_rank": null,
@@ -17224,7 +17502,7 @@
       "school": "Central Michigan",
       "conference": "MAC",
       "score": -0.477,
-      "rating": -7.2,
+      "rating": -7.3,
       "power_games": 1,
       "sos": -17.1,
       "prev_rk": 266,
@@ -17245,6 +17523,7 @@
         "site": "home"
       },
       "color": "#6A0032",
+      "adjustment": null,
       "own_score": -0.484,
       "own_rank": 274,
       "external_rank": null,
@@ -17310,6 +17589,7 @@
         "site": "away"
       },
       "color": "#215732",
+      "adjustment": null,
       "own_score": -0.453,
       "own_rank": 270,
       "external_rank": null,
@@ -17370,6 +17650,7 @@
         "site": "away"
       },
       "color": "#00507D",
+      "adjustment": null,
       "own_score": -0.601,
       "own_rank": 288,
       "external_rank": null,
@@ -17408,10 +17689,10 @@
       "team_id": 30,
       "school": "Brown",
       "conference": "Ivy",
-      "score": -0.496,
+      "score": -0.495,
       "rating": -7.5,
       "power_games": 1,
-      "sos": -17.7,
+      "sos": -17.8,
       "prev_rk": 292,
       "trend": [
         292,
@@ -17430,6 +17711,7 @@
         "site": "home"
       },
       "color": "#411E09",
+      "adjustment": null,
       "own_score": -0.345,
       "own_rank": 252,
       "external_rank": null,
@@ -17471,7 +17753,7 @@
       "score": -0.496,
       "rating": -7.5,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 273,
       "trend": [
         273,
@@ -17490,6 +17772,7 @@
         "site": "away"
       },
       "color": "#00523E",
+      "adjustment": null,
       "own_score": -0.491,
       "own_rank": 277,
       "external_rank": null,
@@ -17528,7 +17811,7 @@
       "team_id": 106,
       "school": "Hampton",
       "conference": "CAA",
-      "score": -0.497,
+      "score": -0.496,
       "rating": -7.5,
       "power_games": 1,
       "sos": 2.4,
@@ -17550,6 +17833,7 @@
         "site": "away"
       },
       "color": "#0067AC",
+      "adjustment": null,
       "own_score": -0.41,
       "own_rank": 264,
       "external_rank": null,
@@ -17610,6 +17894,7 @@
         "site": "home"
       },
       "color": "#532E1F",
+      "adjustment": null,
       "own_score": -0.392,
       "own_rank": 259,
       "external_rank": null,
@@ -17651,7 +17936,7 @@
       "score": -0.513,
       "rating": -7.8,
       "power_games": 2,
-      "sos": -14.3,
+      "sos": -14.4,
       "prev_rk": 288,
       "trend": [
         288,
@@ -17670,6 +17955,7 @@
         "site": "home"
       },
       "color": "#5A4099",
+      "adjustment": null,
       "own_score": -0.469,
       "own_rank": 272,
       "external_rank": null,
@@ -17730,6 +18016,7 @@
         "site": "away"
       },
       "color": "#1E539A",
+      "adjustment": null,
       "own_score": -0.544,
       "own_rank": 280,
       "external_rank": null,
@@ -17771,7 +18058,7 @@
       "score": -0.55,
       "rating": -8.3,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 296,
       "trend": [
         296,
@@ -17790,6 +18077,7 @@
         "site": "home"
       },
       "color": "#A81F30",
+      "adjustment": null,
       "own_score": -0.548,
       "own_rank": 281,
       "external_rank": null,
@@ -17831,7 +18119,7 @@
       "score": -0.576,
       "rating": -8.7,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 271,
       "trend": [
         271,
@@ -17850,6 +18138,7 @@
         "site": "away"
       },
       "color": "#003559",
+      "adjustment": null,
       "own_score": -0.577,
       "own_rank": 284,
       "external_rank": null,
@@ -17904,6 +18193,7 @@
         "site": "home"
       },
       "color": "#003BAB",
+      "adjustment": null,
       "own_score": -0.588,
       "own_rank": 286,
       "external_rank": null,
@@ -17964,6 +18254,7 @@
         "site": "away"
       },
       "color": "#50C9F7",
+      "adjustment": null,
       "own_score": -0.579,
       "own_rank": 285,
       "external_rank": null,
@@ -18024,6 +18315,7 @@
         "site": "away"
       },
       "color": "#492F91",
+      "adjustment": null,
       "own_score": -0.593,
       "own_rank": 287,
       "external_rank": null,
@@ -18078,6 +18370,7 @@
         "site": "away"
       },
       "color": "#0505AA",
+      "adjustment": null,
       "own_score": -0.609,
       "own_rank": 289,
       "external_rank": null,
@@ -18138,6 +18431,7 @@
         "site": "away"
       },
       "color": "#0033A1",
+      "adjustment": null,
       "own_score": -0.569,
       "own_rank": 282,
       "external_rank": null,
@@ -18198,6 +18492,7 @@
         "site": "away"
       },
       "color": "#003A63",
+      "adjustment": null,
       "own_score": -0.645,
       "own_rank": 290,
       "external_rank": null,
@@ -18258,6 +18553,7 @@
         "site": "home"
       },
       "color": "#006633",
+      "adjustment": null,
       "own_score": -0.657,
       "own_rank": 291,
       "external_rank": null,
@@ -18318,6 +18614,7 @@
         "site": "away"
       },
       "color": "#F1122C",
+      "adjustment": null,
       "own_score": -0.575,
       "own_rank": 283,
       "external_rank": null,
@@ -18378,6 +18675,7 @@
         "site": "away"
       },
       "color": "#C41130",
+      "adjustment": null,
       "own_score": -0.68,
       "own_rank": 294,
       "external_rank": null,
@@ -18417,7 +18715,7 @@
       "school": "Bellarmine",
       "conference": "ASUN",
       "score": -0.704,
-      "rating": -10.6,
+      "rating": -10.7,
       "power_games": 1,
       "sos": 18.3,
       "prev_rk": 293,
@@ -18438,6 +18736,7 @@
         "site": "away"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": -0.717,
       "own_rank": 295,
       "external_rank": null,
@@ -18479,7 +18778,7 @@
       "score": -0.708,
       "rating": -10.7,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 298,
       "trend": [
         298,
@@ -18498,6 +18797,7 @@
         "site": "away"
       },
       "color": "#AE122A",
+      "adjustment": null,
       "own_score": -0.723,
       "own_rank": 296,
       "external_rank": null,
@@ -18539,7 +18839,7 @@
       "score": -0.717,
       "rating": -10.8,
       "power_games": 1,
-      "sos": 10.5,
+      "sos": 10.6,
       "prev_rk": 286,
       "trend": [
         286,
@@ -18558,6 +18858,7 @@
         "site": "away"
       },
       "color": "#821019",
+      "adjustment": null,
       "own_score": -0.735,
       "own_rank": 297,
       "external_rank": null,
@@ -18599,7 +18900,7 @@
       "score": -0.728,
       "rating": -11,
       "power_games": 1,
-      "sos": 24.5,
+      "sos": 24.6,
       "prev_rk": 287,
       "trend": [
         287,
@@ -18618,6 +18919,7 @@
         "site": "home"
       },
       "color": "#041B43",
+      "adjustment": null,
       "own_score": -0.775,
       "own_rank": 302,
       "external_rank": null,
@@ -18665,7 +18967,7 @@
       "team_id": 203,
       "school": "North Florida",
       "conference": "ASUN",
-      "score": -0.739,
+      "score": -0.74,
       "rating": -11.2,
       "power_games": 1,
       "sos": 3,
@@ -18687,6 +18989,7 @@
         "site": "away"
       },
       "color": "#004B8D",
+      "adjustment": null,
       "own_score": -0.95,
       "own_rank": 312,
       "external_rank": null,
@@ -18747,6 +19050,7 @@
         "site": "home"
       },
       "color": "#663399",
+      "adjustment": null,
       "own_score": -0.902,
       "own_rank": 306,
       "external_rank": null,
@@ -18785,7 +19089,7 @@
       "team_id": 283,
       "school": "Stetson",
       "conference": "ASUN",
-      "score": -0.75,
+      "score": -0.749,
       "rating": -11.3,
       "power_games": 2,
       "sos": 10.7,
@@ -18807,6 +19111,7 @@
         "site": "away"
       },
       "color": "#0A5640",
+      "adjustment": null,
       "own_score": -0.752,
       "own_rank": 298,
       "external_rank": null,
@@ -18845,10 +19150,10 @@
       "team_id": 148,
       "school": "Louisiana",
       "conference": "Sun Belt",
-      "score": -0.774,
+      "score": -0.773,
       "rating": -11.7,
       "power_games": 1,
-      "sos": 9.4,
+      "sos": 9.5,
       "prev_rk": 305,
       "trend": [
         305,
@@ -18867,6 +19172,7 @@
         "site": "home"
       },
       "color": "#CE181E",
+      "adjustment": null,
       "own_score": -0.754,
       "own_rank": 299,
       "external_rank": null,
@@ -18905,7 +19211,7 @@
       "team_id": 328,
       "school": "UTSA",
       "conference": "American",
-      "score": -0.775,
+      "score": -0.774,
       "rating": -11.7,
       "power_games": 1,
       "sos": -1.9,
@@ -18927,6 +19233,7 @@
         "site": "home"
       },
       "color": "#002A5C",
+      "adjustment": null,
       "own_score": -0.672,
       "own_rank": 292,
       "external_rank": null,
@@ -18965,7 +19272,7 @@
       "team_id": 299,
       "school": "The Citadel",
       "conference": "SoCon",
-      "score": -0.811,
+      "score": -0.81,
       "rating": -12.2,
       "power_games": 1,
       "sos": -5.3,
@@ -18987,6 +19294,7 @@
         "site": "home"
       },
       "color": "#002B5C",
+      "adjustment": null,
       "own_score": -0.674,
       "own_rank": 293,
       "external_rank": null,
@@ -19022,66 +19330,6 @@
     },
     {
       "rk": 303,
-      "team_id": 337,
-      "school": "Vermont",
-      "conference": "Am. East",
-      "score": -0.823,
-      "rating": -12.4,
-      "power_games": 1,
-      "sos": -15.1,
-      "prev_rk": 300,
-      "trend": [
-        300,
-        303
-      ],
-      "last_game": {
-        "date": "2026-11-03T00:00Z",
-        "opponent": "Iona",
-        "site": "away",
-        "won": false,
-        "score": "55-56"
-      },
-      "next_game": {
-        "date": "2026-11-06T00:00Z",
-        "opponent": "Fairfield",
-        "site": "away"
-      },
-      "color": "#154734",
-      "own_score": -0.81,
-      "own_rank": 303,
-      "external_rank": null,
-      "preseason_score": -0.81,
-      "games": 1,
-      "wins": 0,
-      "losses": 1,
-      "conf_wins": 0,
-      "conf_losses": 0,
-      "off_eff": 92.4,
-      "oreb_pct": 43.5,
-      "to_margin": -2.9,
-      "three_pct": 25.7,
-      "def_eff": 96.9,
-      "conf_strength": -19.2,
-      "ranks": {
-        "net": 261,
-        "competition": 343,
-        "winning": 79,
-        "defense": 174,
-        "offense": 306,
-        "recruits": 193,
-        "oreb": 133,
-        "continuity": 210,
-        "turnovers": 271,
-        "three": 296
-      },
-      "identity": null,
-      "returning": 0.82,
-      "experience": 0.82,
-      "incomplete": true,
-      "transfers_in": []
-    },
-    {
-      "rk": 304,
       "team_id": 317,
       "school": "UMBC",
       "conference": "Am. East",
@@ -19092,7 +19340,7 @@
       "prev_rk": 299,
       "trend": [
         299,
-        304
+        303
       ],
       "last_game": {
         "date": "2026-11-02T21:00Z",
@@ -19107,6 +19355,7 @@
         "site": "away"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": -0.773,
       "own_rank": 300,
       "external_rank": null,
@@ -19141,6 +19390,67 @@
       "transfers_in": []
     },
     {
+      "rk": 304,
+      "team_id": 337,
+      "school": "Vermont",
+      "conference": "Am. East",
+      "score": -0.823,
+      "rating": -12.4,
+      "power_games": 1,
+      "sos": -15.1,
+      "prev_rk": 300,
+      "trend": [
+        300,
+        304
+      ],
+      "last_game": {
+        "date": "2026-11-03T00:00Z",
+        "opponent": "Iona",
+        "site": "away",
+        "won": false,
+        "score": "55-56"
+      },
+      "next_game": {
+        "date": "2026-11-06T00:00Z",
+        "opponent": "Fairfield",
+        "site": "away"
+      },
+      "color": "#154734",
+      "adjustment": null,
+      "own_score": -0.81,
+      "own_rank": 303,
+      "external_rank": null,
+      "preseason_score": -0.81,
+      "games": 1,
+      "wins": 0,
+      "losses": 1,
+      "conf_wins": 0,
+      "conf_losses": 0,
+      "off_eff": 92.4,
+      "oreb_pct": 43.5,
+      "to_margin": -2.9,
+      "three_pct": 25.7,
+      "def_eff": 96.9,
+      "conf_strength": -19.2,
+      "ranks": {
+        "net": 261,
+        "competition": 343,
+        "winning": 79,
+        "defense": 174,
+        "offense": 306,
+        "recruits": 193,
+        "oreb": 133,
+        "continuity": 210,
+        "turnovers": 271,
+        "three": 296
+      },
+      "identity": null,
+      "returning": 0.82,
+      "experience": 0.82,
+      "incomplete": true,
+      "transfers_in": []
+    },
+    {
       "rk": 305,
       "team_id": 205,
       "school": "Northeastern",
@@ -19148,7 +19458,7 @@
       "score": -0.846,
       "rating": -12.8,
       "power_games": 1,
-      "sos": -14.4,
+      "sos": -14.5,
       "prev_rk": 312,
       "trend": [
         312,
@@ -19167,6 +19477,7 @@
         "site": "away"
       },
       "color": "#CC0001",
+      "adjustment": null,
       "own_score": -0.775,
       "own_rank": 301,
       "external_rank": null,
@@ -19221,6 +19532,7 @@
         "site": "home"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": -0.869,
       "own_rank": 305,
       "external_rank": null,
@@ -19290,6 +19602,7 @@
         "site": "away"
       },
       "color": "#CF102D",
+      "adjustment": null,
       "own_score": -0.909,
       "own_rank": 307,
       "external_rank": null,
@@ -19328,7 +19641,7 @@
       "team_id": 156,
       "school": "Marist",
       "conference": "Metro",
-      "score": -0.9,
+      "score": -0.899,
       "rating": -13.6,
       "power_games": 1,
       "sos": -6.3,
@@ -19350,6 +19663,7 @@
         "site": "home"
       },
       "color": "#E53730",
+      "adjustment": null,
       "own_score": -0.85,
       "own_rank": 304,
       "external_rank": null,
@@ -19415,6 +19729,7 @@
         "site": "away"
       },
       "color": "#1B49A2",
+      "adjustment": null,
       "own_score": -0.913,
       "own_rank": 308,
       "external_rank": null,
@@ -19456,7 +19771,7 @@
       "score": -0.922,
       "rating": -13.9,
       "power_games": 1,
-      "sos": 12.7,
+      "sos": 12.8,
       "prev_rk": 316,
       "trend": [
         316,
@@ -19475,6 +19790,7 @@
         "site": "away"
       },
       "color": "#004B97",
+      "adjustment": null,
       "own_score": -0.99,
       "own_rank": 314,
       "external_rank": null,
@@ -19535,6 +19851,7 @@
         "site": "away"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": -0.943,
       "own_rank": 310,
       "external_rank": null,
@@ -19595,6 +19912,7 @@
         "site": "away"
       },
       "color": "#CC0000",
+      "adjustment": null,
       "own_score": -1.019,
       "own_rank": 319,
       "external_rank": null,
@@ -19655,6 +19973,7 @@
         "site": "home"
       },
       "color": "#004B87",
+      "adjustment": null,
       "own_score": -1.006,
       "own_rank": 318,
       "external_rank": null,
@@ -19693,8 +20012,8 @@
       "team_id": 84,
       "school": "Fairleigh Dickinson",
       "conference": "NEC",
-      "score": -0.979,
-      "rating": -14.7,
+      "score": -0.978,
+      "rating": -14.8,
       "power_games": 2,
       "sos": 17,
       "prev_rk": 321,
@@ -19715,6 +20034,7 @@
         "site": "home"
       },
       "color": "#72293C",
+      "adjustment": null,
       "own_score": -1.032,
       "own_rank": 320,
       "external_rank": null,
@@ -19775,6 +20095,7 @@
         "site": "home"
       },
       "color": "#6C2B2A",
+      "adjustment": null,
       "own_score": -1.002,
       "own_rank": 316,
       "external_rank": null,
@@ -19814,7 +20135,7 @@
       "school": "Saint Peter's",
       "conference": "Metro",
       "score": -0.991,
-      "rating": -14.9,
+      "rating": -15,
       "power_games": 1,
       "sos": 9.7,
       "prev_rk": 309,
@@ -19835,6 +20156,7 @@
         "site": "home"
       },
       "color": "#004CC2",
+      "adjustment": null,
       "own_score": -0.981,
       "own_rank": 313,
       "external_rank": null,
@@ -19908,6 +20230,7 @@
         "site": "home"
       },
       "color": "#6F2C3E",
+      "adjustment": null,
       "own_score": -1.006,
       "own_rank": 317,
       "external_rank": null,
@@ -19959,7 +20282,7 @@
       "team_id": 2,
       "school": "Air Force",
       "conference": "Mountain West",
-      "score": -0.995,
+      "score": -0.994,
       "rating": -15,
       "power_games": 1,
       "sos": 3.7,
@@ -19981,6 +20304,7 @@
         "site": "home"
       },
       "color": "#004A7B",
+      "adjustment": null,
       "own_score": -0.944,
       "own_rank": 311,
       "external_rank": null,
@@ -20022,7 +20346,7 @@
       "score": -0.999,
       "rating": -15.1,
       "power_games": 1,
-      "sos": -21,
+      "sos": -21.1,
       "prev_rk": 327,
       "trend": [
         327,
@@ -20041,6 +20365,7 @@
         "site": "home"
       },
       "color": "#037961",
+      "adjustment": null,
       "own_score": -0.93,
       "own_rank": 309,
       "external_rank": null,
@@ -20106,6 +20431,7 @@
         "site": "away"
       },
       "color": "#006747",
+      "adjustment": null,
       "own_score": -1.078,
       "own_rank": 324,
       "external_rank": null,
@@ -20166,6 +20492,7 @@
         "site": "away"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": -1.041,
       "own_rank": 322,
       "external_rank": null,
@@ -20204,10 +20531,10 @@
       "team_id": 15,
       "school": "Army",
       "conference": "Patriot",
-      "score": -1.05,
+      "score": -1.049,
       "rating": -15.8,
       "power_games": 1,
-      "sos": 29.3,
+      "sos": 29.4,
       "prev_rk": 331,
       "trend": [
         331,
@@ -20226,6 +20553,7 @@
         "site": "home"
       },
       "color": "#CE9C00",
+      "adjustment": null,
       "own_score": -1.147,
       "own_rank": 330,
       "external_rank": null,
@@ -20265,9 +20593,9 @@
       "school": "UMass Lowell",
       "conference": "Am. East",
       "score": -1.057,
-      "rating": -15.9,
+      "rating": -16,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 322,
       "trend": [
         322,
@@ -20286,6 +20614,7 @@
         "site": "away"
       },
       "color": "#00529C",
+      "adjustment": null,
       "own_score": -1.109,
       "own_rank": 327,
       "external_rank": null,
@@ -20346,6 +20675,7 @@
         "site": "away"
       },
       "color": "#76A7A0",
+      "adjustment": null,
       "own_score": -1.034,
       "own_rank": 321,
       "external_rank": null,
@@ -20385,7 +20715,7 @@
       "school": "Merrimack",
       "conference": "Metro",
       "score": -1.064,
-      "rating": -16,
+      "rating": -16.1,
       "power_games": 1,
       "sos": -1.9,
       "prev_rk": 319,
@@ -20406,6 +20736,7 @@
         "site": "home"
       },
       "color": "#2F4F93",
+      "adjustment": null,
       "own_score": -0.996,
       "own_rank": 315,
       "external_rank": null,
@@ -20457,10 +20788,10 @@
       "team_id": 232,
       "school": "Prairie View A&M",
       "conference": "SWAC",
-      "score": -1.081,
+      "score": -1.082,
       "rating": -16.3,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 320,
       "trend": [
         320,
@@ -20479,6 +20810,7 @@
         "site": "home"
       },
       "color": "#4D0960",
+      "adjustment": null,
       "own_score": -1.135,
       "own_rank": 329,
       "external_rank": null,
@@ -20518,7 +20850,7 @@
       "school": "Bethune-Cookman",
       "conference": "SWAC",
       "score": -1.098,
-      "rating": -16.5,
+      "rating": -16.6,
       "power_games": 1,
       "sos": 0.3,
       "prev_rk": 315,
@@ -20539,6 +20871,7 @@
         "site": "away"
       },
       "color": "#7B1831",
+      "adjustment": null,
       "own_score": -1.115,
       "own_rank": 328,
       "external_rank": null,
@@ -20580,7 +20913,7 @@
       "score": -1.115,
       "rating": -16.8,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 317,
       "trend": [
         317,
@@ -20599,6 +20932,7 @@
         "site": "away"
       },
       "color": "#0C8968",
+      "adjustment": null,
       "own_score": -1.06,
       "own_rank": 323,
       "external_rank": null,
@@ -20659,6 +20993,7 @@
         "site": "away"
       },
       "color": "#231F20",
+      "adjustment": null,
       "own_score": -1.19,
       "own_rank": 332,
       "external_rank": null,
@@ -20697,7 +21032,7 @@
       "team_id": 349,
       "school": "Western Illinois",
       "conference": "OVC",
-      "score": -1.137,
+      "score": -1.136,
       "rating": -17.1,
       "power_games": 1,
       "sos": 4.2,
@@ -20719,6 +21054,7 @@
         "site": "home"
       },
       "color": "#4E1E8A",
+      "adjustment": null,
       "own_score": -1.105,
       "own_rank": 325,
       "external_rank": null,
@@ -20758,9 +21094,9 @@
       "school": "Stonehill",
       "conference": "NEC",
       "score": -1.144,
-      "rating": -17.2,
+      "rating": -17.3,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 337,
       "trend": [
         337,
@@ -20779,6 +21115,7 @@
         "site": "away"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": -1.206,
       "own_rank": 333,
       "external_rank": null,
@@ -20839,6 +21176,7 @@
         "site": "away"
       },
       "color": "#880023",
+      "adjustment": null,
       "own_score": -1.217,
       "own_rank": 334,
       "external_rank": null,
@@ -20877,10 +21215,10 @@
       "team_id": 94,
       "school": "Gardner-Webb",
       "conference": "Big South",
-      "score": -1.158,
-      "rating": -17.4,
+      "score": -1.157,
+      "rating": -17.5,
       "power_games": 1,
-      "sos": 20.9,
+      "sos": 21,
       "prev_rk": 342,
       "trend": [
         342,
@@ -20899,6 +21237,7 @@
         "site": "away"
       },
       "color": "#C12535",
+      "adjustment": null,
       "own_score": -1.22,
       "own_rank": 335,
       "external_rank": null,
@@ -20947,66 +21286,6 @@
     },
     {
       "rk": 334,
-      "team_id": 4,
-      "school": "Alabama A&M",
-      "conference": "SWAC",
-      "score": -1.163,
-      "rating": -17.5,
-      "power_games": 1,
-      "sos": -35,
-      "prev_rk": 334,
-      "trend": [
-        334,
-        334
-      ],
-      "last_game": {
-        "date": "2026-11-03T01:30Z",
-        "opponent": "Oakwood",
-        "site": "home",
-        "won": true,
-        "score": "90-57"
-      },
-      "next_game": {
-        "date": "2026-11-07T01:00Z",
-        "opponent": "Mississippi U for Women",
-        "site": "home"
-      },
-      "color": "#790000",
-      "own_score": -1.227,
-      "own_rank": 336,
-      "external_rank": null,
-      "preseason_score": -1.227,
-      "games": 1,
-      "wins": 1,
-      "losses": 0,
-      "conf_wins": 0,
-      "conf_losses": 0,
-      "off_eff": 93,
-      "oreb_pct": 43.9,
-      "to_margin": -4.3,
-      "three_pct": 14.7,
-      "def_eff": 76.3,
-      "conf_strength": -21.6,
-      "ranks": {
-        "net": 171,
-        "competition": 357,
-        "winning": 164,
-        "defense": 94,
-        "offense": 304,
-        "recruits": 308,
-        "oreb": 130,
-        "continuity": 88,
-        "turnovers": 288,
-        "three": 356
-      },
-      "identity": null,
-      "returning": 1,
-      "experience": 1,
-      "incomplete": true,
-      "transfers_in": []
-    },
-    {
-      "rk": 335,
       "team_id": 190,
       "school": "New Hampshire",
       "conference": "Am. East",
@@ -21017,7 +21296,7 @@
       "prev_rk": 310,
       "trend": [
         310,
-        335
+        334
       ],
       "last_game": {
         "date": "2026-11-03T00:00Z",
@@ -21032,6 +21311,7 @@
         "site": "away"
       },
       "color": "#004990",
+      "adjustment": null,
       "own_score": -1.314,
       "own_rank": 343,
       "external_rank": null,
@@ -21066,6 +21346,67 @@
       "transfers_in": []
     },
     {
+      "rk": 335,
+      "team_id": 4,
+      "school": "Alabama A&M",
+      "conference": "SWAC",
+      "score": -1.163,
+      "rating": -17.5,
+      "power_games": 1,
+      "sos": -35.1,
+      "prev_rk": 334,
+      "trend": [
+        334,
+        335
+      ],
+      "last_game": {
+        "date": "2026-11-03T01:30Z",
+        "opponent": "Oakwood",
+        "site": "home",
+        "won": true,
+        "score": "90-57"
+      },
+      "next_game": {
+        "date": "2026-11-07T01:00Z",
+        "opponent": "Mississippi U for Women",
+        "site": "home"
+      },
+      "color": "#790000",
+      "adjustment": null,
+      "own_score": -1.227,
+      "own_rank": 336,
+      "external_rank": null,
+      "preseason_score": -1.227,
+      "games": 1,
+      "wins": 1,
+      "losses": 0,
+      "conf_wins": 0,
+      "conf_losses": 0,
+      "off_eff": 93,
+      "oreb_pct": 43.9,
+      "to_margin": -4.3,
+      "three_pct": 14.7,
+      "def_eff": 76.3,
+      "conf_strength": -21.6,
+      "ranks": {
+        "net": 171,
+        "competition": 357,
+        "winning": 164,
+        "defense": 94,
+        "offense": 304,
+        "recruits": 308,
+        "oreb": 130,
+        "continuity": 88,
+        "turnovers": 288,
+        "three": 356
+      },
+      "identity": null,
+      "returning": 1,
+      "experience": 1,
+      "incomplete": true,
+      "transfers_in": []
+    },
+    {
       "rk": 336,
       "team_id": 306,
       "school": "UAlbany",
@@ -21073,7 +21414,7 @@
       "score": -1.166,
       "rating": -17.6,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 328,
       "trend": [
         328,
@@ -21092,6 +21433,7 @@
         "site": "away"
       },
       "color": "#3D2777",
+      "adjustment": null,
       "own_score": -1.106,
       "own_rank": 326,
       "external_rank": null,
@@ -21130,7 +21472,7 @@
       "team_id": 341,
       "school": "Wagner",
       "conference": "NEC",
-      "score": -1.195,
+      "score": -1.194,
       "rating": -18,
       "power_games": 1,
       "sos": 2.4,
@@ -21152,6 +21494,7 @@
         "site": "away"
       },
       "color": "#00483A",
+      "adjustment": null,
       "own_score": -1.156,
       "own_rank": 331,
       "external_rank": null,
@@ -21191,9 +21534,9 @@
       "school": "Sacred Heart",
       "conference": "Metro",
       "score": -1.232,
-      "rating": -18.5,
+      "rating": -18.6,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 335,
       "trend": [
         335,
@@ -21212,6 +21555,7 @@
         "site": "home"
       },
       "color": "#A40012",
+      "adjustment": null,
       "own_score": -1.303,
       "own_rank": 340,
       "external_rank": null,
@@ -21285,6 +21629,7 @@
         "site": "away"
       },
       "color": "#EE8601",
+      "adjustment": null,
       "own_score": -1.333,
       "own_rank": 345,
       "external_rank": null,
@@ -21326,7 +21671,7 @@
       "score": -1.241,
       "rating": -18.7,
       "power_games": 1,
-      "sos": 6.1,
+      "sos": 6.2,
       "prev_rk": 339,
       "trend": [
         339,
@@ -21345,6 +21690,7 @@
         "site": "home"
       },
       "color": "#005596",
+      "adjustment": null,
       "own_score": -1.233,
       "own_rank": 337,
       "external_rank": null,
@@ -21397,9 +21743,9 @@
       "school": "Morgan State",
       "conference": "MEAC",
       "score": -1.265,
-      "rating": -19,
+      "rating": -19.1,
       "power_games": 2,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 332,
       "trend": [
         332,
@@ -21418,6 +21764,7 @@
         "site": "away"
       },
       "color": "#014786",
+      "adjustment": null,
       "own_score": -1.416,
       "own_rank": 349,
       "external_rank": null,
@@ -21456,7 +21803,7 @@
       "team_id": 138,
       "school": "Lafayette",
       "conference": "Patriot",
-      "score": -1.268,
+      "score": -1.267,
       "rating": -19.1,
       "power_games": 1,
       "sos": 8.1,
@@ -21478,6 +21825,7 @@
         "site": "home"
       },
       "color": "#790000",
+      "adjustment": null,
       "own_score": -1.271,
       "own_rank": 338,
       "external_rank": null,
@@ -21516,7 +21864,7 @@
       "team_id": 14,
       "school": "Arkansas-Pine Bluff",
       "conference": "SWAC",
-      "score": -1.281,
+      "score": -1.28,
       "rating": -19.3,
       "power_games": 1,
       "sos": 20.4,
@@ -21538,6 +21886,7 @@
         "site": "away"
       },
       "color": "#E0AA0F",
+      "adjustment": null,
       "own_score": -1.35,
       "own_rank": 346,
       "external_rank": null,
@@ -21598,6 +21947,7 @@
         "site": "away"
       },
       "color": "#860038",
+      "adjustment": null,
       "own_score": -1.31,
       "own_rank": 342,
       "external_rank": null,
@@ -21636,10 +21986,10 @@
       "team_id": 111,
       "school": "Holy Cross",
       "conference": "Patriot",
-      "score": -1.295,
+      "score": -1.294,
       "rating": -19.5,
       "power_games": 1,
-      "sos": 3.4,
+      "sos": 3.5,
       "prev_rk": 345,
       "trend": [
         345,
@@ -21658,6 +22008,7 @@
         "site": "away"
       },
       "color": "#0A0A0A",
+      "adjustment": null,
       "own_score": -1.275,
       "own_rank": 339,
       "external_rank": null,
@@ -21699,7 +22050,7 @@
       "score": -1.296,
       "rating": -19.5,
       "power_games": 1,
-      "sos": 8.8,
+      "sos": 8.9,
       "prev_rk": 336,
       "trend": [
         336,
@@ -21718,6 +22069,7 @@
         "site": "away"
       },
       "color": "#EE3024",
+      "adjustment": null,
       "own_score": -1.306,
       "own_rank": 341,
       "external_rank": null,
@@ -21756,7 +22108,7 @@
       "team_id": 32,
       "school": "Bucknell",
       "conference": "Patriot",
-      "score": -1.317,
+      "score": -1.316,
       "rating": -19.8,
       "power_games": 1,
       "sos": 8.2,
@@ -21778,6 +22130,7 @@
         "site": "home"
       },
       "color": "#000060",
+      "adjustment": null,
       "own_score": -1.325,
       "own_rank": 344,
       "external_rank": null,
@@ -21816,10 +22169,10 @@
       "team_id": 155,
       "school": "Manhattan",
       "conference": "Metro",
-      "score": -1.344,
+      "score": -1.343,
       "rating": -20.2,
       "power_games": 1,
-      "sos": 15.4,
+      "sos": 15.5,
       "prev_rk": 349,
       "trend": [
         349,
@@ -21838,6 +22191,7 @@
         "site": "home"
       },
       "color": "#4F8537",
+      "adjustment": null,
       "own_score": -1.392,
       "own_rank": 347,
       "external_rank": null,
@@ -21890,9 +22244,9 @@
       "school": "Maryland Eastern Shore",
       "conference": "MEAC",
       "score": -1.351,
-      "rating": -20.3,
+      "rating": -20.4,
       "power_games": 2,
-      "sos": 9.3,
+      "sos": 9.4,
       "prev_rk": 357,
       "trend": [
         357,
@@ -21911,6 +22265,7 @@
         "site": "home"
       },
       "color": "#5C2301",
+      "adjustment": null,
       "own_score": -1.437,
       "own_rank": 351,
       "external_rank": null,
@@ -21949,10 +22304,10 @@
       "team_id": 6,
       "school": "Alabama State",
       "conference": "SWAC",
-      "score": -1.36,
+      "score": -1.359,
       "rating": -20.5,
       "power_games": 1,
-      "sos": 13.8,
+      "sos": 13.9,
       "prev_rk": 350,
       "trend": [
         350,
@@ -21971,6 +22326,7 @@
         "site": "home"
       },
       "color": "#E9A900",
+      "adjustment": null,
       "own_score": -1.4,
       "own_rank": 348,
       "external_rank": null,
@@ -22012,7 +22368,7 @@
       "score": -1.36,
       "rating": -20.5,
       "power_games": 1,
-      "sos": 20.7,
+      "sos": 20.8,
       "prev_rk": 353,
       "trend": [
         353,
@@ -22031,6 +22387,7 @@
         "site": "away"
       },
       "color": "#006700",
+      "adjustment": null,
       "own_score": -1.437,
       "own_rank": 352,
       "external_rank": null,
@@ -22069,8 +22426,8 @@
       "team_id": 31,
       "school": "Bryant",
       "conference": "Am. East",
-      "score": -1.385,
-      "rating": -20.8,
+      "score": -1.386,
+      "rating": -20.9,
       "power_games": 1,
       "sos": -14.9,
       "prev_rk": 344,
@@ -22091,6 +22448,7 @@
         "site": "away"
       },
       "color": "#000000",
+      "adjustment": null,
       "own_score": -1.455,
       "own_rank": 353,
       "external_rank": null,
@@ -22129,10 +22487,10 @@
       "team_id": 42,
       "school": "Canisius",
       "conference": "Metro",
-      "score": -1.43,
+      "score": -1.429,
       "rating": -21.5,
       "power_games": 1,
-      "sos": 2.8,
+      "sos": 2.9,
       "prev_rk": 351,
       "trend": [
         351,
@@ -22151,6 +22509,7 @@
         "site": "home"
       },
       "color": "#004A81",
+      "adjustment": null,
       "own_score": -1.418,
       "own_rank": 350,
       "external_rank": null,
@@ -22205,7 +22564,7 @@
       "score": -1.456,
       "rating": -21.9,
       "power_games": 1,
-      "sos": 10.1,
+      "sos": 10.2,
       "prev_rk": 358,
       "trend": [
         358,
@@ -22224,6 +22583,7 @@
         "site": "away"
       },
       "color": "#127DBE",
+      "adjustment": null,
       "own_score": -1.485,
       "own_rank": 354,
       "external_rank": null,
@@ -22262,7 +22622,7 @@
       "team_id": 194,
       "school": "Niagara",
       "conference": "Metro",
-      "score": -1.516,
+      "score": -1.515,
       "rating": -22.8,
       "power_games": 1,
       "sos": 14.1,
@@ -22284,6 +22644,7 @@
         "site": "home"
       },
       "color": "#69207E",
+      "adjustment": null,
       "own_score": -1.57,
       "own_rank": 356,
       "external_rank": null,
@@ -22338,7 +22699,7 @@
       "score": -1.522,
       "rating": -22.9,
       "power_games": 1,
-      "sos": 9,
+      "sos": 9.1,
       "prev_rk": 348,
       "trend": [
         348,
@@ -22357,6 +22718,7 @@
         "site": "home"
       },
       "color": "#F89728",
+      "adjustment": null,
       "own_score": -1.532,
       "own_rank": 355,
       "external_rank": null,
@@ -22398,7 +22760,7 @@
       "score": -1.528,
       "rating": -23,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 352,
       "trend": [
         352,
@@ -22417,6 +22779,7 @@
         "site": "away"
       },
       "color": "#7D1315",
+      "adjustment": null,
       "own_score": -1.631,
       "own_rank": 357,
       "external_rank": null,
@@ -22456,9 +22819,9 @@
       "school": "Jackson State",
       "conference": "SWAC",
       "score": -1.617,
-      "rating": -24.3,
+      "rating": -24.4,
       "power_games": 1,
-      "sos": 19.2,
+      "sos": 19.3,
       "prev_rk": 359,
       "trend": [
         359,
@@ -22477,6 +22840,7 @@
         "site": "away"
       },
       "color": "#123297",
+      "adjustment": null,
       "own_score": -1.706,
       "own_rank": 358,
       "external_rank": null,
@@ -22518,7 +22882,7 @@
       "score": -1.656,
       "rating": -24.9,
       "power_games": 1,
-      "sos": -35,
+      "sos": -35.1,
       "prev_rk": 355,
       "trend": [
         355,
@@ -22537,6 +22901,7 @@
         "site": "away"
       },
       "color": "#FF3630",
+      "adjustment": null,
       "own_score": -1.772,
       "own_rank": 360,
       "external_rank": null,
@@ -22597,6 +22962,7 @@
         "site": "home"
       },
       "color": "#A80532",
+      "adjustment": null,
       "own_score": -1.77,
       "own_rank": 359,
       "external_rank": null,
@@ -22651,7 +23017,7 @@
       "score": -1.768,
       "rating": -26.6,
       "power_games": 1,
-      "sos": 8.5,
+      "sos": 8.6,
       "prev_rk": 361,
       "trend": [
         361,
@@ -22670,6 +23036,7 @@
         "site": "away"
       },
       "color": "#00614A",
+      "adjustment": null,
       "own_score": -1.813,
       "own_rank": 361,
       "external_rank": null,
@@ -22711,7 +23078,7 @@
       "score": -1.796,
       "rating": -27,
       "power_games": 1,
-      "sos": 11.1,
+      "sos": 11.2,
       "prev_rk": 363,
       "trend": [
         363,
@@ -22730,6 +23097,7 @@
         "site": "away"
       },
       "color": "#2E3192",
+      "adjustment": null,
       "own_score": -1.857,
       "own_rank": 362,
       "external_rank": null,
@@ -22771,7 +23139,7 @@
       "score": -1.888,
       "rating": -28.4,
       "power_games": 1,
-      "sos": 11.7,
+      "sos": 11.8,
       "prev_rk": 362,
       "trend": [
         362,
@@ -22790,6 +23158,7 @@
         "site": "home"
       },
       "color": "#4B0058",
+      "adjustment": null,
       "own_score": -1.96,
       "own_rank": 363,
       "external_rank": null,
@@ -22829,7 +23198,7 @@
       "school": "Mississippi Valley State",
       "conference": "SWAC",
       "score": -2.267,
-      "rating": -34,
+      "rating": -34.1,
       "power_games": 0,
       "sos": null,
       "prev_rk": 364,
@@ -22844,6 +23213,7 @@
         "site": "away"
       },
       "color": "#005328",
+      "adjustment": null,
       "own_score": -2.267,
       "own_rank": 364,
       "external_rank": null,

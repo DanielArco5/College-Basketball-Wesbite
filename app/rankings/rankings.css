@@ -715,3 +715,4 @@ body:has(.rank) .sitenav { max-width: 72rem; }
 @media (max-width: 36rem) {
   .rank-game { white-space: normal; min-width: 8.5rem; }
 }
+.rank-badge.is-adjust { background: rgba(160, 140, 120, 0.16); color: #C9B8A6; cursor: help; }

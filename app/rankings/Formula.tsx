@@ -78,6 +78,7 @@ export function FormulaRanking({ ranking, limit }: { ranking: Ranking; limit?: n
                     {r.conference}
                     {r.identity && <IdentityBadge label={r.identity} />}
                     {r.pinned && <PickBadge row={r} />}
+                    {r.adjustment && <AdjustBadge adjustment={r.adjustment} />}
                   </span>
                   {r.transfers_in.length > 0 && (
                     <span className="ratings-adds-line">
@@ -265,6 +266,15 @@ function Movers({ rows }: { rows: RankedRow[] }) {
 /** The team's color as a CSS variable, for its row stripe. */
 function teamColor(color: string | null | undefined) {
   return color ? ({ ["--team" as string]: color } as React.CSSProperties) : undefined;
+}
+
+/** Our call on the preseason rating; the reason is in the tooltip. */
+function AdjustBadge({ adjustment }: { adjustment: { points: number; why: string } }) {
+  return (
+    <span className="rank-badge is-adjust" title={`${adjustment.why}. ${signed(adjustment.points, 1)} rating points.`}>
+      Our call {signed(adjustment.points, 1)}
+    </span>
+  );
 }
 
 /** Placed by hand. The formula's own spot stays visible next to it. */
@@ -495,6 +505,13 @@ export function FormulaMethod({ formula }: { formula: Formula }) {
           <strong>Rank.</strong> The top {RANKED} are ranked and the next{" "}
           {p.HONORABLE} are honorable mentions. All of this reruns every hour
           on game days, as box scores and final scores come in.
+        </li>
+        <li>
+          <strong>Our calls.</strong> Where we know something the numbers
+          don&rsquo;t weigh enough, like a team that lost its top scorers, we
+          move its preseason rating by a few points and tag it &ldquo;Our
+          call&rdquo; with the reason. It fades with the rest of the
+          preseason as games are played, so the results still decide.
         </li>
         <li>
           <strong>Our picks.</strong> We can place a team by hand when we

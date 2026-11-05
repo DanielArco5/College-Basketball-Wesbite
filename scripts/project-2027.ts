@@ -231,6 +231,23 @@ const OUT_FOR_SEASON: [player: string, school: string][] = [
   ["Donnie Freeman", "Syracuse"], // Achilles, St. John's transfer (Jul 2)
 ];
 
+/**
+ * Our own calls, in rating points (per 100 possessions) off a team's
+ * preseason rating, with the reason shown on the page. They sit in the
+ * preseason, so they fade as real games take over, the same as the rest
+ * of the projection; nothing here pins a rank.
+ */
+const ADJUSTMENTS: Record<string, { points: number; why: string }> = {
+  Arizona: {
+    points: -3.4,
+    why: "Roster turnover: about a quarter of last season's scoring is back, and none of its top three scorers",
+  },
+  Gonzaga: {
+    points: -1.6,
+    why: "Roster turnover in its lead scorers",
+  },
+};
+
 const db = createClient(env("SUPABASE_URL"), env("SUPABASE_SERVICE_ROLE_KEY"), {
   auth: { persistSession: false },
 });
@@ -652,7 +669,14 @@ async function main() {
     // Off both lists: no better than the team just below their depth.
     return rk === null ? Math.min(own[i], ladder[EXTERNAL_DEPTH]) : ladder[rk - 1];
   });
-  const preseason = own.map((o, i) => (1 - EXTERNAL_WEIGHT) * o + EXTERNAL_WEIGHT * externalScore[i]);
+  const blended = own.map((o, i) => (1 - EXTERNAL_WEIGHT) * o + EXTERNAL_WEIGHT * externalScore[i]);
+  // Our calls (ADJUSTMENTS), converted from rating points to this scale.
+  const toScore = Math.sqrt(mean(blended.map((s) => (s - mean(blended)) ** 2))) / EM_SD;
+  const schools = rows.map((r) => r.school);
+  for (const name of Object.keys(ADJUSTMENTS)) {
+    if (!schools.includes(name)) console.warn(`  adjustment not matched: ${name}`);
+  }
+  const preseason = blended.map((b, i) => b + (ADJUSTMENTS[schools[i]]?.points ?? 0) * toScore);
 
   // ── 8. Power rating from this season's box scores ─────────────────
   const teamIds = rows.map((r) => r.team_id);
@@ -725,6 +749,7 @@ async function main() {
       last_game: lastGame(r.team_id, games2027, d1),
       next_game: nextGame(r.team_id, games2027, d1),
       color: colorOf.get(r.team_id) ?? null,
+      adjustment: ADJUSTMENTS[r.school] ?? null,
       own_score: round(own[i], 3),
       own_rank: ownRank[i],
       external_rank: external[i],
