@@ -241,13 +241,21 @@ async function ingestDate(dateISO: string, season: number, untrackedOnly = false
 
     // Stub rows so the FKs resolve. Enrich later from /teams and /roster.
     if (p.teamId) {
-      teams.set(p.teamId, { id: p.teamId, school: p.team ?? String(p.teamId), conference: p.conference });
+      teams.set(p.teamId, {
+        id: p.teamId,
+        school: p.team ?? String(p.teamId),
+        conference: p.conference,
+        // New rows only (existing teams are left alone). The column
+        // defaults to true; a team CBBD lists with no conference isn't D1.
+        is_d1: p.conference != null,
+      });
     }
     if (p.opponentId) {
       teams.set(p.opponentId, {
         id: p.opponentId,
         school: p.opponent ?? String(p.opponentId),
         conference: p.opponentConference,
+        is_d1: p.opponentConference != null,
       });
     }
 

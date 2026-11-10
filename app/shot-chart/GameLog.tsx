@@ -150,7 +150,18 @@ export function GameLog({
 }
 
 /** One team's box score for one game: every player who played, then totals. */
-export function BoxScore({ rows, title, season }: { rows: LogRow[]; title: string; season: number }) {
+export function BoxScore({
+  rows,
+  title,
+  season,
+  linkPlayers = true,
+}: {
+  rows: LogRow[];
+  title: string;
+  season: number;
+  /** False for a non-D1 team: its players have no chart to open. */
+  linkPlayers?: boolean;
+}) {
   if (!rows.length) return null;
   const players = [...rows].sort(
     (a, b) => Number(b.starter) - Number(a.starter) || n(b.minutes) - n(a.minutes),
@@ -176,7 +187,11 @@ export function BoxScore({ rows, title, season }: { rows: LogRow[]; title: strin
             {players.map((p) => (
               <tr key={p.player_id}>
                 <td>
-                  <Link href={`/shot-chart?player=${p.player_id}&season=${season}`}>{p.player_name ?? "Unknown"}</Link>
+                  {linkPlayers ? (
+                    <Link href={`/shot-chart?player=${p.player_id}&season=${season}`}>{p.player_name ?? "Unknown"}</Link>
+                  ) : (
+                    (p.player_name ?? "Unknown")
+                  )}
                   {p.starter && <span className="game-log-starter" title="Starter">S</span>}
                 </td>
                 <td className="num">{n(p.minutes)}</td>

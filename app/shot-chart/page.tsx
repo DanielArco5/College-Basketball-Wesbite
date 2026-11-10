@@ -184,13 +184,16 @@ export default async function ShotChartPage({
 
     if (error) return <Failure message={error} />;
 
-    items = candidates.map((row) => ({
+    // Division I players only. Players on non-D1 opponents have shots in
+    // the database (they make up D1 teams' shots allowed), but no chart.
+    const d1 = candidates.filter((row) => teamById.has(row.team_id));
+    items = d1.map((row) => ({
       id: row.player_id,
       name: row.player_name,
-      detail: teamById.get(row.team_id)?.school ?? "",
+      detail: teamById.get(row.team_id)!.school,
     }));
     selectedId = Number(params.player) || items[0]?.id;
-    playerTeam = candidates.find((c) => c.player_id === selectedId);
+    playerTeam = d1.find((c) => c.player_id === selectedId);
 
     // Roster links reach players under the picker's shot floor too; look
     // them up directly so the page still knows their name and team.
@@ -201,7 +204,12 @@ export default async function ShotChartPage({
         .eq("season", season)
         .eq("player_id", selectedId)
         .maybeSingle();
-      if (data) playerTeam = data;
+      if (data && teamById.has(data.team_id)) playerTeam = data;
+    }
+    // A non-D1 player's link (an old bookmark): open the list's first player.
+    if (!playerTeam && candidates.some((c) => c.player_id === selectedId)) {
+      selectedId = items[0]?.id;
+      playerTeam = d1.find((c) => c.player_id === selectedId);
     }
   }
 
@@ -604,6 +612,7 @@ export default async function ShotChartPage({
             rows={gameBox.filter((r) => r.team_id === t.id)}
             title={`${t.name} box score`}
             season={season}
+            linkPlayers={teamById.has(t.id)}
           />
         ))}
       {!game && (
