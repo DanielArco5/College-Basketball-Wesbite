@@ -604,13 +604,6 @@ body:has(.rank) .sitenav { max-width: 72rem; }
 .rank-ap-page .ap { margin-top: 1.5rem; padding-top: 0; border-top: 0; }
 .rank-ap-page .ap h2 { display: none; }
 
-.ap-ours {
-  margin-left: auto;
-  font-family: "Barlow Condensed", system-ui, sans-serif;
-  font-size: 0.82rem;
-  color: var(--ink-faint);
-}
-
 /* --- Top 25: movement, trend, games, team color --------------------- */
 
 .rank-top td { vertical-align: middle; }

@@ -15,7 +15,7 @@ import ShotMix, { type LeagueTotals, type SeasonTotals } from "./ShotMix";
 import EntityPicker, { type PickerItem } from "./EntityPicker";
 import Roster, { type RosterPlayer, type RosterSeason } from "./Roster";
 import PlayerStats, { type BoxRow } from "./PlayerStats";
-import GameChart, { GameLegend, type GameShot } from "./GameChart";
+import GameChart, { type GameShot } from "./GameChart";
 import GamePicker from "./GamePicker";
 import { BoxScore, GameLog, type GameMeta, type LogRow } from "./GameLog";
 import { conferenceOf, membersOf } from "@/lib/conferences";
@@ -101,8 +101,8 @@ export default async function ShotChartPage({
   // season is "fitted" once they're filled. The live season opens with
   // its first game all the same: until it's fitted, its charts are
   // counted straight from the shots (shotZoneStats) against the last
-  // fitted season's D1 averages. The page still opens on the newest
-  // fitted season until then.
+  // fitted season's D1 averages. The page opens on the newest season
+  // with any shots, so the live season from its first game.
   const [{ data: seasonRows }, { data: playerPriors }, { data: teamPriors }] = await Promise.all([
     db.from("d1_season_totals").select("season"),
     db.from("zone_priors").select("season, zone"),
@@ -121,7 +121,7 @@ export default async function ShotChartPage({
   const requested = Number(params.season);
   const season = available.includes(requested)
     ? requested
-    : (fitted[0] ?? available[0] ?? SEASONS.at(-1)!);
+    : (available[0] ?? SEASONS.at(-1)!);
   const young = !fitted.includes(season);
   /** Whose D1 averages the page compares against. */
   const baseSeason = young ? (fitted[0] ?? season) : season;
@@ -360,6 +360,18 @@ export default async function ShotChartPage({
 
   const { attempts, makes } = totals;
 
+  // Seasons this player has shots in. The season toggle keeps the player
+  // only where he has a chart; elsewhere it opens that season's player list.
+  const playerSeasons = new Set<number>();
+  if (mode === "player" && selectedId) {
+    const { data } = await db
+      .from("player_season_totals")
+      .select("season")
+      .eq("player_id", selectedId)
+      .in("season", SEASONS);
+    for (const r of data ?? []) playerSeasons.add(r.season);
+  }
+
   // A picked game's box scores: the page's own team first, then the
   // opponent (shots-allowed pages too, so both are always there).
   const ownTeam = mode === "team" ? selectedId : playerTeam?.team_id;
@@ -425,11 +437,16 @@ export default async function ShotChartPage({
                 </span>
               );
             }
-            const subject = mode === "team" ? `team=${selectedId}` : `player=${selectedId}`;
+            const subject =
+              mode === "team"
+                ? `team=${selectedId}&`
+                : playerSeasons.has(s)
+                  ? `player=${selectedId}&`
+                  : "";
             return (
               <Link
                 key={s}
-                href={`/shot-chart?${subject}&season=${s}`}
+                href={`/shot-chart?${subject}season=${s}`}
                 className={s === season ? "on" : ""}
                 aria-current={s === season ? "page" : undefined}
                 scroll={false}
@@ -984,7 +1001,6 @@ function GameView({
       <div className="chart-col">
         <figure className="chart">
           <GameChart shots={plotted} showShooter={mode === "team"} />
-          <GameLegend />
           <figcaption>
             {side === "defense"
               ? "Every shot opponents took against this team in this game."

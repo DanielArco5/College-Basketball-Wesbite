@@ -11,18 +11,9 @@ function seasonLabel(season: number) {
 /**
  * The AP Top 25, one tab per season: the live poll for the current
  * season, the final poll for finished ones. Each team links to its shot
- * chart for that season. `ours` (teams.id -> our rank) adds our spot next
- * to each team in the `oursSeason` poll.
+ * chart for that season.
  */
-export default function ApPolls({
-  polls,
-  ours,
-  oursSeason,
-}: {
-  polls: ApPoll[];
-  ours?: Record<number, number>;
-  oursSeason?: number;
-}) {
+export default function ApPolls({ polls }: { polls: ApPoll[] }) {
   const [season, setSeason] = useState(polls[0]?.season);
   const poll = polls.find((p) => p.season === season);
   if (!poll) return null;
@@ -55,11 +46,6 @@ export default function ApPolls({
               <span>{r.school}</span>
             )}
             {r.record && r.record !== "0-0" && <span className="ap-rec">{r.record}</span>}
-            {poll.season === oursSeason && r.team_id && ours?.[r.team_id] && (
-              <span className="ap-ours" title="Where our formula ranks them">
-                Ours #{ours[r.team_id]}
-              </span>
-            )}
           </li>
         ))}
       </ol>

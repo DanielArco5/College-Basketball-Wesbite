@@ -859,3 +859,45 @@ body:has(.wrap) {
 /* Box scores list players, so the first column is the only left one. */
 .game-log table:has(.game-log-total) th:nth-child(-n + 3) { text-align: right; }
 .game-log table:has(.game-log-total) th:first-child { text-align: left; }
+
+/* All / makes / misses on a single game's chart. */
+.shot-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.shot-filter button {
+  font: inherit;
+  font-family: var(--display);
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  color: var(--ink-dim);
+  background: transparent;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  padding: 0.3rem 0.85rem;
+  cursor: pointer;
+  transition: color 120ms ease, border-color 120ms ease;
+}
+
+.shot-filter button:hover {
+  color: var(--ink);
+}
+
+.shot-filter button.on {
+  color: var(--accent-ink);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.shot-filter button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.shot-filter-n {
+  opacity: 0.75;
+  font-variant-numeric: tabular-nums;
+}

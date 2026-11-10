@@ -1,7 +1,6 @@
-import { apRanks } from "@/lib/ap";
 import { getRanking } from "@/lib/rankings";
-import { ApDisclaimer, RankHeader } from "../bits";
-import AllTeams, { type TeamRow } from "./AllTeams";
+import { RankHeader } from "../bits";
+import { AllTeamsSection } from "../sections";
 import "../rankings.css";
 
 export const metadata = {
@@ -12,33 +11,7 @@ export const metadata = {
 export const revalidate = 300;
 
 export default async function AllTeamsPage() {
-  const [{ formula }, ap] = await Promise.all([getRanking(), apRanks()]);
-  // Only what the table shows: the full rows carry transfers, weights and
-  // more, which would bloat the page's data for nothing.
-  const rows: TeamRow[] = formula.rows.map((r) => ({
-    rk: r.rk,
-    team_id: r.team_id,
-    school: r.school,
-    conference: r.conference,
-    wins: r.wins,
-    losses: r.losses,
-    rating: r.rating ?? 0,
-    off_eff: r.off_eff,
-    oreb_pct: r.oreb_pct,
-    to_margin: r.to_margin,
-    three_pct: r.three_pct,
-    def_eff: r.def_eff,
-    ranks: r.ranks,
-    identity: r.identity,
-    ap: ap.get(r.team_id),
-    prev_rk: r.prev_rk,
-    trend: r.trend ?? [],
-    last_game: r.last_game,
-    next_game: r.next_game,
-    color: r.color,
-    sos: typeof r.sos === "number" ? r.sos : null,
-  }));
-
+  const { formula } = await getRanking();
   return (
     <main className="rank">
       <RankHeader live={formula.stage === "in-season"} active="all" title="All teams">
@@ -48,8 +21,7 @@ export default async function AllTeamsPage() {
         stat is that team&rsquo;s rank in the country. Hand picks in the Top 25 aren&rsquo;t applied
         here; this is the formula&rsquo;s own order.
       </RankHeader>
-      <AllTeams rows={rows} />
-      <ApDisclaimer />
+      <AllTeamsSection formula={formula} />
     </main>
   );
 }

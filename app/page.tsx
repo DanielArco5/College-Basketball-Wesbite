@@ -4,6 +4,7 @@ import { getRanking, type Ranking } from "@/lib/rankings";
 import { getWire } from "@/lib/wire";
 import type { WireEntry } from "./LiveWire";
 import { FormulaMethod, FormulaRanking } from "./rankings/Formula";
+import { AllTeamsSection, ApSection, ConferencesSection } from "./rankings/sections";
 import { LogoMark } from "./Logo";
 import "./home.css";
 import "./rankings/rankings.css";
@@ -32,6 +33,9 @@ type Counts = {
 const TABS = [
   { key: "overview", label: "Overview" },
   { key: "top25", label: "Top 25" },
+  { key: "all", label: "All teams" },
+  { key: "conferences", label: "Conferences" },
+  { key: "ap", label: "AP Poll" },
   { key: "shots", label: "Shot charts" },
   { key: "wire", label: "Live Wire" },
   { key: "method", label: "How it works" },
@@ -141,6 +145,33 @@ export default async function Home({
       <div className="home-panel">
         {tab === "overview" && <Overview ranking={ranking} />}
         {tab === "top25" && <Top25 ranking={ranking} />}
+        {tab === "all" && (
+          <section>
+            <h2 className="home-h2">All {formula.teams_rated} teams, 2026-27</h2>
+            <p className="home-intro">
+              Every Division I team, rated by the same formula as the Top 25 and
+              re-ranked as games go final. Arrows show the change since yesterday;
+              the small number under each stat is that team&rsquo;s national rank.
+            </p>
+            <AllTeamsSection formula={formula} />
+          </section>
+        )}
+        {tab === "conferences" && (
+          <section>
+            <h2 className="home-h2">Conferences, 2026-27</h2>
+            <p className="home-intro">
+              Each league by conference record once league play starts, by our
+              rating until then. Strongest leagues first.
+            </p>
+            <ConferencesSection formula={formula} />
+          </section>
+        )}
+        {tab === "ap" && (
+          <section className="rank-ap-page">
+            <h2 className="home-h2">AP Top 25</h2>
+            <ApSection />
+          </section>
+        )}
         {tab === "shots" && <ShotCharts db={db} />}
         {tab === "wire" && <Wire />}
         {tab === "method" && <Method ranking={ranking} />}
@@ -212,8 +243,8 @@ function Top25({ ranking }: { ranking: Ranking }) {
     <section>
       <h2 className="home-h2">
         {live ? "Top 25, 2026-27" : "Top 25, 2026-27 preseason"}
-        <Link href="/rankings" className="home-h2-link">
-          Full page
+        <Link href="/?tab=all" className="home-h2-link" scroll={false}>
+          All teams
         </Link>
       </h2>
       <p className="home-intro">
