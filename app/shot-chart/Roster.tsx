@@ -12,7 +12,42 @@ export type RosterPlayer = {
   href: string | null;
   /** Short context: shots that season, "Transfer from X", "New to D1". */
   note: string;
+  /** Box-score totals that season for this team; null before he's played. */
+  stats: RosterStats | null;
 };
+
+export type RosterStats = {
+  games: number;
+  minutes: number;
+  points: number;
+  rebounds: number;
+  assists: number;
+  steals: number;
+  blocks: number;
+  turnovers: number;
+  fgm: number;
+  fga: number;
+  three_m: number;
+  three_a: number;
+  ftm: number;
+  fta: number;
+};
+
+const PER_GAME: [string, string, keyof RosterStats][] = [
+  ["MIN", "Minutes per game", "minutes"],
+  ["PTS", "Points per game", "points"],
+  ["REB", "Rebounds per game", "rebounds"],
+  ["AST", "Assists per game", "assists"],
+  ["STL", "Steals per game", "steals"],
+  ["BLK", "Blocks per game", "blocks"],
+  ["TO", "Turnovers per game", "turnovers"],
+];
+const SPLITS: [string, string, keyof RosterStats, keyof RosterStats][] = [
+  ["FG%", "Field goals", "fgm", "fga"],
+  ["3P%", "Three-pointers", "three_m", "three_a"],
+  ["FT%", "Free throws", "ftm", "fta"],
+];
+const pct = (made: number, att: number) => (att ? ((100 * made) / att).toFixed(1) : "—");
 
 export type RosterSeason = { season: number; label: string; players: RosterPlayer[] };
 
@@ -50,22 +85,63 @@ export default function Roster({
           ))}
         </div>
       </div>
-      <ul className="roster-list">
-        {current.players.map((p) => (
-          <li key={p.id}>
-            <span className="roster-num">{p.jersey ? `#${p.jersey}` : ""}</span>
-            <span className="roster-name">
-              {p.href ? (
-                <Link href={p.href}>{p.name}</Link>
-              ) : (
-                <span className="roster-nolink">{p.name}</span>
-              )}
-              {p.position && <span className="roster-pos">{p.position}</span>}
-            </span>
-            <span className="roster-note">{p.note}</span>
-          </li>
-        ))}
-      </ul>
+      <div className="game-log roster-stats">
+        <div className="game-log-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Player</th>
+                <th title="Games played">GP</th>
+                {PER_GAME.map(([label, title]) => (
+                  <th key={label} title={title}>
+                    {label}
+                  </th>
+                ))}
+                {SPLITS.map(([label, title]) => (
+                  <th key={label} title={title}>
+                    {label}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {current.players.map((p) => (
+                <tr key={p.id}>
+                  <td>
+                    <span className="roster-num">{p.jersey ? `#${p.jersey}` : ""}</span>
+                    {p.href ? (
+                      <Link href={p.href}>{p.name}</Link>
+                    ) : (
+                      <span className="roster-nolink">{p.name}</span>
+                    )}
+                    {p.position && <span className="roster-pos">{p.position}</span>}
+                  </td>
+                  {p.stats?.games ? (
+                    <>
+                      <td className="num">{p.stats.games}</td>
+                      {PER_GAME.map(([label, , key]) => (
+                        <td key={label} className="num">
+                          {(p.stats![key] / p.stats!.games).toFixed(1)}
+                        </td>
+                      ))}
+                      {SPLITS.map(([label, , made, att]) => (
+                        <td key={label} className="num" title={`${p.stats![made]}/${p.stats![att]}`}>
+                          {pct(p.stats![made], p.stats![att])}
+                        </td>
+                      ))}
+                    </>
+                  ) : (
+                    <td className="roster-note" colSpan={1 + PER_GAME.length + SPLITS.length}>
+                      {p.note}
+                    </td>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="roster-foot">Per-game averages. Hover a percentage for makes and attempts.</p>
+      </div>
     </section>
   );
 }

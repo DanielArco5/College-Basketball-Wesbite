@@ -572,44 +572,23 @@ body:has(.wrap) {
   outline-offset: 2px;
 }
 
-.roster-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
-  gap: 0 2rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.roster-list li {
-  display: grid;
-  grid-template-columns: 2.4rem 1fr;
-  grid-template-rows: auto auto;
-  column-gap: 0.4rem;
-  padding: 0.55rem 0;
-  border-bottom: 1px solid var(--rule);
-}
+.roster-stats { margin-top: 0; }
+/* The player column is the only left-aligned one. */
+.roster-stats th:nth-child(-n + 3) { text-align: right; }
+.roster-stats th:first-child { text-align: left; }
 
 .roster-num {
-  grid-row: span 2;
+  display: inline-block;
+  min-width: 2.2rem;
   color: var(--ink-dim);
   font-variant-numeric: tabular-nums;
-  font-size: 0.9rem;
-  padding-top: 0.1rem;
+  font-size: 0.85rem;
 }
 
-.roster-name {
-  font-family: var(--display);
-  font-size: 1.05rem;
-}
-.roster-name a {
-  color: var(--ink);
-  text-decoration: none;
-}
-.roster-name a:hover {
-  text-decoration: underline;
-  text-decoration-color: var(--accent);
-  text-underline-offset: 3px;
+.roster-foot {
+  margin: 0.75rem 0 0;
+  color: var(--ink-faint);
+  font-size: 0.8rem;
 }
 
 .roster-nolink { color: var(--ink-dim); }

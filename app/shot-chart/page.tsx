@@ -13,7 +13,7 @@ import {
 import ShotChart, { ZoneLegend, type ZoneStat } from "./ShotChart";
 import ShotMix, { type LeagueTotals, type SeasonTotals } from "./ShotMix";
 import EntityPicker, { type PickerItem } from "./EntityPicker";
-import Roster, { type RosterPlayer, type RosterSeason } from "./Roster";
+import Roster, { type RosterPlayer, type RosterSeason, type RosterStats } from "./Roster";
 import PlayerStats, { type BoxRow } from "./PlayerStats";
 import GameChart, { type GameShot } from "./GameChart";
 import GamePicker from "./GamePicker";
@@ -709,7 +709,7 @@ async function loadRosters(
   return Promise.all(
     SEASONS.map(async (season): Promise<RosterSeason> => {
       const label = `${seasonLabel(season)}`;
-      const [{ data: listed }, { data: shooters }] = await Promise.all([
+      const [{ data: listed }, { data: shooters }, { data: boxRows }] = await Promise.all([
         db
           .from("player_seasons")
           .select("player_id, jersey, position, players(name)")
@@ -720,7 +720,24 @@ async function loadRosters(
           .select("player_id, player_name, team_id, attempts, makes")
           .eq("season", season)
           .eq("team_id", teamId),
+        // Missing before supabase/player-box-stats.sql: the roster then
+        // falls back to its notes.
+        db
+          .from("player_box_seasons")
+          .select(
+            "player_id, games, minutes, points, rebounds, assists, steals, blocks, turnovers, fgm, fga, three_m, three_a, ftm, fta",
+          )
+          .eq("season", season)
+          .eq("team_id", teamId),
       ]);
+      const stats = new Map<number, RosterStats>();
+      for (const { player_id, ...r } of boxRows ?? []) {
+        const clean = Object.fromEntries(Object.entries(r).map(([k, v]) => [k, v ?? 0])) as RosterStats;
+        if (clean.games) stats.set(player_id, clean);
+      }
+      // Most minutes first; anyone without a box line keeps the order below.
+      const byMinutes = (a: { id: number }, b: { id: number }) =>
+        (stats.get(b.id)?.minutes ?? -1) - (stats.get(a.id)?.minutes ?? -1);
 
       if (!listed?.length) {
         const players = (shooters ?? [])
@@ -732,7 +749,9 @@ async function loadRosters(
             position: null,
             href: `/shot-chart?player=${p.player_id}&season=${season}`,
             note: `${p.attempts} FGA · ${p.attempts ? ((100 * p.makes) / p.attempts).toFixed(1) : "0.0"}%`,
-          }));
+            stats: stats.get(p.player_id) ?? null,
+          }))
+          .sort(byMinutes);
         return { season, label, players };
       }
 
@@ -775,12 +794,14 @@ async function loadRosters(
             position: p.position ? (POSITION[p.position] ?? p.position) : null,
             href,
             note,
+            stats: stats.get(p.player_id) ?? null,
             rank: [cur?.attempts ?? -1, old?.attempts ?? -1],
           };
         })
         // This season's shooters, then last season's, then newcomers.
         .sort((a, b) => b.rank[0] - a.rank[0] || b.rank[1] - a.rank[1] || a.name.localeCompare(b.name))
-        .map((p) => ({ ...p, rank: undefined }));
+        .map((p) => ({ ...p, rank: undefined }))
+        .sort(byMinutes);
       return { season, label, players };
     }),
   );
