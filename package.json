@@ -15,7 +15,8 @@
     "fetch-news": "tsx --env-file=.env.local scripts/fetch-news.ts",
     "player-stats": "tsx --env-file=.env.local scripts/player-stats.ts",
     "results": "tsx --env-file=.env.local scripts/game-results.ts",
-    "game-logs": "tsx --env-file=.env.local scripts/game-logs.ts"
+    "game-logs": "tsx --env-file=.env.local scripts/game-logs.ts",
+    "tweet": "tsx --env-file=.env.local scripts/tweet.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.0",
@@ -25,6 +26,7 @@
     "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
