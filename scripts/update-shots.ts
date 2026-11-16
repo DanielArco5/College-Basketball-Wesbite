@@ -3,6 +3,8 @@
  *
  *   npm run update-shots              # through yesterday (Eastern)
  *   npm run update-shots -- --today   # through today, games finished so far
+ *   npm run update-shots -- --no-refresh     # import only
+ *   npm run update-shots -- --refresh-only   # refresh the summaries only
  *
  * Imports every game day since the last run, then refreshes the
  * shot-chart summaries. The day the last run ended on is always fetched
@@ -18,10 +20,15 @@
  * Last season (2025-26) is never touched: it has its own season key and
  * its own checkpoint, and nothing here asks for its dates.
  *
+ * The daily job imports with --no-refresh and runs --refresh-only as its
+ * last step: the refresh loads the database for a few minutes, and
+ * anything that talks to it in that time can fail.
+ *
  * Needs supabase/refresh-shot-views.sql run once in the SQL editor.
  */
 
 import { spawnSync } from "node:child_process";
+import { appendFileSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
 
 const SEASON = 2027;
@@ -36,6 +43,8 @@ const db = createClient(env("SUPABASE_URL"), env("SUPABASE_SERVICE_ROLE_KEY"), {
 });
 
 async function main() {
+  if (process.argv.includes("--refresh-only")) return refresh();
+
   const through = easternDate(process.argv.includes("--today") ? 0 : -1);
   const to = through < SEASON_END ? through : SEASON_END;
 
@@ -69,15 +78,27 @@ async function main() {
     process.exit(run.status ?? 1);
   }
 
+  const after = await seasonShots();
+  const changed = before === null || after !== before;
+  // For the daily job: a later step refreshes only if something changed.
+  if (changed && process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, "changed=true\n");
+
+  if (process.argv.includes("--no-refresh")) {
+    console.log(changed ? "\nNew shots imported; summaries not refreshed yet." : "\nNo new shots since the last run.");
+    return;
+  }
   // Hourly runs mostly find nothing new; the refresh is the slow part
   // (a couple of minutes), so it's skipped when no shot was added. The
   // morning run always refreshes, in case an earlier one was cut short.
-  const after = await seasonShots();
-  if (process.argv.includes("--today") && before !== null && after === before) {
+  if (process.argv.includes("--today") && !changed) {
     console.log("\nNo new shots since the last run; charts are already current.");
     return;
   }
+  await refresh();
+}
 
+async function refresh() {
+  await settleNames();
   console.log("\nRefreshing shot-chart summaries...");
   const { data, error } = await db.rpc("refresh_shot_views");
   // Supabase's API gateway gives up on a request after about two minutes,
@@ -95,6 +116,82 @@ async function main() {
     process.exit(1);
   }
   console.log(data);
+}
+
+/**
+ * One spelling per player before the refresh.
+ *
+ * The play-by-play sometimes spells a player two ways ("Mike Walz", then
+ * "Michael Walz"). The player summaries are keyed by player and zone, so
+ * a second spelling makes a duplicate row and the whole refresh fails and
+ * rolls back: in November 2026 three such players froze every shot chart
+ * for six days. Shots still waiting for a zone are the ones the summaries
+ * haven't seen; any of them that names a player differently from the
+ * summaries (or from each other) is rewritten to the established name.
+ */
+async function settleNames() {
+  // Names on the shots imported since the last good refresh.
+  const fresh = new Map<number, Map<string, number>>();
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await db
+      .from("shot_events")
+      .select("player_id,player_name")
+      .eq("season", SEASON)
+      .is("zone", null)
+      .not("x", "is", null)
+      .not("player_id", "is", null)
+      .order("id")
+      .range(from, from + 999);
+    if (error) throw new Error(`Reading new shots: ${error.message}`);
+    for (const s of data ?? []) {
+      if (!s.player_name) continue;
+      const names = fresh.get(s.player_id) ?? new Map<string, number>();
+      names.set(s.player_name, (names.get(s.player_name) ?? 0) + 1);
+      fresh.set(s.player_id, names);
+    }
+    if ((data ?? []).length < 1000) break;
+  }
+  if (!fresh.size) return;
+
+  // Names the summaries already have for those players.
+  const known = new Map<number, Map<string, number>>();
+  const ids = [...fresh.keys()];
+  for (let i = 0; i < ids.length; i += 200) {
+    for (let from = 0; ; from += 1000) {
+      const { data, error } = await db
+        .from("player_zone_stats")
+        .select("player_id,player_name,attempts")
+        .eq("season", SEASON)
+        .in("player_id", ids.slice(i, i + 200))
+        .order("player_id")
+        .order("zone")
+        .range(from, from + 999);
+      if (error) throw new Error(`Reading player summaries: ${error.message}`);
+      for (const r of data ?? []) {
+        const names = known.get(r.player_id) ?? new Map<string, number>();
+        names.set(r.player_name, (names.get(r.player_name) ?? 0) + r.attempts);
+        known.set(r.player_id, names);
+      }
+      if ((data ?? []).length < 1000) break;
+    }
+  }
+
+  const most = (names: Map<string, number>) => [...names].sort((a, b) => b[1] - a[1])[0][0];
+  for (const [id, names] of fresh) {
+    const before = known.get(id);
+    const all = new Set([...names.keys(), ...(before?.keys() ?? [])]);
+    if (all.size < 2) continue;
+    // The name already on the charts wins; a new player's most-used one.
+    const keep = before ? most(before) : most(names);
+    const { error } = await db
+      .from("shot_events")
+      .update({ player_name: keep })
+      .eq("season", SEASON)
+      .eq("player_id", id)
+      .neq("player_name", keep);
+    if (error) throw new Error(`Renaming player ${id}: ${error.message}`);
+    console.log(`One spelling for player ${id}: "${keep}" (also seen: ${[...all].filter((n) => n !== keep).join(", ")}).`);
+  }
 }
 
 /** Shots stored for the live season, or null if the count failed. */

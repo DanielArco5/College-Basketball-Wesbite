@@ -1,11 +1,17 @@
 # Shot charts, the Top 25 and Live Wire news every hour through game time.
 #
-#   Morning:  yesterday's games (re-checked for late finishes), then the
-#             NCAA stats, player stats and the Top 25 re-rank.
-#   Hourly:   12:30 p.m. to 1:30 a.m. Eastern, today's games finished so
-#             far, then NCAA stats and the re-rank. One API call each
-#             (the NCAA.com stats are free), about 15 a day.
-#   By hand:  everything, including today's games so far.
+#   Every run:  today's games finished so far, Live Wire news, NCAA
+#               stats, final scores, the re-rank, and any X post that's
+#               due. One API call.
+#   Once a day: the first run after 3 a.m. Eastern also re-checks
+#               yesterday's late games and loads box scores and player
+#               stats (three more API calls). If any of that fails, the
+#               next run tries again, so no one has to run it by hand.
+#   By hand:    everything, whether or not it's already been done today.
+#
+# GitHub starts scheduled runs late and skips many of them: of about 15
+# scheduled a day, 4 or so actually run. That's enough, since no single
+# run matters any more.
 #
 # Needs three repository secrets (Settings -> Secrets and variables ->
 # Actions): SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, CBBD_API_KEY. They're
@@ -28,9 +34,9 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "all = everything, including today's games so far"
+        description: "all = everything now; auto = only what's due, like a scheduled run"
         type: choice
-        options: [all, morning, hourly]
+        options: [all, auto]
         default: all
 
 concurrency: daily-update
@@ -39,8 +45,6 @@ jobs:
   update:
     runs-on: ubuntu-latest
     timeout-minutes: 45
-    env:
-      MODE: ${{ inputs.mode || (github.event.schedule == '15 11 * * *' && 'morning' || 'hourly') }}
     steps:
       - uses: actions/checkout@v4
 
@@ -74,31 +78,50 @@ jobs:
             scripts/.cache/recruits-2026.json
           key: cbbd-preseason-2027-v2
 
+      # Decides whether the once-a-day work is still owed today.
+      - name: What's due
+        id: due
+        run: npx tsx --env-file=.env.local scripts/due.ts ${{ inputs.mode == 'all' && '--force' || '' }}
+
       # Every run, first, since it's quick; free. news.yml also runs it
       # overnight, whenever GitHub gets round to its 3-hour schedule.
       - name: Live Wire news
+        if: ${{ !cancelled() }}
         run: npm run fetch-news
 
-      # One API call per run: today's games hourly, yesterday in the morning.
-      # Runs even if the news fetch failed.
+      # One API call for today's games; once a day, one more to re-check
+      # yesterday's. The summaries are refreshed in the last step.
       - name: Shot charts
+        id: shots
         if: ${{ !cancelled() }}
-        run: npm run update-shots ${{ env.MODE == 'morning' && ' ' || '-- --today' }}
+        run: |
+          if [ "${{ steps.due.outputs.morning }}" = "true" ]; then
+            npm run update-shots -- --no-refresh
+          fi
+          npm run update-shots -- --today --no-refresh
 
       # Every run; free. The ranking runs even if the shot import failed.
       - name: NCAA.com team stats
         if: ${{ !cancelled() }}
         run: npm run ncaa-stats
 
-      # Box-score stats for the player pages: one API call, mornings only.
+      # Box-score stats for the player pages: one API call, once a day.
       - name: Player season stats
-        if: ${{ !cancelled() && env.MODE != 'hourly' }}
+        id: player
+        if: ${{ !cancelled() && steps.due.outputs.morning == 'true' }}
         run: npm run player-stats -- --season 2027 --refresh
 
-      # Per-game box scores for the game logs: one API call, mornings only.
+      # Per-game box scores for the game logs: one API call, once a day.
       - name: Game logs
-        if: ${{ !cancelled() && env.MODE != 'hourly' }}
+        id: logs
+        if: ${{ !cancelled() && steps.due.outputs.morning == 'true' }}
         run: npm run game-logs
+
+      # Only when all of the once-a-day work succeeded; otherwise the next
+      # run does it again.
+      - name: Mark the daily work done
+        if: ${{ steps.due.outputs.morning == 'true' && steps.shots.outcome == 'success' && steps.player.outcome == 'success' && steps.logs.outcome == 'success' }}
+        run: npx tsx --env-file=.env.local scripts/due.ts --done
 
       # Final scores from ESPN for the ranking; free. Games still going
       # are left out.
@@ -110,6 +133,18 @@ jobs:
         if: ${{ !cancelled() }}
         run: npm run rank
 
+      # The site's X account: yesterday's hot and cold shooters once a day,
+      # an unusual team shot chart every third day. Posts only what's due
+      # and never twice; does nothing until the four X_ secrets are set.
+      - name: Post to X
+        if: ${{ !cancelled() }}
+        env:
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+        run: npm run tweet -- auto --post
+
       - name: Keep CBBD preseason payloads
         if: ${{ !cancelled() && steps.cbbd.outputs.cache-hit != 'true' && hashFiles('scripts/.cache/recruits-2026.json') != '' }}
         uses: actions/cache/save@v4
@@ -120,3 +155,9 @@ jobs:
             scripts/.cache/player-stats-2026.json
             scripts/.cache/recruits-2026.json
           key: cbbd-preseason-2027-v2
+
+      # Last, because it loads the database for a few minutes and other
+      # steps fail if they run during it. Skipped when no shot was added.
+      - name: Refresh shot-chart summaries
+        if: ${{ !cancelled() && (steps.shots.outputs.changed == 'true' || steps.due.outputs.morning == 'true') }}
+        run: npm run update-shots -- --refresh-only
