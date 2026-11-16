@@ -6,8 +6,8 @@
  *
  * What it weighs, and how heavily (see WEIGHTS): a power rating (net
  * efficiency and competition), then style tilts for offensive
- * efficiency, offensive rebounding, roster experience, turnover margin,
- * three-point shooting and defense. On top of that, an
+ * efficiency, offensive rebounding, turnover margin, three-point
+ * shooting and defense. Roster continuity isn't scored. On top of that, an
  * identity bonus lifts teams that are elite at one thing: scoring, or
  * winning the margins on the glass and in turnovers.
  *
@@ -61,20 +61,22 @@ const CACHE = "scripts/.cache";
 /**
  * Share of the base score. Must sum to 1. Two layers: a power rating
  * built the way the major rankings build theirs (net efficiency and the
- * competition it came against, plus last season's winning, 65%), then
- * style tilts toward defense, efficient offense, offensive rebounding and
- * an experienced roster (35%). The
- * identity bonus below is added on top.
+ * competition it came against, plus last season's winning, 67%), then
+ * style tilts toward defense, efficient offense and offensive rebounding
+ * (33%). The identity bonus below is added on top.
+ *
+ * Roster experience (minutes back, plus part credit for transfers) was a
+ * 3% component until 2026-11-16; it was dropped and its share went to
+ * net efficiency. It's still computed and saved on each row, unscored.
  */
 const WEIGHTS = {
-  net: 0.32,
+  net: 0.35,
   competition: 0.25,
   winning: 0.07,
   defense: 0.1,
   offense: 0.09,
   recruits: 0.07,
   oreb: 0.05,
-  continuity: 0.03,
   turnovers: 0.01,
   three: 0.01,
 } as const;
@@ -607,8 +609,6 @@ async function main() {
     three: rows.map((r) => r.proj.three),
     defense: rows.map((r) => -r.proj.defense),
     competition: rows.map((r) => r.proj.competition),
-    // Roster experience: minutes back, plus half credit for D1 transfers.
-    continuity: rows.map((r) => r.experience),
     // Last season's win percentage: programs that win keep winning.
     winning: rows.map((r) => r.proj.winPct),
     // The incoming freshman class, by national recruiting ranking.
@@ -638,7 +638,6 @@ async function main() {
     three: shown.map((x) => x.three),
     defense: shown.map((x) => -x.defense),
     competition: parts.competition,
-    continuity: parts.continuity,
     winning: parts.winning,
     recruits: parts.recruits,
   };

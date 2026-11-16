@@ -251,8 +251,8 @@ export function FormulaMethod({ formula }: { formula: Formula }) {
         than it allows per possession, the strength of the competition it
         does it against, and whether it actually won. The other{" "}
         {pctOf(1 - W.net - W.competition - W.winning)} are{" "}
-        <strong>style tilts</strong> toward defense, efficient offense,
-        offensive rebounding and an experienced roster. They move teams within the power rating&rsquo;s frame rather
+        <strong>style tilts</strong> toward defense, efficient offense
+        and offensive rebounding. They move teams within the power rating&rsquo;s frame rather
         than overturn it. And there&rsquo;s room for outliers: a team truly
         elite at one thing can crack the Top 25 on that alone.
       </p>
@@ -300,15 +300,6 @@ export function FormulaMethod({ formula }: { formula: Formula }) {
             <td>Offensive rebounding</td>
             <td>Share of its own misses a team gets back</td>
             <td className="num">{pctOf(W.oreb)}</td>
-          </tr>
-          <tr>
-            <td>Roster experience</td>
-            <td>
-              Last season&rsquo;s minutes back with the same team, plus{" "}
-              {pctOf(p.TRANSFER_CREDIT)} credit for minutes transfers played
-              elsewhere in Division I
-            </td>
-            <td className="num">{pctOf(W.continuity)}</td>
           </tr>
           <tr>
             <td>Turnover margin</td>
