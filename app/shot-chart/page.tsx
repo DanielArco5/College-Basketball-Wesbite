@@ -20,6 +20,7 @@ import GamePicker from "./GamePicker";
 import { BoxScore, GameLog, type GameMeta, type LogRow } from "./GameLog";
 import { conferenceOf, membersOf } from "@/lib/conferences";
 import { apRankOf } from "@/lib/ap";
+import { fetchAll, getBaselines, getPickerList, getPriors } from "./data";
 import "./shot-chart.css";
 
 /**
@@ -42,25 +43,6 @@ const MIN_LIVE_ATTEMPTS = 5;
 
 function seasonLabel(season: number) {
   return `${season - 1}–${String(season).slice(2)}`;
-}
-
-// Supabase returns at most 1,000 rows per request, whatever .limit() asks
-// for, so anything that can exceed that is read in pages.
-const PAGE_SIZE = 1000;
-
-async function fetchAll<T>(
-  page: (
-    from: number,
-    to: number,
-  ) => PromiseLike<{ data: T[] | null; error: { message: string } | null }>,
-): Promise<{ data: T[]; error: string | null }> {
-  const rows: T[] = [];
-  for (let from = 0; ; from += PAGE_SIZE) {
-    const { data, error } = await page(from, from + PAGE_SIZE - 1);
-    if (error) return { data: rows, error: error.message };
-    rows.push(...(data ?? []));
-    if (!data || data.length < PAGE_SIZE) return { data: rows, error: null };
-  }
 }
 
 // The live season changes once a day at most, when new games are imported.
@@ -103,14 +85,13 @@ export default async function ShotChartPage({
   // counted straight from the shots (shotZoneStats) against the last
   // fitted season's D1 averages. The page opens on the newest season
   // with any shots, so the live season from its first game.
-  const [{ data: seasonRows }, { data: playerPriors }, { data: teamPriors }] = await Promise.all([
+  const [{ data: seasonRows }, { player: playerPriors, team: teamPriors }] = await Promise.all([
     db.from("d1_season_totals").select("season"),
-    db.from("zone_priors").select("season, zone"),
-    db.from("team_zone_priors").select("season, zone"),
+    getPriors(),
   ]);
-  const zones = new Set((playerPriors ?? []).map((p) => p.zone)).size;
-  const ready = (s: number, rows: { season: number }[] | null) =>
-    (rows ?? []).filter((r) => r.season === s).length >= zones;
+  const zones = new Set(playerPriors.map((p) => p.zone)).size;
+  const ready = (s: number, rows: { season: number }[]) =>
+    rows.filter((r) => r.season === s).length >= zones;
   const hasShots = (s: number) => (seasonRows ?? []).some((r) => r.season === s);
   const fitted = SEASONS.filter(
     (s) => hasShots(s) && ready(s, playerPriors) && ready(s, teamPriors),
@@ -164,23 +145,7 @@ export default async function ShotChartPage({
     }));
     selectedId = Number(params.team) || teams[0]?.id;
   } else {
-    // Sorted by id as well as name so pages don't shuffle players who
-    // share a name across the page boundary.
-    const { data: candidates, error } = await fetchAll<{
-      player_id: number;
-      player_name: string;
-      team_id: number;
-      attempts: number;
-    }>((from, to) =>
-      db
-        .from("player_season_totals")
-        .select("player_id, player_name, team_id, attempts")
-        .eq("season", season)
-        .gte("attempts", minAttempts)
-        .order("player_name")
-        .order("player_id")
-        .range(from, to),
-    );
+    const { data: candidates, error } = await getPickerList(season, minAttempts);
 
     if (error) return <Failure message={error} />;
 
@@ -654,12 +619,12 @@ async function shotZoneStats(
         .order("id")
         .range(from, to),
     ),
-    db.from("zone_baselines").select("zone, fg_pct").eq("season", baseSeason),
+    getBaselines(baseSeason),
   ]);
   if (shots.error) return { data: [], error: { message: shots.error } };
   if (baseErr) return { data: [], error: baseErr };
 
-  const league = new Map((base ?? []).map((b) => [b.zone as Zone, Number(b.fg_pct)]));
+  const league = new Map(base.map((b) => [b.zone as Zone, Number(b.fg_pct)]));
   const byZone = new Map<Zone, { attempts: number; makes: number }>();
   for (const shot of shots.data) {
     const z = byZone.get(shot.zone) ?? { attempts: 0, makes: 0 };

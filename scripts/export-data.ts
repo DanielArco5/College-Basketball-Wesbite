@@ -10,15 +10,18 @@
  * also means the site can be rebuilt when Supabase is paused, asleep,
  * or out of credits, as long as the JSON from the last run is there.
  *
+ * One season per run, picked with EXPORT_SEASON (default 2026). Each
+ * season is written to its own folder and only that folder is cleared.
+ *
  * Output:
- *   data/meta.json              seasons, counts, generated-at
- *   data/teams.json             every D1 team
- *   data/players.json           picker list, 20+ attempts
- *   data/wire.json              Live Wire entries
- *   data/ratings.json           team ratings, all three orderings
- *   data/zones/player-<id>.json zone stats per player
- *   data/zones/team-<id>.json   offensive + defensive zone stats
- *   public/data/shots/*.json    shot locations, served to the browser
+ *   data/<season>/meta.json              counts, generated-at
+ *   data/<season>/teams.json             every D1 team
+ *   data/<season>/players.json           picker list, 20+ attempts
+ *   data/<season>/wire.json              Live Wire entries
+ *   data/<season>/ratings.json           team ratings, all three orderings
+ *   data/<season>/zones/player-<id>.json zone stats per player
+ *   data/<season>/zones/team-<id>.json   offensive + defensive zone stats
+ *   public/data/<season>/shots/*.json    shot locations, served to the browser
  *
  * The zones/ files are read at build time. The public/data/ files are
  * copied into the deploy as-is and fetched by the browser on demand.
@@ -38,8 +41,10 @@ if (!URL || !KEY) {
 
 const db = createClient(URL, KEY, { auth: { persistSession: false } });
 
-const OUT = "data";
-const PUB = "public/data";
+// Each season gets its own folder, so exporting one season leaves the
+// others in place.
+const OUT = `data/${SEASON}`;
+const PUB = `public/data/${SEASON}`;
 
 /**
  * PostgREST caps a response at 1,000 rows by default. Anything that can
@@ -94,7 +99,9 @@ async function main() {
   const players = await fetchAll<any>(
     "player_season_totals",
     "player_id, player_name, team_id, attempts, makes",
-    (q) => q.eq("season", SEASON).gte("attempts", 20).order("player_name")
+    // player_id breaks ties, so players who share a name can't shuffle
+    // across a page boundary and get dropped or doubled.
+    (q) => q.eq("season", SEASON).gte("attempts", 20).order("player_name").order("player_id")
   );
   write(
     `${OUT}/players.json`,
@@ -119,11 +126,17 @@ async function main() {
   console.log(`wire: ${(wire ?? []).length}`);
 
   // ── Team ratings ─────────────────────────────────────────────────
+  // The view only ranks by net. Offense and defense ranks are worked
+  // out here: most points scored first, fewest allowed first.
   const ratings = await fetchAll<any>(
     "team_ratings",
-    "team_id, school, conference, adj_off, adj_def, net, games, rk, off_rk, def_rk",
-    (q) => q.eq("season", SEASON).order("rk")
+    "team_id, school, conference, adj_off, adj_def, net, games, rk",
+    (q) => q.eq("season", SEASON).order("rk").order("team_id")
   );
+  const rankBy = (key: "off_rk" | "def_rk", order: (a: any, b: any) => number) =>
+    [...ratings].sort(order).forEach((r, i) => (r[key] = i + 1));
+  rankBy("off_rk", (a, b) => b.adj_off - a.adj_off);
+  rankBy("def_rk", (a, b) => a.adj_def - b.adj_def);
   write(`${OUT}/ratings.json`, ratings);
   console.log(`ratings: ${ratings.length}`);
 
@@ -134,7 +147,7 @@ async function main() {
   const playerZones = await fetchAll<any>(
     "player_zone_stats",
     "*",
-    (q) => q.eq("season", SEASON)
+    (q) => q.eq("season", SEASON).order("player_id").order("zone")
   );
   const byPlayer = new Map<number, any[]>();
   for (const z of playerZones) {
@@ -148,10 +161,10 @@ async function main() {
   console.log(`player zones: ${playerZones.length} rows, ${byPlayer.size} players`);
 
   const teamZones = await fetchAll<any>("team_zone_stats", "*", (q) =>
-    q.eq("season", SEASON)
+    q.eq("season", SEASON).order("team_id").order("zone")
   );
   const teamDef = await fetchAll<any>("team_defense_zone_stats", "*", (q) =>
-    q.eq("season", SEASON)
+    q.eq("season", SEASON).order("team_id").order("zone")
   );
   const defByTeam = new Map<number, any[]>();
   for (const z of teamDef) {
@@ -185,15 +198,22 @@ async function main() {
   const shotsByPlayer = new Map<number, number[][]>();
   const shotsByTeam = new Map<number, number[][]>();
 
-  const PAGE = 10000;
+  // Paged by id rather than by offset: the server hands back at most
+  // 1,000 rows however many are asked for, so the loop runs until a
+  // page comes back empty, and each page starts after the last id seen
+  // instead of making Postgres skip every row already read.
+  const PAGE = 1000;
   let total = 0;
-  for (let from = 0; ; from += PAGE) {
+  let lastId = 0;
+  for (;;) {
     const { data, error } = await db
       .from("shot_events")
-      .select("player_id, team_id, x, y, made")
+      .select("id, player_id, team_id, x, y, made")
       .eq("season", SEASON)
       .not("zone", "is", null)
-      .range(from, from + PAGE - 1);
+      .gt("id", lastId)
+      .order("id")
+      .limit(PAGE);
 
     if (error) throw new Error(`shot_events: ${error.message}`);
     if (!data || data.length === 0) break;
@@ -216,9 +236,9 @@ async function main() {
       }
     }
 
+    lastId = data[data.length - 1].id;
     total += data.length;
     if (total % 100000 < PAGE) console.log(`  shots: ${total}...`);
-    if (data.length < PAGE) break;
   }
 
   for (const [id, shots] of shotsByPlayer) {

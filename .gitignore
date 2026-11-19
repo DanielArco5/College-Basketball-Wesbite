@@ -42,3 +42,7 @@ next-env.d.ts
 
 # CBBD payloads cached by scripts/project-2027.ts
 /scripts/.cache/
+
+# Written by scripts/export-data.ts, regenerated before every build
+/data/
+/public/data/
